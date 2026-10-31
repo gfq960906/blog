@@ -11,7 +11,7 @@ export const site = {
   description: "记录工作与生活的地方",
 
   // 你的名字或昵称
-  author: "郭",
+  author: "fqguo",
 
   // 站点最终的公网地址，用于 RSS 和 sitemap。
   // 用 GitHub Pages 的话形如："https://<你的用户名>.github.io/blog"
