@@ -3,6 +3,6 @@ node_modules/
 Thumbs.db
 *.log
 
-# 构建产物：默认提交（GitHub Pages 老式部署需要），
-# 若用 .github/workflows 自动构建，可取消下面这行的注释
-# dist/
+# 构建产物 docs/ 需要提交（GitHub Pages 直接从 docs 发布）
+# 若用 Netlify Drop，可临时用 OUT_DIR=dist 生成到 dist/
+dist/

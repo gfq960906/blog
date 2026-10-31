@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "./build.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const DIST = path.join(ROOT, "dist");
+const DIST = path.join(ROOT, process.env.OUT_DIR || "docs");
 const watch = !process.argv.includes("--no-watch");
 let PORT = Number(process.env.PORT || 4321);
 const DEFAULT_PORT = PORT;

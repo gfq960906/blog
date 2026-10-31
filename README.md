@@ -21,8 +21,12 @@ node serve.mjs
 
 ```bash
 node build.mjs
-# 结果在 dist/ 目录里，双击 dist/index.html 也能看
+# 结果在 docs/ 目录里，双击 docs/index.html 也能看
 ```
+
+> 为什么是 `docs`：GitHub Pages 可以直接把仓库里的 `docs/` 目录当网站发布，不需要 Actions，
+> 也不需要额外权限，push 完就生效。
+> 想生成到别的目录（比如拖到 Netlify Drop）：设置环境变量 `OUT_DIR=dist` 再构建。
 
 ---
 
@@ -40,7 +44,7 @@ blog/
 │  ├─ about.md            ← 「关于」页内容
 │  ├─ posts/              ← 【写文章放这里】一个 .md 一篇文章
 │  └─ labs/               ← 【放专题页】你自己的 HTML 报告整页放这里
-└─ dist/                  ← 生成的网站（不要手改，会被覆盖）
+└─ docs/                  ← 生成的网站（GitHub Pages 就发布这个目录，不要手改）
 ```
 
 ---
@@ -140,33 +144,33 @@ content/labs/2026-10-27-neutral-atom-companies.html
 
 ### 方案 A：Netlify Drop（最快，5 分钟，不用 Git）
 
-1. 本地跑 `node build.mjs`
+1. 本地跑 `OUT_DIR=dist node build.mjs`（PowerShell 里先 `$env:OUT_DIR="dist"`）
 2. 打开 <https://app.netlify.com/drop>
 3. 把 `dist` 文件夹**整个拖进去**
 4. 拿到一个 `xxx.netlify.app` 的网址，完事
 
 以后更新：重新构建，再拖一次（或者绑定 GitHub 仓库让它自动部署）。
 
-### 方案 B：GitHub Pages（免费、可绑自己的域名、推送即更新）
+### 方案 B：GitHub Pages（已经配置好了）
 
-1. 在 GitHub 上新建一个仓库（比如叫 `blog`，**不要**勾选初始化 README）
-2. 本机执行：
+这个仓库已经按下面的方式配置完成，日常更新只要三步：
 
 ```bash
-cd blog
-git init
-git add .
-git commit -m "init blog"
-git branch -M main
-git remote add origin https://github.com/<你的用户名>/blog.git
-git push -u origin main
+node build.mjs                 # 1. 重新生成 docs/
+git add -A && git commit -m "更新"   # 2. 提交
+git push                       # 3. 推送，GitHub 自动更新网站
 ```
 
-3. 仓库页面 → **Settings → Pages → Source** 选 **GitHub Actions**
-4. 等 1 分钟，网址是 `https://<你的用户名>.github.io/blog/`
+首次配置时做过的事（供参考，不用重做）：
 
-项目里已经带了 `.github/workflows/pages.yml`，你每次 `git push`，GitHub 会自动构建并发布。
+1. 建一个 public 仓库 `blog`
+2. 仓库页面 → **Settings → Pages → Source** 选 **Deploy from a branch**，
+   Branch 选 `main`，文件夹选 **/docs**
+3. 等 1 分钟左右，网址就是 `https://<你的用户名>.github.io/blog/`
 
+> 为什么用「分支 + /docs」而不是 GitHub Actions：这套方式**不需要额外的 token 权限**，
+> 也没有 Actions 配额和排队问题，推上去就直接生效，最省心。
+>
 > 注意：因为站点用的是**相对路径**，部署在 `/blog/` 这种子路径下也能正常显示，不需要改配置。
 > 唯一要改的是 `site.config.mjs` 里的 `url`，填成你的正式网址（RSS 和 sitemap 要用）。
 

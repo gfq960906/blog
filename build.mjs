@@ -10,7 +10,9 @@ import { site, categories } from "./site.config.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
-const DIST = path.join(ROOT, "dist");
+// 构建产物目录。用 GitHub Pages「分支 + /docs」方式发布时必须是 docs；
+// 想用 dist（比如拖到 Netlify Drop）就设置环境变量 OUT_DIR=dist
+const DIST = path.join(ROOT, process.env.OUT_DIR || "docs");
 
 /* ---------------------------------------------------------- */
 /*  工具函数                                                   */
