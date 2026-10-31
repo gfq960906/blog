@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { site, categories } from "./site.config.mjs";
+import { site, categories, labGroups } from "./site.config.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
@@ -339,6 +339,9 @@ function readLabs() {
         date: meta.date ? new Date(meta.date) : null,
         summary: meta.summary || (descM ? descM[1] : ""),
         tag: meta.tag || "专题",
+        group: meta.group || "其他",
+        short: meta.short || meta.title || (titleM ? titleM[1].trim() : name),
+        post: meta.post || "",
         text,
       };
     })
@@ -635,35 +638,69 @@ ${v.posts.map((p) => postCard(p, "../")).join("\n")}
   }
 
   /* ---- 专题（富 HTML 页面） ---- */
+  const labCard = (l) => `<a class="lab-card" href="labs/${encodeURIComponent(l.name)}.html">
+      <span class="lab-tag">${esc(l.tag)}</span>
+      <h3>${esc(l.title)}</h3>
+      <p>${esc(l.summary)}</p>
+      ${l.date ? `<time>${fmtDate(l.date)}</time>` : ""}
+    </a>`;
+
+  const groupOrder = [...labGroups];
+  for (const l of labs) if (!groupOrder.includes(l.group)) groupOrder.push(l.group);
+  const grouped = groupOrder
+    .map((g) => ({ group: g, items: labs.filter((l) => l.group === g) }))
+    .filter((g) => g.items.length);
+
   const labsBody = `
 <section class="page-head">
   <h1>专题与报告</h1>
   <p class="page-sub">整理好的调研、报告、可视化页面，独立成页</p>
 </section>
-<div class="lab-grid">
-${labs
-  .map(
-    (l) => `<a class="lab-card" href="labs/${encodeURIComponent(l.name)}.html">
-      <span class="lab-tag">${esc(l.tag)}</span>
-      <h3>${esc(l.title)}</h3>
-      <p>${esc(l.summary)}</p>
-      ${l.date ? `<time>${fmtDate(l.date)}</time>` : ""}
-    </a>`
-  )
-  .join("\n")}
-</div>
-${labs.length ? "" : '<p class="empty">还没有专题页。把 HTML 文件放进 <code>content/labs/</code> 即可自动出现在这里。</p>'}
+${
+  grouped.length
+    ? grouped
+        .map(
+          (g) => `<section class="lab-group">
+  <h2 class="lab-group-title">${esc(g.group)}<span class="lab-group-count">${g.items.length}</span></h2>
+  <div class="lab-grid">
+${g.items.map(labCard).join("\n")}
+  </div>
+</section>`
+        )
+        .join("\n")
+    : '<p class="empty">还没有专题页。把 HTML 文件放进 <code>content/labs/</code> 即可自动出现在这里。</p>'
+}
 `;
   writeFile("labs.html", layout({ title: "专题", body: labsBody, active: "labs.html" }));
 
-  // 原样复制 labs 页面，并在 </body> 前插入返回条
+  // 原样复制 labs 页面，并在页头插入「相关」导航条（专题之间互相跳转）
   const labsDir = path.join(CONTENT, "labs");
   if (fs.existsSync(labsDir)) {
-    for (const f of fs.readdirSync(labsDir).filter((x) => x.endsWith(".html"))) {
-      let raw = fs.readFileSync(path.join(labsDir, f), "utf8");
-      const back = `<div style="position:fixed;left:16px;bottom:16px;z-index:9999;font:14px/1.4 -apple-system,'PingFang SC','Microsoft YaHei',sans-serif"><a href="../labs.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18)">← 返回博客专题</a></div>`;
-      raw = raw.includes("</body>") ? raw.replace("</body>", back + "\n</body>") : raw + back;
-      writeFile(path.join("labs", f), raw);
+    const xnavCss = `<style>
+.blog-xnav{position:sticky;top:0;z-index:9998;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  padding:10px 20px;font:13px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:rgba(251,250,247,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,0,0,.07);color:#77808c}
+.blog-xnav-t{opacity:.7;margin-right:2px}
+.blog-xnav a{color:#24456e;text-decoration:none;padding:4px 11px;border-radius:999px;
+  background:rgba(36,69,110,.07);transition:background .15s}
+.blog-xnav a:hover{background:rgba(36,69,110,.15)}
+.blog-xnav .blog-xnav-all{margin-left:auto;background:none;border:1px solid rgba(0,0,0,.14);color:#3d444d}
+@media (max-width:640px){.blog-xnav{padding:8px 12px;font-size:12px}.blog-xnav .blog-xnav-all{margin-left:0}}
+</style>`;
+
+    for (const l of labs) {
+      let raw = fs.readFileSync(path.join(labsDir, `${l.name}.html`), "utf8");
+      const others = labs.filter((x) => x.name !== l.name);
+      const links = others
+        .map((o) => `<a href="./${encodeURIComponent(o.name)}.html">${esc(o.short)}</a>`)
+        .join("");
+      const postLink = l.post
+        ? `<a class="blog-xnav-post" href="../posts/${encodeURIComponent(l.post)}.html">读文字版</a>`
+        : "";
+      const bar = `<div class="blog-xnav"><span class="blog-xnav-t">相关</span>${links}${postLink}<a class="blog-xnav-all" href="../labs.html">全部专题 →</a></div>${xnavCss}`;
+      raw = /<body[^>]*>/i.test(raw) ? raw.replace(/<body[^>]*>/i, (m) => `${m}\n${bar}`) : bar + raw;
+      writeFile(path.join("labs", `${l.name}.html`), raw);
     }
   }
 

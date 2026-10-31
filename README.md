@@ -154,14 +154,39 @@ content/labs/2026-10-27-neutral-atom-companies.html
 
 1. 原样复制到网站的 `labs/` 目录下（页面样式由那个 HTML 自己决定，不受博客样式影响）；
 2. 自动读取它的 `<title>` 和 `<meta name="description">`；
-3. 在「专题」板块生成一张卡片链过去；
-4. 在页面左下角自动加一个「← 返回博客专题」的浮标。
+3. 在「专题」板块按分组生成卡片链过去；
+4. 在页面顶部插入一条粘性的「相关 / 全部专题」导航条，专题之间可以互相跳转。
 
-如果想让卡片显示得更好看，在 HTML 开头放一行注释：
+如果想让卡片显示得更好看，在 HTML 开头放一行注释（**所有字段都是可选的**）：
 
 ```html
-<!-- meta: {"title":"标题","date":"2026-10-27","summary":"一句话介绍","tag":"调研报告"} -->
+<!-- meta: {"title":"标题","date":"2026-10-27","summary":"一句话介绍",
+           "tag":"调研报告","group":"公司图谱","short":"公司图谱 v2",
+           "post":"2026-10-27-neutral-atom-companies"} -->
 ```
+
+| 字段 | 作用 |
+| --- | --- |
+| `title` | 卡片和导航条上的标题 |
+| `date` | 排序用（不写就排在最后） |
+| `summary` | 卡片上的一句话介绍 |
+| `tag` | 卡片左上角的小标签 |
+| `group` | 专题页分组，分组顺序在 `site.config.mjs` 的 `labGroups` 里改 |
+| `short` | 顶部导航条里显示的短名字（默认用 title） |
+| `post` | 对应的文章 slug（写了才会出现「读文字版」链接） |
+
+### 顺手把 HTML 报告变成一篇 Markdown 文章（可选）
+
+专题页只在「专题」板块和搜索里出现，不进 RSS 和文章列表。如果也想让它被订阅、被当成普通文章读，可以转一份 Markdown：
+
+```powershell
+node tools/html2md.mjs content/sources/report.html content/sources/report.md
+```
+
+然后按「三、写一篇新文章」的方法加 frontmatter，放进 `content/posts/`。
+
+> 转换器在 `tools/html2md.mjs`，零依赖，保留标题层级、列表、表格、引用；
+> 页面里的 CSS 条形图会变成表格。转换完建议自己扫一眼，个别排版细节可能需要手改。
 
 ---
 

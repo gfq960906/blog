@@ -323,6 +323,35 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 
 /* ---------------- 专题卡片 ---------------- */
 
+.lab-group { margin: 0 0 40px; }
+
+.lab-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 34px 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+
+.lab-group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.lab-group-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--bg-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
 .lab-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

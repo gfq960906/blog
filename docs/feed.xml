@@ -12,6 +12,13 @@
     <description>折腾了一个晚上，把博客搭起来了。记录一下为什么想写，以及这套东西是怎么运转的。</description>
   </item>
   <item>
+    <title>全球原子体系量子计算公司图谱 v2</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-30-neutral-atom-companies.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-30-neutral-atom-companies.html</guid>
+    <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+    <description>18 家 A 类原子体系公司、3 家科技巨头、5 家 B 类传感厂商的完整梳理，逐家官网核实，附收录口径与排除名单。</description>
+  </item>
+  <item>
     <title>中性原子路线，为什么值得持续盯住</title>
     <link>https://gfq960906.github.io/blog/posts/2026-10-28-neutral-atom-note.html</link>
     <guid>https://gfq960906.github.io/blog/posts/2026-10-28-neutral-atom-note.html</guid>
@@ -19,11 +26,25 @@
     <description>整理了最近关于中性原子量子计算的一些零散思考：它的优势到底在哪，工程上的难点又卡在哪里。</description>
   </item>
   <item>
+    <title>里德堡原子两比特门：实验进展与实现细节（2010–2026）</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-28-rydberg-two-qubit-gates.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-28-rydberg-two-qubit-gates.html</guid>
+    <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+    <description>门协议谱系、误差通道量级与十余篇实验细节，附三条硬件路线对比、保真度演进与通往 99.9% 的路径。</description>
+  </item>
+  <item>
     <title>周末去了城郊的那条河</title>
     <link>https://gfq960906.github.io/blog/posts/2026-10-25-weekend.html</link>
     <guid>https://gfq960906.github.io/blog/posts/2026-10-25-weekend.html</guid>
     <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
     <description>天气好得不像话，骑车去了城郊。没做什么特别的事，就是坐着看了很久的水。</description>
+  </item>
+  <item>
+    <title>里德堡量子计算单比特门：逐篇实现细节</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-23-rydberg-single-qubit-gates.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-23-rydberg-single-qubit-gates.html</guid>
+    <pubDate>Fri, 23 Oct 2026 00:00:00 GMT</pubDate>
+    <description>从 2015 年 Cs 阵列微波门到 2023 年 99.97% 拉曼门，10 篇代表性工作逐篇拆解平台、编码、光路与误差机理。</description>
   </item>
   <item>
     <title>一周工作复盘：把「查资料」变成可复用的东西</title>

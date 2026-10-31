@@ -28,3 +28,7 @@ export const categories = {
   research: { name: "研究笔记", color: "#6b5b95" },
   essay:    { name: "随笔感想", color: "#4a7c59" },
 };
+
+// 专题页的分组顺序（在专题页 html 的 meta 里用 "group": "公司图谱" 指定）
+// 没写 group 的专题会归到「其他」，排在最后
+export const labGroups = ["公司图谱", "实验进展", "综述"];
