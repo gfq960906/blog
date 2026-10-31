@@ -48,7 +48,7 @@
     <div class="card-tags"><a class="tag" href="../tags/%E9%87%8C%E5%BE%B7%E5%A0%A1.html">#里德堡</a> <a class="tag" href="../tags/%E5%8D%95%E6%AF%94%E7%89%B9%E9%97%A8.html">#单比特门</a> <a class="tag" href="../tags/%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97.html">#量子计算</a></div>
   </div>
   <div class="post-body with-toc">
-    <div class="prose"><blockquote>[object Object]</blockquote>
+    <div class="prose"><blockquote><p>📄 这是<strong>文字版</strong>，方便检索与订阅。带图表和完整排版的报告见专题页：<a href="../labs/2026-10-23-rydberg-single-qubit-gates.html">《里德堡量子计算单比特门》</a>。</p></blockquote>
 <h2 id="0-怎么读这份文档">0 · 怎么读这份文档</h2>
 <p>先记住一个容易混淆的点：<strong>里德堡量子计算机里的“单比特门”，绝大多数不是在里德堡态上做的</strong>，而是在编码 qubit 的两个长寿命基态上做；里德堡态只负责两比特相互作用。所以每篇的“单比特门实现”讲的都是三件事：</p>
 <ol><li><strong>编码</strong>：哪两个态构成 qubit（超精细、核自旋，还是基态–里德堡态）。</li><li><strong>驱动</strong>：用什么场让这两个态做 Rabi 旋转（微波/RF、拉曼，还是直接 Rydberg 脉冲）。</li><li><strong>寻址</strong>：怎么只动目标原子而不碰邻居（全局驱动 + 光移选点、聚焦拉曼束、交叉光束相位）。</li></ol>
@@ -68,7 +68,7 @@
 <div class="table-wrap"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>原子 / 阵列</td><td>Cs-133；7×7，3.8 μm；阱深 ~400 μK</td></tr><tr><td>编码</td><td>F=3, m_F=0 / F=4, m_F=0；9.19 GHz</td></tr><tr><td>驱动</td><td>微波喇叭，Ω = 2π × 4.74 kHz（全局）</td></tr><tr><td>寻址</td><td>459 nm Stark 束 + 微波失谐 δ = 33 kHz（√15 Ω）</td></tr><tr><td>Clifford 时间</td><td>≈ 185 μs（平均脉冲面积 7π/4）</td></tr><tr><td>全局保真度</td><td>F² = 0.9983(14)；最好点 0.9999(3)，最差点 0.9939</td></tr><tr><td>单点保真度</td><td>0.9923(7)；串扰误差 0.002(9)（近邻 0.014(20)）</td></tr><tr><td>相干</td><td>T₁ = 0.59 s；T₂* = 14 ms（中位数 7 ms）；原子寿命 17 s</td></tr></tbody></table></div>
 <h3 id="误差与结论">误差与结论</h3>
 <p>他们用密度矩阵模拟了失谐（最多 100 Hz，对应阵列内差动 Stark 移）和 200 ns 的脉冲长度抖动（0.2% 微波功率漂移），发现这两项加起来仍比实测误差小几倍。把 <code>T₂*</code> 的衰减因子代进去，取 <code>⟨t⟩ = 185 μs</code>、<code>T₂* = 2.7 ms</code>，正好复现实测的 0.9983，所以结论是：**限制主要来自有限的 T₂*（磁噪声 + 有限温度运动效应）和脉冲长度/失谐误差**，不是微波源本身。</p>
-<blockquote>[object Object]</blockquote>
+<blockquote><p>这篇的意义：第一次在 49 个可单独寻址的原子上把“全局门 + Stark 选点门”都做了 RB 标定，给出了后来被反复引用的 <code>δ/Ω = √15</code> 串扰最优点。局限是单点门比全局门差 4.5 倍，原因是 Stark 束强度/指向抖动。</p></blockquote>
 <h2 id="2-weiss-组-2016三维-cs-光晶格里的靶向相位门">2 · Weiss 组 2016：三维 Cs 光晶格里的“靶向相位门”</h2>
 <p>Yang Wang, Aishwarya Kumar, Tsung-Yao Wu, David S. Weiss（Penn State）· Science 352, 1562 (2016) · <a href="https://arxiv.org/abs/1601.03639" target="_blank" rel="noopener">arXiv:1601.03639</a> · DOI 10.1126/science.aaf2581</p>
 <p>Cs-133 · 5×5×5 3D · 靶向相位 · 微波 + 880 nm · RB 0.9962</p>
@@ -185,7 +185,7 @@
 <p>两条主线很清楚：<strong>碱金属超精细 + 拉曼</strong>走“速度与保真度”，已经把单比特门做到 10⁻⁴ 以下；<strong>碱土/镱核自旋</strong>走“相干时间”，天然没有差分光移，但驱动慢、且两比特门还弱。微波路线则是“稳但慢”，靠魔强度阱也能进 10⁻⁵。</p>
 <h2 id="11-误差机理小结">11 · 误差机理小结</h2>
 <div class="table-wrap"><table><thead><tr><th>误差源</th><th>物理图像</th><th>典型量级</th><th>对策与代表工作</th></tr></thead><tbody><tr><td>差动光移（DLS）</td><td>阱光对两个超精细态的光移不同，且随光强/位置变化</td><td>η ~ 10⁻³；阵列内失谐可达 100 Hz；T₂* 1–14 ms</td><td>魔强度阱（武汉 2018）、魔波长、回波</td></tr><tr><td>微波 Rabi 慢</td><td>超精细劈裂在 GHz，微波 Rabi 只有 kHz</td><td>Clifford 75–185 μs</td><td>拉曼提速（JILA 170 ns；Harvard 1 MHz）</td></tr><tr><td>拉曼/中间态散射</td><td>经激发态虚耦合，有限失谐下真实布居</td><td>碱金属 T₁ ~ 0.5–1 s；Rb 双光子散射 ~80 μs</td><td>增大失谐（Harvard 180 GHz）、暗态、单光子（Sr）</td></tr><tr><td>激光相位噪声</td><td>~1 MHz 处的高频噪声直接变成 Rydberg 失谐</td><td>Rabi 相干 7 → 27 μs</td><td>参考腔滤波 + 注入锁定（Harvard 2018）</td></tr><tr><td>多普勒</td><td>有限温度下每颗原子随机失谐</td><td>10 μK → 43.5 kHz</td><td>回波、拉曼边带冷却（JILA n̄≈0.14）</td></tr><tr><td>寻址串扰</td><td>聚焦光斑溢出到邻居</td><td>单点 0.992 vs 全局 0.998；串扰 0.2%–5%</td><td>δ/Ω=√15（Saffman）、靶向相位（Weiss）、AOD 闭环</td></tr><tr><td>核自旋特有</td><td>无超精细耦合 → DLS≈0；限制变成磁场与光泄漏</td><td>T₂* 秒级；T₁ 数十秒</td><td>磁场稳定、挡光、magic 波长（Yb 486.78 nm）</td></tr></tbody></table></div>
-<blockquote>[object Object]</blockquote>
+<blockquote><p>一句话总结：<strong>单比特门本身已经不是里德堡平台的瓶颈</strong>。Rb 拉曼已经到 99.97%（Harvard 2023）、微波 + 魔强度阱到 3×10⁻⁵（武汉 2018）、Yb 核自旋 RB 到 99.959%（Princeton 2022）。真正卡住整机的是两比特门（Harvard CZ 99.5%，Yb CZ 83%）、原子损失、并行寻址串扰与校准开销。</p></blockquote>
 <h2 id="12-补充与延伸">12 · 补充与延伸</h2>
 <h3 id="两篇值得配套读的">两篇值得配套读的</h3>
 <ul><li><strong>Levine 等，PRA 105, 032618 (2022)</strong>：Harvard 拉曼驱动系统的专门论文——相位调制 + 啁啾布拉格光栅（CBG）转成幅度调制，被动稳定、高效率、支持高功率。这是 Harvard 2023 单比特门 99.97% 的硬件基础。<a href="https://arxiv.org/abs/2110.14645" target="_blank" rel="noopener">arXiv:2110.14645</a> · DOI 10.1103/PhysRevA.105.032618</li><li><strong>Bluvstein 等，Nature 2024</strong>：在同一平台上用 280 个物理比特做逻辑处理器，单比特门沿用本文方案。<a href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener">arXiv:2312.03982</a> · DOI 10.1038/s41586-023-06927-3</li></ul>

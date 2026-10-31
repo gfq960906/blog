@@ -204,7 +204,7 @@ function mdToHtml(src) {
         buf.push(lines[i].replace(/^>\s?/, ""));
         i++;
       }
-      out.push(`<blockquote>${mdToHtml(buf.join("\n"))}</blockquote>`);
+      out.push(`<blockquote>${mdToHtml(buf.join("\n")).html}</blockquote>`);
       continue;
     }
 
@@ -231,7 +231,7 @@ function mdToHtml(src) {
             sub.push(lines[i]);
             i++;
           }
-          const subHtml = mdToHtml(sub.map((s) => s.trim()).join("\n"));
+          const subHtml = mdToHtml(sub.map((s) => s.trim()).join("\n")).html;
           if (items.length) items[items.length - 1].children = subHtml;
           else items.push({ text: "", children: subHtml });
           continue;

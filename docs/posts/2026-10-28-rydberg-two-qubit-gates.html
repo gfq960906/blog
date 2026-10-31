@@ -48,11 +48,11 @@
     <div class="card-tags"><a class="tag" href="../tags/%E9%87%8C%E5%BE%B7%E5%A0%A1.html">#里德堡</a> <a class="tag" href="../tags/%E4%B8%A4%E6%AF%94%E7%89%B9%E9%97%A8.html">#两比特门</a> <a class="tag" href="../tags/%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97.html">#量子计算</a></div>
   </div>
   <div class="post-body with-toc">
-    <div class="prose"><blockquote>[object Object]</blockquote>
+    <div class="prose"><blockquote><p>📄 这是<strong>文字版</strong>，方便检索与订阅。带图表和完整排版的报告见专题页：<a href="../labs/2026-10-28-rydberg-two-qubit-gates.html">《里德堡原子两比特门》</a>。</p></blockquote>
 <h2 id="0-先看结论">§0 · 先看结论</h2>
-<blockquote>[object Object]</blockquote>
+<blockquote><p><strong>一句话：</strong>里德堡两比特门的物理内核是“当一个原子被激发到里德堡态时，邻居的双激发被能量偏移封死”，由此把一束<strong>全局</strong>激光变成条件操作。所有实验差异，本质上是三件事的组合：<strong>用什么原子/什么激发路径、用几个脉冲、错误怎么被压下去</strong>。</p></blockquote>
 <ul><li><strong>门不是靠“对准某个原子”实现的</strong>，绝大多数现代方案用一束打整片阵列的里德堡激光，靠原子间距（是否落在 blockade 半径内）决定谁和谁纠缠。只有早期的寻址方案（Cs 那批）需要逐个原子打光。</li><li><strong>保真度演进大致是</strong>：2010 年 Bell 0.58–0.75 → 2015 年 Cs 0.73 → 2019 年 0.86–0.95 → 2023 年 0.9952（Rb）→ 2025 年 0.9971（Sr）→ 2026 年 0.99854（Rb）。实测</li><li><strong>门时间在缩短，不是变长</strong>：2019 年双脉冲方案 0.4 μs，2023 年 264 ns，2026 年 <strong>71 ns</strong>。快和准是一起进步的，因为拉比频率提高了约 5 倍。</li><li><strong>现在的主要误差已经不是“门协议不好”</strong>，而是<strong>原子损失（loss）</strong>和<strong>里德堡态寿命</strong>。2026 年哈佛的数据里 loss 占全部误差的 ~60%。这直接催生了“把 loss 当 erasure 用”的纠错路线。</li><li><strong>门保真度和“测出来的保真度”是两件事</strong>。2025 年 Caltech 明确指出：全局 randomized benchmarking 测的是<strong>对称子空间</strong>的平均保真度 F_Sym，不是全空间 Haar 平均 F_Haar；在 Rydberg 衰变主导时两者可差 12%（极端情况下差 50%）。读论文里的“99.x%”必须看它用的什么基准。</li></ul>
-<blockquote>[object Object]</blockquote>
+<blockquote><p><strong>数值标注约定：</strong>本文件中 实测 = 论文报告的实验测量值；换算 = 由论文给出的参数直接推算（如门时间 = 无量纲门时长 ÷ 拉比频率）；估计 = 作者自己的外推/理论预测。凡是我无法从原文核实的，会在正文里写明“未读到原文”。</p></blockquote>
 <h2 id="1-物理机制三种耦合方式">§1 · 物理机制：三种耦合方式</h2>
 <h3 id="11-阻塞blockade几乎所有门都用这个">1.1 阻塞（blockade）——几乎所有门都用这个</h3>
 <p>两个原子都激发到里德堡态 |rr⟩ 时，范德瓦尔斯相互作用给这对态一个能量偏移</p>
@@ -83,7 +83,7 @@
 <p>Jandura &amp; Pupillo（Quantum 6, 712, 2022）用最优控制找到在 blockade 区实现 CZ 的<strong>时间最优单脉冲</strong>：固定幅度、相位随时间变化。哈佛把它参数化成一条极简单的解析曲线：</p>
 <p><code>φ(t) = A cos(ωt − φ₀) + δ₀ t</code>，一组解为 <code>A = 2π×0.1122，ω = 1.0431 Ω，φ₀ = −0.7318，δ₀ = 0</code>，总时长 <code>ΩT/2π = 1.215</code>（只比单原子共振 2π 脉冲长 21.5%）。</p>
 <p>后来又有“平滑幅度”版本（smooth-amplitude）：幅度也随时间变，<code>Ω₄₂₀(t)/Ω₁₀₁₃ = Ω₀ + Ω₁ sech(ω_Ω τ)^α</code>，相位 <code>δ₀τ + B tanh(λτ)</code>，<code>ΩT/2π = 1.207</code>。它从很低的蓝光拉比频率起步，<strong>大部分时间待在暗态</strong>，因此中间态散射更小；代价是峰值拉比更高、对有限 blockade 更敏感。</p>
-<blockquote>[object Object]</blockquote>
+<blockquote><p><strong>为什么单脉冲更好？</strong>（1）没有 gap，里德堡态布居时间最短；（2）只有一个波形要标定，参数少、可全局优化；（3）对有限的脉冲上升时间鲁棒——哈佛的 Extended Data 显示，上升时间 0→40 ns 变化时，仍能重新找到一组参数实现精确 CZ。</p></blockquote>
 <h3 id="24-暗态与绝热把散射压下去">2.4 暗态与绝热：把散射压下去</h3>
 <p>双光子激发经过中间态 |e⟩（Rb 的 6P₃/₂），散射率 ∝ (Ω_b/2Δ)²。在 <code>|Δ| ≫ |δ|, Ω</code> 的极限下，三能级系统可以重写成暗态/亮态基：</p>
 <p><code>|D⟩ = (−|1⟩ + α|r⟩)/√(1+α²)</code>，<code>|B⟩ = (α|1⟩ + ...|e⟩ + |r⟩)/√(1+α²)</code>，其中 α = Ω_b/Ω_r。</p>
@@ -94,7 +94,7 @@
 <h2 id="3-误差物理每条通道的量级">§3 · 误差物理：每条通道的量级</h2>
 <p>这一节是我认为比“保真度数字”更有用的部分。下面每条都给出物理标度，并附 2023/2026 哈佛 Rb 体系里的实测贡献（这两篇的误差预算表最完整）。</p>
 <div class="table-wrap"><table><thead><tr><th>误差通道</th><th>物理标度 / 来源</th><th>实测贡献（Rb，n=53）</th></tr></thead><tbody><tr><td>有限阻塞</td><td>∝ (Ω/B)²；B 随 R⁻⁶ 掉得极快，间距是硬约束。 Förster 共振下界 <code>F ≤ 1−(π/2)/(Vτ_R)</code>。</td><td>2026：0.001% （950 MHz blockade，间距 1.73 μm）</td></tr><tr><td>里德堡态寿命</td><td>γ_r，辐射 ∝ n³、黑体 ∝ n²；门期间布居 ∫P_r dt/τ_R。 可直接导致 loss 或泄漏。</td><td>2023：0.113% 2026：0.046% （T₁=88 μs → 80 μs）</td></tr><tr><td>中间态散射</td><td>∝ (Ω_b/2Δ)² ×（寿命 110 ns）；\</td><td>1⟩ 与 \</td><td>0⟩ 两条路。 增大 Δ 是唯一解，代价是要更高激光功率维持 Ω。</td><td>2023：\</td><td>1⟩ 0.103%/0.043%，\</td><td>0⟩ 0.019% 2026：\</td><td>1⟩ 0.028%，\</td><td>0⟩ 0.018%</td></tr><tr><td>基态–里德堡相干 T₂*</td><td>失相位误差 ∝ 1/(ΩT₂*)²；主要来自光移抖动（束指向/功率）与有限温度。 这是当前 Rb 的主要限制之一。</td><td>2023：0.134%（T₂<em>=3 μs） 2026：T₂</em>=2.8–4.7 μs，合计 0.016%</td></tr><tr><td>原子运动（多普勒/位置）</td><td>自由飞行期间的相位扩散；位置抖动经 B∝R⁻⁶ 变成失谐抖动。 门期间关阱是常规做法（几 hundred ns）。</td><td>2023：位置抖动 0.012% 2026：Doppler 0.007% Yb 2023：多普勒 0.5%（2.9 μK）</td></tr><tr><td>激光频率/强度噪声</td><td>用保真度响应理论（FRT）把噪声 PSD 与门响应函数卷积。 频率噪声主要在伺服 ~1 MHz 处贡献；强度噪声主要来自 DC/逐发漂移。</td><td>2025 起可逐项分解 （Caltech 的 FRT 方法）</td></tr><tr><td>原子损失 / 泄漏</td><td>里德堡态反阱 → 关阱期间掉原子；衰变到其他 m_F 或低激发态 → 泄漏。 可被探测 → 转成 erasure。</td><td>2026：loss 0.087(5)%（占 60%），0.054%/原子/门； 泄漏 0.008(1)%/原子/门</td></tr><tr><td>并行串扰</td><td>相邻门站点之间残余 vdW 耦合、光束不均匀、里德堡态衰变到邻近 P 态。</td><td>Levine 2019：寻址串扰 &lt;2% Graham 2019：Rydberg 串扰 0.005 Evered 2026：稀疏排布门站点以避开 P 态衰变影响</td></tr></tbody></table></div>
-<blockquote>[object Object]</blockquote>
+<blockquote><p><strong>基准测量本身也是误差源。</strong>Bell 态保真度会被 SPAM 压低（Evered 2023 单门后 raw 98.0%，SPAM 校正 99.4(4)%，但多门衰减拟合给 99.52(4)%）；echo RB 对单比特误差有一定敏感性（但 X 门夹在 CZ 对之间可消掉单比特相位）；SSB（Tsai 2025）专门设计来去掉单比特敏感性且保持对称子空间平均。三种方法在 2026 年的 Rb 数据上互相吻合到 0.001% 量级，这本身是可信度证据。</p></blockquote>
 <h2 id="4-逐篇实现细节">§4 · 逐篇实现细节</h2>
 <p>以下按年份排列。每篇统一按「平台 / 编码与制备 / 激发与门协议 / 关键参数 / 标定与测量 / 误差与局限」六块写。没读到原文的地方我会注明。</p>
 <h3 id="2010-parisbrowaeys-grangier-wilk-等第一次用-rydberg-blockade-造出纠缠arxiv09080454">2010 · Paris（Browaeys / Grangier）· Wilk 等：第一次用 Rydberg blockade 造出纠缠arXiv:0908.0454</h3>
@@ -323,7 +323,7 @@
 <h2 id="5-三条硬件路线横向对比">§5 · 三条硬件路线横向对比</h2>
 <p>同样叫“里德堡两比特门”，底层硬件差别很大。核心分野是<strong>激发路径</strong>：碱金属必须双光子（经 p 态），碱土金属可单光子（从 ³P₀ 出发）。</p>
 <div class="table-wrap"><table><thead><tr><th>路线</th><th>代表工作</th><th>优势</th><th>代价</th></tr></thead><tbody><tr><td><strong>Rb 双光子</strong> 420 + 1013/1015 nm，n≈53</td><td>Levine 2019；Evered 2023（99.52%）；Evered 2026（<strong>99.854%</strong>）</td><td>最成熟；高功率 1015 nm 可得 &gt;17 MHz；单比特门 99.99%；1.7 μm 间距下 blockade 950 MHz；可搬到 442 比特</td><td>中间态散射是硬账；双光子光移要处理；n=53 时 T₁ ~80 μs 限制寿命；需关阱</td></tr><tr><td><strong>Cs 双光子</strong> 459 + 1038 nm，n=66–82</td><td>Maller 2015（0.73）；Graham 2019（0.86/0.89）</td><td>早期主力，晶格/2D 阵列技术成熟；g 因子与波长组合灵活</td><td>同双光子问题；晶格间距偏大（3.1–3.8 μm）→ blockade 弱；温度偏高（15 μK）</td></tr><tr><td><strong>Sr 单光子</strong> 316.6 nm，从 ³P₀</td><td>Madjarov 2020（Bell ≥0.991）；Tsai 2025（<strong>0.9971</strong>）</td><td>无中间态散射；自电离探测效率 0.996+；可开阱做门；光频比特相干极好（用于钟与计量）</td><td>316.6 nm 功率是 Ω 瓶颈（7.7 MHz 上限）；³P₀ 制备慢（钟跃迁 kHz 级）；里德堡态在 813 nm 反阱</td></tr><tr><td><strong>Yb 单光子</strong> 302 nm，从 ³P₀</td><td>Ma 2022（≈0.83）；Ma 2023（<strong>0.980</strong>）</td><td>亚稳态核自旋 T₁、T₂ 达秒级；单光子快激发；里德堡衰变被离子实束缚 → 可探测 → erasure 转换 33%</td><td>亚稳态寿命 2.96 s（存储劣势）；Ω 只有 1.6 MHz（π 330 ns），门 ~760 ns 偏慢；多普勒误差占比高</td></tr></tbody></table></div>
-<blockquote>[object Object]</blockquote>
+<blockquote><p><strong>为什么 Rb 现在领先？</strong>不是因为物理更优，而是因为<strong>工程投入</strong>：高功率 1015 nm 激光 + 高 NA 物镜（1.7 μm 间距）+ 低温 + 暗态脉冲 + 快速标定（20–30 Hz 循环、40 分钟标定完）。这三件事同时做到，才有 17 MHz 的 Ω 和 950 MHz 的 blockade。Sr/Yb 的物理上限（无中间态散射）更高，但卡在 UV 激光功率上。</p></blockquote>
 <h2 id="6-保真度演进">§6 · 保真度演进</h2>
 <div class="table-wrap"><table><thead><tr><th>工作</th><th>数值</th></tr></thead><tbody><tr><td>2010 Wilk（Bell）</td><td>0.75</td></tr><tr><td>2010 Isenhower（CNOT）</td><td>0.73</td></tr><tr><td>2015 Maller（Bell）</td><td>0.73</td></tr><tr><td>2019 Graham（Bell）</td><td>0.86</td></tr><tr><td>2019 Levine（Bell 下界）</td><td>0.950</td></tr><tr><td>2020 Madjarov（Bell，校正）</td><td>0.991</td></tr><tr><td>2023 Ma（CZ）</td><td>0.980</td></tr><tr><td>2023 Evered（CZ，60 原子）</td><td>0.9952</td></tr><tr><td>2025 Tsai（CZ，对称平均）</td><td>0.9971</td></tr><tr><td>2026 Evered（CZ，raw）</td><td>0.99854</td></tr></tbody></table></div>
 <p>条形长度按“保真度 − 0.5”线性映射。注意各类指标并不完全可比：Wilk/Maller/Levine/Graham/Madjarov 是 Bell 态（或 W 态）保真度，Ma/Evered/Tsai 是 CZ 门保真度；Madjarov 是保守下界，Levine 是下界，Tsai 是对称子空间平均。<strong>不要把这些数字直接横比</strong>——这正是 §3 结尾强调的基准问题。</p>
