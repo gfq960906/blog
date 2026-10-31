@@ -14,6 +14,8 @@
 .\deploy.ps1
 ```
 
+或者直接**双击 `deploy.cmd`**（效果一样，避免 PowerShell 执行策略报错）。
+
 它会自动：构建 → 提交 → 推送。GitHub Pages 大约 30 秒后更新。
 
 ---
