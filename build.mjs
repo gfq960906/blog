@@ -325,12 +325,21 @@ function readLabs() {
         try { meta = JSON.parse(metaM[1]); } catch { /* ignore */ }
       }
       const descM = raw.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
+      const text = raw
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<!--[\s\S]*?-->/g, " ")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 1200);
       return {
         name,
         title: meta.title || (titleM ? titleM[1].trim() : name),
         date: meta.date ? new Date(meta.date) : null,
         summary: meta.summary || (descM ? descM[1] : ""),
         tag: meta.tag || "专题",
+        text,
       };
     })
     .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
@@ -677,7 +686,7 @@ ${labs.length ? "" : '<p class="empty">还没有专题页。把 HTML 文件放�
   const searchBody = `
 <section class="page-head">
   <h1>搜索</h1>
-  <p class="page-sub">在 ${posts.length} 篇记录里找点东西</p>
+  <p class="page-sub">在 ${posts.length} 篇文章和 ${labs.length} 个专题里找点东西</p>
 </section>
 <div class="search-box">
   <input id="search-input" type="search" placeholder="输入关键词，比如「量子」「周记」…" autocomplete="off" autofocus>
@@ -694,16 +703,28 @@ ${labs.length ? "" : '<p class="empty">还没有专题页。把 HTML 文件放�
     })
   );
 
-  const index = posts.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    date: isoDate(p.date),
-    dateText: fmtDate(p.date),
-    cat: catInfo(p.category).name,
-    tags: p.tags,
-    summary: p.summary,
-    text: p.body.replace(/[#>*`|-]/g, " ").replace(/\s+/g, " ").slice(0, 600),
-  }));
+  const index = [
+    ...posts.map((p) => ({
+      href: `posts/${encodeURIComponent(p.slug)}.html`,
+      kind: "article",
+      title: p.title,
+      dateText: fmtDate(p.date),
+      cat: catInfo(p.category).name,
+      tags: p.tags,
+      summary: p.summary,
+      text: p.body.replace(/[#>*`|-]/g, " ").replace(/\s+/g, " ").slice(0, 600),
+    })),
+    ...labs.map((l) => ({
+      href: `labs/${encodeURIComponent(l.name)}.html`,
+      kind: "lab",
+      title: l.title,
+      dateText: l.date ? fmtDate(l.date) : "",
+      cat: l.tag || "专题",
+      tags: [l.tag].filter(Boolean),
+      summary: l.summary,
+      text: l.text || "",
+    })),
+  ];
   writeFile("search-index.json", JSON.stringify(index));
 
   /* ---- 404 ---- */

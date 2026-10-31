@@ -88,7 +88,7 @@
             '<article class="post-card">' +
             '<div class="card-meta"><time>' + p.dateText + "</time>" +
             '<span class="cat-name">' + p.cat + "</span></div>" +
-            '<h2 class="card-title"><a href="posts/' + encodeURIComponent(p.slug) + '.html">' + p.title + "</a></h2>" +
+            '<h2 class="card-title"><a href="' + p.href + '">' + p.title + "</a></h2>" +
             (p.summary ? '<p class="card-summary">' + p.summary + "</p>" : "") +
             "</article>"
           );
