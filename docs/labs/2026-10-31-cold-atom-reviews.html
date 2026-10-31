@@ -153,7 +153,8 @@ kbd{background:#eef2f6;border:1px solid #dbe3ea;border-bottom-width:2px;border-r
 <div class="toolbar">
   <div class="trow">
     <input type="search" id="q" placeholder="搜标题、作者、期刊、单位、分类、标签、年份（空格分隔多个词；按 / 聚焦，Esc 清空）" autocomplete="off">
-    <select id="sort">
+    <span style="white-space:nowrap"><button type="button" id="vCat">分类视图</button><button type="button" id="vTime">时间线</button></span>
+      <select id="sort">
       <option value="c">按引用数</option>
       <option value="yd">按年份（新→旧）</option>
       <option value="ya">按年份（旧→新）</option>
@@ -224,7 +225,14 @@ function hayOf(e){
 }
 const DATA = RAW.map((e,i)=>{ const o = {id:i, ...e}; o.src = srcOf(o); o.f = facetsOf(o); o.h = hayOf(o); return o; });
 
-const state = {q:"", cats:new Set(), facs:new Set(), srcs:new Set(), sort:"c"};
+const state = {q:"", cats:new Set(), facs:new Set(), srcs:new Set(), sort:"c", view:"cat"};
+const VB_ON = "background:#0b6b3a;color:#fff;border:1px solid #0b6b3a;border-radius:6px;padding:3px 10px;font-size:12.5px;cursor:pointer;margin:0 4px 0 6px;font-family:inherit";
+const VB_OFF = "background:#fff;color:#15202b;border:1px solid #e2e8ef;border-radius:6px;padding:3px 10px;font-size:12.5px;cursor:pointer;margin:0 4px 0 6px;font-family:inherit";
+function syncView(){
+  const a = document.getElementById("vCat"), b = document.getElementById("vTime");
+  if (a) a.style.cssText = state.view === "cat" ? VB_ON : VB_OFF;
+  if (b) b.style.cssText = state.view === "time" ? VB_ON : VB_OFF;
+}
 
 function active(){
   const q=state.q.trim().toLowerCase();
@@ -367,8 +375,23 @@ function render(){
         + '</tbody></table>';
 
   // category sections（标题恒定渲染，筛选后仍可从目录跳转）
-  html += '<h2 id="cats-intro">按实验形态分八类</h2>';
-  for(const k of Object.keys(CATS)){
+    // 时间线视图：不分八类，按当前排序连成一条
+  if(state.view==="time"){
+    html += '<h2 id="timeline">时间线：全部条目按年份连续排列</h2>';
+    html += '<p class="lead">不分类别，按你选的排序连成一条：切到「按年份（新→旧）」就是从 2026 一路读到 2000，「按引用数」则是这条时间线上的高引优先。</p>';
+    if(!rows.length){
+      html += '<div class="empty" style="padding:10px 0">当前筛选下没有条目，点「清空筛选」。</div>';
+    } else {
+      const groups=[];
+      for(const e of rows){ const g=groups[groups.length-1]; if(g && g.y===e.y) g.rs.push(e); else groups.push({y:e.y, rs:[e]}); }
+      for(const g of groups){
+        html += '<h3 id="y'+g.y+'">'+g.y+' <span style="color:#8b96a3;font-weight:400;font-size:12.5px">· '+g.rs.length+' 篇</span></h3>';
+        html += tableHtml(g.rs);
+      }
+    }
+  }
+  if(state.view!=="time") html += '<h2 id="cats-intro">按实验形态分八类</h2>';
+  for(const k of (state.view==="time" ? [] : Object.keys(CATS))){
     const rs = rows.filter(e=>e.cat===k);
     const tot = DATA.filter(e=>e.cat===k).length;
     html += '<h3 id="cat-'+k+'">'+CATS[k].n+' <span style="color:#8b96a3;font-weight:400;font-size:12.5px">· '+(rs.length===tot? tot+' 篇' : rs.length+' / '+tot+' 篇')+'</span></h3>';
@@ -381,7 +404,7 @@ function render(){
   html += '<p class="lead">一篇综述常常同时属于多个要素，这里做的是多标签交叉索引——查实验细节时按这个找，比按类别找快。每格列出该要素下引用最高的 6 篇，点击上方按钮可筛选全表。</p>';
   html += '<div class="grid">';
   for(const f of FACETS){
-    const rs = DATA.filter(e=>e.f.includes(f));
+    const rs = DATA.filter(e=>e.f.includes(f.id));
     if(!rs.length) continue;
     const top6 = rs.slice().sort((a,b)=>(b.c??-1)-(a.c??-1)).slice(0,6);
     html += '<div class="card"><div class="h"><span>'+f.n+'</span><em>'+rs.length+' 篇</em></div><ul>'
@@ -406,6 +429,7 @@ function render(){
   html += logHtml();
 
   document.getElementById("app").innerHTML = html;
+  syncView();
 }
 
 function buildChips(){
@@ -449,6 +473,8 @@ function sync(){
 }
 
 document.getElementById("q").addEventListener("input", e=>{ state.q=e.target.value; render(); });
+document.getElementById("vCat").onclick = ()=>{ state.view="cat"; render(); };
+document.getElementById("vTime").onclick = ()=>{ state.view="time"; render(); };
 document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; render(); });
 document.addEventListener("keydown", e=>{
   if(e.key==="/" && document.activeElement.tagName!=="INPUT"){ e.preventDefault(); document.getElementById("q").focus(); }
