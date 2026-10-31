@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- meta: {"title":"里德堡量子计算单比特门：逐篇实现细节","date":"2026-10-23","summary":"从 2015 年 Cs 阵列微波门到 2023 年 99.97% 拉曼门，10 篇代表性工作逐篇拆解平台、编码、光路与误差机理。","tag":"实验综述"} -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>里德堡量子计算单比特门：逐篇实现细节</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff; --fg: #1b1e23; --muted: #5f6670; --line: #e4e6ea;
+    --soft: #f5f6f8; --accent: #2f6fed; --code: #eef0f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a; --fg: #e7e9ec; --muted: #9aa1a9; --line: #2b2f35;
+      --soft: #1d2025; --accent: #7aa7ff; --code: #262a30;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    line-height: 1.75; font-size: 15px;
+  }
+  .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1560px; margin: 0 auto; }
+  nav.toc {
+    position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+    padding: 28px 14px 28px 22px; border-right: 1px solid var(--line); font-size: 13px;
+  }
+  nav.toc .toc-title { font-weight: 600; font-size: 12px; letter-spacing: .08em; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
+  nav.toc a { display: block; padding: 5px 8px; border-radius: 6px; color: var(--muted); text-decoration: none; }
+  nav.toc a:hover { background: var(--soft); color: var(--fg); }
+  nav.toc a.sub { padding-left: 20px; font-size: 12.5px; }
+  main { padding: 36px 48px 96px; min-width: 0; }
+  header.doc { margin-bottom: 36px; }
+  h1 { font-size: 28px; line-height: 1.35; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  h2 { font-size: 21px; margin: 56px 0 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h2 .no { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  .meta { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 6px; font-size: 13.5px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-weight: 600; white-space: nowrap; }
+  td.k { white-space: nowrap; color: var(--muted); width: 34%; }
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--soft);
+    padding: 10px 14px; margin: 14px 0; border-radius: 0 6px 6px 0; font-size: 14px;
+  }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; font-family: "Cascadia Mono", Consolas, monospace; }
+  .tag {
+    display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); margin-right: 6px;
+  }
+  footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); margin-top: 64px; padding-top: 16px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { display: none; }
+    main { padding: 24px 18px 64px; }
+  }
+  @media print {
+    nav.toc { display: none; }
+    .layout { display: block; }
+    main { padding: 0; }
+    h2 { break-after: avoid; }
+    table { break-inside: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <div class="toc-title">目录</div>
+  <a href="#read">怎么读这份文档</a>
+  <a href="#p1">1 · Saffman 2015（Cs，微波）</a>
+  <a href="#p2">2 · Weiss 2016（Cs 3D，相位门）</a>
+  <a href="#p3">3 · 武汉物数所 2018（Rb，魔强度阱）</a>
+  <a href="#p4">4 · Harvard 2018（Rb，Rydberg 编码）</a>
+  <a href="#p5">5 · Caltech 2020（Sr，单光子）</a>
+  <a href="#p6">6 · Princeton 2022（Yb 核自旋，RF）</a>
+  <a href="#p7">7 · JILA 2022（Yb 核自旋，拉曼）</a>
+  <a href="#p8">8 · Atom Computing 2022（Sr-87，拉曼）</a>
+  <a href="#p9">9 · Harvard 2023（Rb，高性能拉曼）</a>
+  <a href="#p10">10 · 横向对比</a>
+  <a href="#p11">11 · 误差机理小结</a>
+  <a href="#p12">12 · 补充与延伸</a>
+</nav>
+
+<main>
+<header class="doc">
+  <h1>里德堡量子计算：单比特门的逐篇实现细节</h1>
+  <div class="subtitle">从 2015 年 Cs 阵列的微波门，到 2023 年 Rb 阵列的 99.97% 拉曼门。每篇按“平台 → 编码与态制备 → 单比特门光路/脉冲 → 标定 → 误差”拆开。</div>
+</header>
+
+<section id="read">
+  <h2><span class="no">0</span>怎么读这份文档</h2>
+  <p>先记住一个容易混淆的点：<strong>里德堡量子计算机里的“单比特门”，绝大多数不是在里德堡态上做的</strong>，而是在编码 qubit 的两个长寿命基态上做；里德堡态只负责两比特相互作用。所以每篇的“单比特门实现”讲的都是三件事：</p>
+  <ol>
+    <li><strong>编码</strong>：哪两个态构成 qubit（超精细、核自旋，还是基态–里德堡态）。</li>
+    <li><strong>驱动</strong>：用什么场让这两个态做 Rabi 旋转（微波/RF、拉曼，还是直接 Rydberg 脉冲）。</li>
+    <li><strong>寻址</strong>：怎么只动目标原子而不碰邻居（全局驱动 + 光移选点、聚焦拉曼束、交叉光束相位）。</li>
+  </ol>
+  <p>文中数字默认是<strong>论文实测值</strong>；凡是我按公式换算的，会写“（换算）”；凡是作者自己的预测，会写“（作者估计）”。</p>
+</section>
+
+<!-- ============ 1 ============ -->
+<section id="p1">
+  <h2><span class="no">1</span>Saffman 组 2015：49 点 Cs 阵列上的微波门</h2>
+  <p class="meta">T. Xia, M. Lichtman, K. Maller, A. W. Carr, M. J. Piotrowicz, L. Isenhower, M. Saffman（University of Wisconsin–Madison）· PRL 114, 100503 (2015) · <a href="https://arxiv.org/abs/1501.02041">arXiv:1501.02041</a> · DOI 10.1103/PhysRevLett.114.100503</p>
+  <p class="meta"><span class="tag">Cs-133</span><span class="tag">2D 49 点</span><span class="tag">微波 9.19 GHz</span><span class="tag">Stark 束选点</span><span class="tag">RB 0.9983</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>780 nm 红失谐光阱，7×7 = 49 点，点间距 3.8 μm，阱深约 400 μK。</li>
+    <li>原子从 2D 冷却区推到玻璃腔，3D MOT 装载；偏振梯度冷却到 5–10 μK；再用约 5 ms 的 852 nm 近共振光触发光助碰撞，保证每点最多一个原子。平均装载 60%，一次实验平均约 29 个点有原子。</li>
+    <li>成像：MOT 荧光，20 ms 积分；用独立成分分析滤波，单点像素 0.62 μm。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>编码在 Cs 钟态：<code>|0⟩ = |6S₁/₂, F=3, m_F=0⟩</code>，<code>|1⟩ = |6S₁/₂, F=4, m_F=0⟩</code>；劈裂 9.19 GHz。</li>
+    <li>态制备：894 nm π 偏振光把原子泵到 F=4（<code>6S₁/₂ F=4 → 6P₁/₂ F=4</code>），852 nm π 偏振重泵把 F=3 也推过去；量子化轴由 0.15 mT 偏置场定义，垂直于阵列平面。</li>
+    <li>态敏读出：先用 852 nm 把 F=4 原子推走（<code>F=4 → 6P₃/₂ F′=5</code>），再对剩下 F=3 原子做荧光成像。测 |0⟩ 概率直接看“还剩几个原子”；测 |1⟩ 概率则先加一个 π 微波脉冲再推。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>全局旋转</strong>：真空腔外的微波喇叭，9.19 GHz，共振驱动 |0⟩↔|1⟩。实测 Rabi 频率 <code>Ω = 2π × 4.74 kHz</code>。Rx 用固定幅度、变长度的脉冲；Ry 靠移相 90°；Rz 由 Rx/Ry 组合而成。</li>
+    <li><strong>Clifford 集合</strong>：用完整的 24 个单比特 Clifford 门 C1，由 <code>{I, Rj(±π/2), Rj(π)}</code> 生成。为了实现方便，所有 −π/2 旋转都写成 +3π/2，导致每个 Clifford 平均脉冲面积达 <code>7π/4</code>；一个 Clifford 平均耗时约 185 μs。</li>
+    <li><strong>单点寻址</strong>：把微波频率故意失谐 <code>δ = 2π × 33 kHz</code>，全局微波对所有人都远离共振（旋转被压制 <code>Ω²/δ²</code>）；再用一束紧聚焦 459 nm 光（腰斑 3.2 × 2.7 μm）对 <code>6S₁/₂ F=4 → 7P₁/₂ F=4</code> 红失谐 20 GHz，在目标点产生差动 Stark 移，把该点的 |0⟩、|1⟩ 相对移回共振。Stark 束 σ+ 偏振、垂直阵列平面，用一对正交 AOD 扫描，切换时间 &lt; 0.5 μs。</li>
+    <li><strong>为什么取 δ/Ω = √15</strong>：非目标原子受到的非共振脉冲面积接近 4π 的整数倍，残留翻转误差取局部极小。他们从两能级旋转的保真度积分（对 Bloch 球平均）数值验证：<code>δ/Ω ≈ √15</code> 时 Rx(π) 的串扰误差最小；实测用 <code>33/8.5 = 3.88</code>。</li>
+  </ol>
+
+  <h3>标定与随机基准测试（RB）</h3>
+  <ul>
+    <li>全局 RB：7 组随机 Clifford 序列，长度 ℓ = 1…100；每点 50 次测量。按 <code>P₀ = 1/2 + 1/2(1−d_if)(1−d)^ℓ</code> 拟合，用 <code>F² = 1 − d/2</code> 报保真度。</li>
+    <li>单点 RB：10 组序列，长度 {1, 8, 15, 22, 29, 36, 43, 50}；在 47 个点上逐个拟合。</li>
+    <li>串扰：目标点之外的点制备在 |1⟩，测每个 Clifford 后的背景翻转概率。</li>
+  </ul>
+
+  <h3>关键参数</h3>
+  <table>
+    <tr><td class="k">原子 / 阵列</td><td>Cs-133；7×7，3.8 μm；阱深 ~400 μK</td></tr>
+    <tr><td class="k">编码</td><td>F=3, m_F=0 / F=4, m_F=0；9.19 GHz</td></tr>
+    <tr><td class="k">驱动</td><td>微波喇叭，Ω = 2π × 4.74 kHz（全局）</td></tr>
+    <tr><td class="k">寻址</td><td>459 nm Stark 束 + 微波失谐 δ = 33 kHz（√15 Ω）</td></tr>
+    <tr><td class="k">Clifford 时间</td><td>≈ 185 μs（平均脉冲面积 7π/4）</td></tr>
+    <tr><td class="k">全局保真度</td><td>F² = 0.9983(14)；最好点 0.9999(3)，最差点 0.9939</td></tr>
+    <tr><td class="k">单点保真度</td><td>0.9923(7)；串扰误差 0.002(9)（近邻 0.014(20)）</td></tr>
+    <tr><td class="k">相干</td><td>T₁ = 0.59 s；T₂* = 14 ms（中位数 7 ms）；原子寿命 17 s</td></tr>
+  </table>
+
+  <h3>误差与结论</h3>
+  <p>他们用密度矩阵模拟了失谐（最多 100 Hz，对应阵列内差动 Stark 移）和 200 ns 的脉冲长度抖动（0.2% 微波功率漂移），发现这两项加起来仍比实测误差小几倍。把 <code>T₂*</code> 的衰减因子代进去，取 <code>⟨t⟩ = 185 μs</code>、<code>T₂* = 2.7 ms</code>，正好复现实测的 0.9983，所以结论是：<strong>限制主要来自有限的 T₂*（磁噪声 + 有限温度运动效应）和脉冲长度/失谐误差</strong>，不是微波源本身。</p>
+  <div class="callout">这篇的意义：第一次在 49 个可单独寻址的原子上把“全局门 + Stark 选点门”都做了 RB 标定，给出了后来被反复引用的 <code>δ/Ω = √15</code> 串扰最优点。局限是单点门比全局门差 4.5 倍，原因是 Stark 束强度/指向抖动。</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="p2">
+  <h2><span class="no">2</span>Weiss 组 2016：三维 Cs 光晶格里的“靶向相位门”</h2>
+  <p class="meta">Yang Wang, Aishwarya Kumar, Tsung-Yao Wu, David S. Weiss（Penn State）· Science 352, 1562 (2016) · <a href="https://arxiv.org/abs/1601.03639">arXiv:1601.03639</a> · DOI 10.1126/science.aaf2581</p>
+  <p class="meta"><span class="tag">Cs-133</span><span class="tag">5×5×5 3D</span><span class="tag">靶向相位</span><span class="tag">微波 + 880 nm</span><span class="tag">RB 0.9962</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>Cs 原子装在 5 μm 间距的立方光晶格，5×5×5 = 125 个点；冷却到约 70% 基态占据。</li>
+    <li>平均只有约 40% 的点有原子；因此一篇里“48 个目标点”实际每次约 20 个原子参与。</li>
+    <li>晶格光自发散射是主要退相干源，但 <code>T₂′ = 7 s</code>，远长于 80 μs 的微波脉冲。</li>
+  </ul>
+
+  <h3>编码与读出</h3>
+  <ul>
+    <li>编码：<code>|1⟩ = |6S₁/₂, F=3, m_F=0⟩</code>，<code>|0⟩ = |6S₁/₂, F=4, m_F=0⟩</code>。</li>
+    <li>读出：清掉 |4,0⟩ 原子，对剩下的 |3,0⟩ 成像。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的（重点在“不直接翻转”）</h3>
+  <ol>
+    <li><strong>寻址光</strong>：两束圆偏振 880.250 nm 光交叉，腰斑约 2.7 μm、瑞利长度 26 μm；交点处对 <code>m_F ≠ 0</code> 的态产生约 2 倍于单束路径的 ac Stark 移。用 MEMS 反射镜把光束指向下一个目标只要 &lt; 5 μs。</li>
+    <li><strong>门的四段结构</strong>：全局 |0⟩↔|1⟩ 的 80 μs 共振 π 脉冲（黑）、120 μs 的非共振“寻址”微波脉冲（紫），配合寻址光强线性升降。总有效寻址光时间 252 μs。自旋回波把非目标原子在前两段得到的相位在后两段精确抵消；目标原子因为“交叉点 → 单束路径 → 旁观者”的身份变化，净相位不为零。</li>
+    <li><strong>相位公式</strong>：目标原子净相位 <code>φ ≈ Ω²T/(δ−kf) − Ω²T/(δ−f) + Ω²T/δ − Ω²T/(δ−f)</code>，其中 δ 是相对旁观者共振的微波失谐，f 是单束光造成的 ac Stark 移，k 是交叉点/单束的移比。</li>
+    <li><strong>工作点 δ = 74.9 kHz</strong>：这里相位对 δ 的变化是二阶的，而 δ 又正比于寻址光强，所以门对光强是<strong>二阶</strong>不敏感、对光束指向是<strong>四阶</strong>不敏感。2% 光强变化 → 8 mrad 相位 → 约 1×10⁻⁴ 门误差。</li>
+    <li><strong>任意旋转</strong>：这套只直接给 <code>Rz(θ)</code>；再用全局 <code>Rx(±π/2)</code> 夹住它，<code>Ry(θ) = Rx(π/2) Rz(θ) Rx(−π/2)</code>，非目标原子因为两个全局脉冲相消而不受影响。</li>
+  </ol>
+
+  <h3>标定与 RB</h3>
+  <ul>
+    <li>先在 48 个随机目标点上做单个 <code>Rz(π/2)</code>，用干涉条纹验证 0.94 的 F²；再对 24 个目标做完整 RB。</li>
+    <li>RB 的“计算门”从 <code>{Rx(±π/2), Ry(±π/2)}</code> 随机取，“泡利门”从 <code>{Rx(±π), Ry(±π), Rz(±π), I}</code> 随机取；每点平均约 100 次实现。</li>
+    <li>同时测旁观者、单束路径原子、目标原子的误差，用来分离串扰与自发散射。</li>
+  </ul>
+
+  <h3>关键参数</h3>
+  <table>
+    <tr><td class="k">原子 / 阵列</td><td>Cs-133；5×5×5 光晶格，5 μm</td></tr>
+    <tr><td class="k">编码</td><td>|F=3,0⟩ / |F=4,0⟩</td></tr>
+    <tr><td class="k">寻址光</td><td>880.250 nm 交叉光束，腰斑 2.7 μm，MEMS 切换 &lt; 5 μs</td></tr>
+    <tr><td class="k">微波</td><td>80 μs 共振 π；120 μs 非共振寻址；工作点 δ = 74.9 kHz</td></tr>
+    <tr><td class="k">RB 保真度</td><td>0.9962(16)；串扰保真度 0.9979(2)</td></tr>
+    <tr><td class="k">单门误差</td><td>目标 38(16)×10⁻⁴；旁观者 17(2)×10⁻⁴；单束路径 46(9)×10⁻⁴</td></tr>
+    <tr><td class="k">误差分解（目标）</td><td>寻址光自发散射 16×10⁻⁴；非共振微波 5.4×10⁻⁴；其余主要为全局微波不稳定</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>这是三维几何里最实用的单点寻址方案：光只提供差分 Stark 移，不要求精确强度，因此适合深阵列。局限是门时间被微波（80 μs 级）和四段序列拖长，且误差主要来自微波功率稳定度，而不是光。</p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="p3">
+  <h2><span class="no">3</span>武汉物数所 2018：魔强度光阱把微波门误差压到 3×10⁻⁵</h2>
+  <p class="meta">Cheng Sheng, Xiaodong He, Ruijun Guo, Kunpeng Wang, Peng Xu, Zongyuan Xiong, Min Liu, Jin Wang, Mingsheng Zhan（中科院武汉物数所）· PRL 121, 240501 (2018) · <a href="https://arxiv.org/abs/1712.06306">arXiv:1712.06306</a> · DOI 10.1103/PhysRevLett.121.240501</p>
+  <p class="meta"><span class="tag">Rb-87</span><span class="tag">单原子</span><span class="tag">微波 6.834 GHz</span><span class="tag">魔强度阱</span><span class="tag">3.0(7)×10⁻⁵</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>单颗 ⁸⁷Rb 原子装在紧聚焦线偏振光阱里，波长约 830 nm；原子从 MOT 装载。</li>
+    <li>关键装置是一块液晶延迟器：30 ms 内把线偏振阱光变成圆偏振，从而切换到“魔强度”工作点。</li>
+    <li>偏置磁场 3.2 G（魔强度点需要）；主动磁场稳定把短期噪声从 4 mG 压到 sub-mG。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>编码：<code>|0⟩ = |5S₁/₂, F=1, m_F=0⟩</code>，<code>|1⟩ = |5S₁/₂, F=2, m_F=0⟩</code>。</li>
+    <li>态制备：795 nm π 偏振（D1，F=1→F′=1）+ 780 nm π 偏振重泵（D2，F=2→F′=2），把原子泵到 |0⟩。</li>
+    <li>读出：这里主要靠荧光/推出来判态；论文重点是门，不是单发读出。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>微波链</strong>：商用 6.834 GHz 铷频综（Spectra Dynamics RB-1），相位分辨率 0.09°、频率稳定度 1 μHz；经 TTL 控制的 PIN 开关（SP123DHS-80）切成近矩形脉冲，放大后送到腔外喇叭（驻波比 1.15）。PIN 开关和放大器温度稳定在 0.05 mK，以被动稳幅。</li>
+    <li><strong>Rabi 频率</strong>：1 W 输入下优化到约 12 kHz；π/2 脉冲 20.78 μs。</li>
+    <li><strong>标定</strong>：先用微波 Ramsey（故意失谐 15 Hz，扫描到 120 ms）把共振频率定到 0.2 Hz 以内；再用 100 个相同脉冲串扫脉宽，把 π/2 定到 0.01 μs。</li>
+    <li><strong>门集合</strong>：24 个 Clifford，同样把 −π/2 写成 3π/2；Rz 由 Rx/Ry 组合。</li>
+    <li><strong>为什么能到 10⁻⁵</strong>：魔强度阱让两个钟态的差动光移在特定阱深下相消（依赖超极化率项），把 <code>T₂*</code> 从毫秒级推到秒级；再叠加主动磁场稳定，回波相干 1.72 s。</li>
+  </ol>
+
+  <h3>标定与 RB</h3>
+  <ul>
+    <li>5 组随机 Clifford 序列，长度截断在 {1, 200, 400, 600, 800, 1000, 1300}，每点 50 次。</li>
+    <li>拟合 <code>F = 1/2 + 1/2(1−d_if)(1−2ε_g)^ℓ</code>，得 ε_g = 3.0(7)×10⁻⁵，d_if = 0.03。</li>
+    <li>整个 RB 过程中不定期重标共振频率和脉宽——说明魔强度阱的稳定性足够好。</li>
+  </ul>
+
+  <h3>误差分解</h3>
+  <table>
+    <tr><td class="k">频率漂移</td><td>12 小时内峰峰 5 Hz、rms 1 Hz → 预测 2.5×10⁻⁸（可忽略）</td></tr>
+    <tr><td class="k">脉冲面积抖动</td><td>3 小时累积 rms 0.15% → 7.4×10⁻⁶</td></tr>
+    <tr><td class="k">退相干</td><td>主导项；定义短时标相干 <code>T_RB = 1.30 T₂s</code>；Clifford 平均 75.73 μs（含 3 μs 空档）</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>第一次把中性原子单比特门做到 <code>10⁻⁴</code> 容错阈值以下（3×10⁻⁵），证明“魔强度阱 + 磁场稳定”这条路可行。局限是：单原子、全局门，没有阵列寻址；魔强度点要求几个高斯的磁场，对磁场噪声天然敏感。</p>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="p4">
+  <h2><span class="no">4</span>Harvard 2018：Rydberg 编码 qubit 与激光相位噪声</h2>
+  <p class="meta">Harry Levine, Alexander Keesling, Ahmed Omran, Hannes Bernien, Sylvain Schwartz, Alexander S. Zibrov, Manuel Endres, Markus Greiner, Vladan Vuletić, Mikhail D. Lukin（Harvard / MIT）· PRL 121, 123603 (2018) · <a href="https://arxiv.org/abs/1806.04682">arXiv:1806.04682</a> · DOI 10.1103/PhysRevLett.121.123603</p>
+  <p class="meta"><span class="tag">Rb-87</span><span class="tag">Rydberg 编码 70S</span><span class="tag">420 + 1013 nm</span><span class="tag">809 nm 相位门</span><span class="tag">Bell 0.97</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>一维光镊阵列，原子逐个装配到可编程位置；本文重点是相干性，不是规模。</li>
+    <li>Rydberg 激发期间<strong>关掉光镊</strong>：脉冲 3–8 μs，之后恢复光阱。基态原子被重新捕获，留在 Rydberg 态的原子被光镊的反束缚推走——这就是他们的态探测机制。</li>
+    <li>探测保真度：Rydberg 态 <code>f_r = 0.96(1)</code>；基态 0.955–0.990（取决于关阱时长）。</li>
+  </ul>
+
+  <h3>编码</h3>
+  <ul>
+    <li><code>|g⟩ = |5S₁/₂, F=2, m_F=−2⟩</code>，<code>|r⟩ = |70S, J=1/2, m_J=−1/2⟩</code>；1.5 G 磁场下光泵制备。</li>
+    <li>这是“Rydberg qubit”：单比特门就是基态↔Rydberg 的 π 脉冲，所以相干时间直接受 Rydberg 寿命和激光噪声限制。</li>
+  </ul>
+
+  <h3>单比特门的光路与核心改进</h3>
+  <ol>
+    <li><strong>双光子激发</strong>：420 nm 对 <code>|g⟩ → |6P₃/₂, F=3, m_F=−3⟩</code> 蓝失谐 Δ；1013 nm 把 |e⟩ 接到 |r⟩。两束偏振分别驱动 σ− 和 σ+，保证只耦合一个中间子能级和一个 Rydberg 态。</li>
+    <li><strong>光路</strong>：两台 MogLabs 外腔二极管激光器，PDH 锁到超低膨胀（ULE）参考腔，线宽 &lt; 1 kHz；对射聚焦到原子，腰斑 20 μm（420）/30 μm（1013），以压低多普勒。</li>
+    <li><strong>关键：把参考腔当光谱滤波器</strong>。锁定的激光在 ~1 MHz 处仍有相位噪声（锁环路带宽外的噪声甚至会被放大）。腔透射是 FWHM ≈ 500 kHz 的洛伦兹（细度 ~3000），把 1 MHz 处噪声压 ≥ 4 倍；再用透射光注入锁定 420 nm 与 1013 nm 二极管，放大到 5 mW / 50 mW（1013 再经锥形放大器）。</li>
+    <li><strong>参数</strong>：单光子 Rabi <code>Ω_B ≈ 2π×60 MHz</code>、<code>Ω_R ≈ 2π×40 MHz</code>；中间态失谐 <code>Δ ≈ 2π×600 MHz</code>；双光子 Rabi <code>Ω ≈ 2π×2 MHz</code>。功率稳定 &lt; 1%，AOM 开关 ~20 ns。</li>
+    <li><strong>单原子相位门</strong>（不是翻转门）：一束独立聚焦的 809 nm 光给基态 |g⟩ 一个 5 MHz 的光移，控制脉冲长度即得到 <code>φ = δt</code> 的相位；整个序列嵌在自旋回波里抵消多普勒。束斑对邻近原子的串扰 &lt; 2%。这个 Z 门被用来测 Bell 态的 off-diagonal 元素。</li>
+  </ol>
+
+  <h3>结果</h3>
+  <table>
+    <tr><td class="k">Rabi 相干</td><td>27(4) μs（此前 ≤ 7 μs）</td></tr>
+    <tr><td class="k">Rydberg 寿命</td><td>T₁ = 51(6) μs（n=70 的辐射寿命 146 μs，被 1013 nm 散射 ~80 μs 缩短）</td></tr>
+    <tr><td class="k">Ramsey</td><td>T₂* = 4.5(1) μs，由 10 μK 下 43.5 kHz 的多普勒分布解释</td></tr>
+    <tr><td class="k">回波</td><td>T₂ = 32(6) μs；纯退相位 T_φ = 47(13) μs（残余激光相位噪声）</td></tr>
+    <tr><td class="k">两原子</td><td>5.7 μm，U/ℏ = 2π×30 MHz ≫ Ω；√2Ω = 2.83 MHz；Bell 原始 0.91(2)，探测校正后 0.97(3)</td></tr>
+    <tr><td class="k">两原子回波</td><td>|W⟩ 寿命 36(2) μs；T_φ^W &gt; 100 μs（|gr⟩/|rg⟩ 构成无退相干子空间）</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>这篇的贡献不是“门保真度数字”，而是<strong>把限制 Rydberg 相干性的激光相位噪声机理讲清楚并压下去</strong>：用腔滤波 + 注入锁定，让 Rabi 相干从 7 μs 提到 27 μs。局限是 Rydberg 编码的 qubit 寿命只有几十 μs、探测保真度只有 0.96 左右；作者自己指出下一步要靠边带冷却、更高细度腔滤波、场电离或把 Rydberg 态映射回基态来改进。</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="p5">
+  <h2><span class="no">5</span>Caltech 2020：Sr 的单光子 Rydberg 激发与自电离探测</h2>
+  <p class="meta">Ivaylo S. Madjarov*, Jacob P. Covey*, Adam L. Shaw, Joonhee Choi, Anant Kale, Alexandre Cooper, Hannes Pichler, Vladimir Schkolnik, Jason R. Williams, Manuel Endres（Caltech / JPL）· Nat. Phys. 16, 857 (2020) · <a href="https://arxiv.org/abs/2001.04455">arXiv:2001.04455</a> · DOI 10.1038/s41567-020-0903-z</p>
+  <p class="meta"><span class="tag">Sr-88</span><span class="tag">单光子 316.6 nm</span><span class="tag">自电离探测</span><span class="tag">π 脉冲 0.9951</span><span class="tag">Bell ≥0.991</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>一维 43 个光镊，间距 3.6 μm；镊光 813.4 nm（对钟态 magic），基态阱深 <code>U₀ ≈ k_B×450 μK</code>，径向频率 78 kHz。</li>
+    <li>窄线冷却到 <code>T ≈ 2.5 μK</code>、平均声子数 <code>n̄ ≈ 0.3</code>；这是碱金属难以达到的低熵。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>他们把长寿命钟态当“新的基态”：<code>|g⟩ = 5s5p ³P₀</code>，<code>|r⟩ = 5s61s ³S₁, m_J=0</code>。这是一对“钟态–Rydberg”qubit。</li>
+    <li>态制备：698 nm 窄线把 ¹S₀ 相干转移到 ³P₀（710 G 下 <code>Ω_C ≈ 2π×3.5 kHz</code>，π 脉冲保真度 0.986），再补非相干泵浦，总保真度 0.997(1)。</li>
+    <li>读出：<strong>自电离</strong>。用 5s→5p 的芯态跃迁（5p₃/₂61s₁/₂）把 Rydberg 电子自电离，原子变“暗”；随后对 ³P₀ 原子做高保真成像。自电离 1/e 时间 35 ns；Rydberg 探测保真度上界 0.9996，实测下界 0.9963(9)。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>单光子激发</strong>：316.6 nm 直接 <code>|g⟩↔|r⟩</code>，束腰 18 μm，30 mW 就能给 <code>Ω_R ≈ 2π×6–7 MHz</code>（优化后可达 13 MHz）。π 脉冲只有 70 ns。</li>
+    <li><strong>为什么可以单光子</strong>：³P₀ 是亚稳态，寿命长，可以直接从它激发到 ³S₁ 系列，不需要经中间态，因此<strong>完全没有中间态散射</strong>——这是 Sr/Yb 相对 Rb/Cs 的结构性优势。</li>
+    <li><strong>激发时关阱</strong>：Rydberg 态在 813.4 nm 是反束缚的（幅度约等于基态束缚），所以先在浅阱里激发、再恢复阱深读出。</li>
+    <li><strong>也做了开阱版本</strong>：阱深 <code>U/h ≈ 0.94 MHz</code> 时仍能保持高保真，说明标准光镊阵列可以不清空阱就做 Rydberg 门。</li>
+  </ol>
+
+  <h3>结果</h3>
+  <table>
+    <tr><td class="k">单原子 π</td><td>0.9951(9)；SPAM 校正 0.9967(9)</td></tr>
+    <tr><td class="k">单原子 2π</td><td>0.9951(9)；校正 0.998(1)</td></tr>
+    <tr><td class="k">长时相干</td><td>约 42 个 Rabi 周期（τ_C ≈ 7 μs）；阻塞下约 60 个周期</td></tr>
+    <tr><td class="k">两原子</td><td>3.6 μm，V_B ≈ 2π×130 MHz（n=61）；√2Ω = 8.5 MHz；Bell ≥0.980(3)，校正 ≥0.991(4)</td></tr>
+    <tr><td class="k">开阱版本</td><td>Bell ≥0.975(3)，校正 ≥0.987(4)</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>这是第一次在碱土金属里做出 Rydberg 阻塞纠缠，且当时的中性原子两原子纠缠保真度纪录（0.991）。单光子 + 自电离探测使保真度和探测都优于碱金属双光子方案。局限：这里测的是“基态–Rydberg”门的保真度，不是长寿命基态编码的单比特门；Rydberg 态寿命 ~80 μs 仍是限制，且要关阱或浅阱操作。</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="p6">
+  <h2><span class="no">6</span>Princeton 2022：¹⁷¹Yb 核自旋，RF 驱动的慢而稳的门</h2>
+  <p class="meta">Shuo Ma*, Alex P. Burgers*, Genyue Liu, Jack Wilson, Bichen Zhang, Jeff D. Thompson（Princeton）· PRX 12, 021028 (2022) · <a href="https://arxiv.org/abs/2112.06799">arXiv:2112.06799</a> · DOI 10.1103/PhysRevX.12.021028</p>
+  <p class="meta"><span class="tag">Yb-171</span><span class="tag">核自旋</span><span class="tag">RF 161.7 Hz</span><span class="tag">RB 99.959%</span><span class="tag">T₂* 1.24 s</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>30 点光镊阵列，镊光 <code>486.78 nm</code>——他们新找的 ¹⁷¹Yb magic 波长（对 <code>¹S₀–³P₁, |m_F′|=1/2</code> 的差分光移仅 0.0001(6) U₀）。</li>
+    <li>每阱 5 mW，556 nm 窄线成像 25 ms，单原子成像+存活综合保真度 98.8(3)%，温度 7.4 μK。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>编码：¹S₀ 的核自旋子能级，<code>|0⟩ = |m_F=−1/2⟩</code>，<code>|1⟩ = |m_F=+1/2⟩</code>。¹S₀ 没有超精细耦合，所以对差分光移和拉曼散射天然免疫。</li>
+    <li>初始化：σ+ 光泵，走 <code>|0⟩ → ³P₁, F′=3/2, m_F′=1/2</code>；4.11 G 把 <code>m_F′=3/2</code> 移开 5.7 MHz（31Γ），使 |1⟩ 成为暗态。</li>
+    <li>读出：先把 |1⟩ 通过 Rydberg 态“吹走”——用 <code>³S₁ 6s75s, F′=3/2, m_F′=3/2</code>，经 ³P₁ 双光子激发（556 + 308 nm，<code>Δ_r = 20 MHz</code>，<code>Ω_r = 0.31 MHz</code>），再用 369 nm 的 Yb⁺ 芯态跃迁自电离；剩余 |0⟩ 原子成像。Zeeman 劈裂 7.8 MHz ≫ Ω_r 保证只激发 |1⟩。</li>
+    <li>重复 3 轮吹除：|0⟩ 存活 94.5(3)%，|1⟩ 残留 0.2(2)%，平均初始化+读出保真度 97.2(4)%。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>RF 线圈</strong>：核自旋在 4.11 G 下 Larmor 频率 <code>ω_L ≈ 2π×3.09 kHz</code>（750 Hz/G）；用射频线圈直接驱动，<code>Ω_RF = 2π×161.7(5) Hz</code>。</li>
+    <li><strong>为什么这么慢</strong>：他们故意让 <code>Ω_RF ≪ ω_L</code>，避免同向/反向旋转项在 Ω≈ω_L 时把演化搞复杂；代价是 π/2 约 1.5 ms（换算）。更大的静磁场或加一个 σ+ 线圈就能提速。</li>
+    <li><strong>Z 旋转</strong>：直接改 RF 相位；RB 用 pyGSTi 生成的 Clifford 序列。</li>
+    <li><strong>门误差</strong>：随机 Clifford 深度到 400，每个 Clifford 约 4 ms；理想输出在 |0⟩/|1⟩ 各半。拟合得 <code>F₁Q = 99.975(1)%</code>（输出 |1⟩）与 <code>99.927(3)%</code>（输出 |0⟩），平均 <code>99.959(6)%</code>，SPAM 2.5(6)%。两者差异与原子损失一致。</li>
+  </ol>
+
+  <h3>相干与两比特（背景）</h3>
+  <table>
+    <tr><td class="k">T₂*</td><td>逐点平均 1.24(5) s；阵列平均 1.00(4) s（磁场梯度 ~2 mHz/μm）</td></tr>
+    <tr><td class="k">回波 T₂</td><td>5(1) s</td></tr>
+    <tr><td class="k">T₁</td><td>20(2) s（校正损失后）；原子损失时间 9 s</td></tr>
+    <tr><td class="k">差分光移</td><td>η = 9.8×10⁻⁸（线偏振下理论为 0）</td></tr>
+    <tr><td class="k">两比特</td><td>CZ：Ω_r = 0.763 MHz，Δ_Z/Ω_r = 10.6，Δ/Ω_r = 0.377，ξ = 3.902，τΩ_r = 4.293；3 μm 间距；Bell 83(2)%</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>把核自旋 qubit 的相干优势（秒级）和 Rydberg 门结合起来的第一套“通用门”。局限：全部门是全局的，没有逐点寻址；两比特门只有 83%，受限于中间态/里德堡态自发辐射（约 3%）与激光噪声。作者指出局域化不难：单比特可用简并拉曼，两比特可用 369 nm 光移局部控制。</p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="p7">
+  <h2><span class="no">7</span>JILA 2022：¹⁷¹Yb 单束拉曼，170 ns 的快速门</h2>
+  <p class="meta">Alec Jenkins*, Joanna W. Lis*, Aruku Senoo, William F. McGrew, Adam M. Kaufman（JILA / NIST / CU Boulder）· PRX 12, 021027 (2022) · <a href="https://arxiv.org/abs/2112.06732">arXiv:2112.06732</a> · DOI 10.1103/PhysRevX.12.021027</p>
+  <p class="meta"><span class="tag">Yb-171</span><span class="tag">10×10</span><span class="tag">单束拉曼</span><span class="tag">π/2 = 170 ns</span><span class="tag">RB 5.2×10⁻³</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>532 nm 光镊，10×10 = 100 点（6 mW/阱，17.1 MHz 深）；用 556 nm 窄线“蓝失谐增强装载”把装载率做到 92.73(8)%，单阱最高 96.0(1.4)%——这是碱土金属里第一次实现这类方案。</li>
+    <li>成像用 399 nm 宽线 + 556 nm 冷却光，120 ms，误判约 0.3%，成像损失 2.51%。</li>
+    <li>用核自旋做三维拉曼边带冷却，<code>n̄_r = 0.14(3)</code>、<code>n̄_z = 0.13(4)</code>，接近运动基态。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>编码：<code>|0⟩ = |m_F=+1/2⟩</code>，<code>|1⟩ = |m_F=−1/2⟩</code>；制备保真度 0.996(1)。</li>
+    <li>读出：频率移动的 556 nm 光把 |0⟩ 加热出阱（blow-away），用存活与否判自旋；blow-away 5 ms，综合误判约 6×10⁻³。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的（两种驱动区间）</h3>
+  <ol>
+    <li><strong>弱驱动区间（Ω_X &lt; Δ_N）</strong>：两束同向传播光，一束 π 偏振、一束垂直于量子化轴（σ+/σ−）。扫描两束频差会看到两条拉曼共振（分别经 ³P₁ 的 <code>F′=3/2, m_F′=±1/2</code>）。固定在其中一条上，可看到 kHz 量级的 Rabi 振荡。</li>
+    <li><strong>强驱动区间（Ω_X ≫ Δ_N）——本文主方案</strong>：<strong>只用一束 X 光</strong>，它同时含沿量子化轴和垂直于轴的分量，因此一束光就驱动两条拉曼通道；再加一束 Z 光劈裂核自旋并驱动 Z 轴旋转。</li>
+    <li><strong>参数</strong>：<code>Δ_X/2π ≈ −180 MHz</code>，<code>Δ_Z/2π = −164 MHz</code>，激发态劈裂 <code>Δ_e/2π ≈ 2 MHz</code>；X Rabi <code>1.77 MHz</code>，Z Rabi <code>0.77 MHz</code>；小磁场把核自旋劈裂 1.25 kHz。π/2 = 170 ns。</li>
+    <li><strong>RB</strong>：Clifford 由 X(π/2) 和 Z(π/2) 编译；每个深度 40 组随机序列，深度到 ~100；拟合得每 Clifford 误差 5.2(5)×10⁻³。</li>
+  </ol>
+
+  <h3>相干与误差判断</h3>
+  <table>
+    <tr><td class="k">T₂*</td><td>3.7(4) s</td></tr>
+    <tr><td class="k">回波 T₂</td><td>7.9(4) s</td></tr>
+    <tr><td class="k">自旋弛豫</td><td>数十秒；加几个高斯磁场可到 100 s 量级</td></tr>
+    <tr><td class="k">门时间 / 相干</td><td>170 ns vs 秒级，差 6–7 个量级</td></tr>
+  </table>
+  <p>作者用估计的散射率做模拟（图中红线），认为当前 5×10⁻³ 主要来自拉曼光散射和光强噪声；基于 <code>T₂*</code> 与散射预算，他们<strong>估计</strong>可以做到 <code>10⁻⁴</code>（作者估计，非实测）。</p>
+
+  <h3>结论与局限</h3>
+  <p>这篇证明了核自旋 qubit 也能“快”：单束拉曼 + 170 ns π/2，配合秒级相干，是 Rb 微波方案之外另一条速度路线。局限是当前误差仍停留在 10⁻³，需要更好的光强稳定和更远的拉曼失谐；另外全部门是全局的。</p>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="p8">
+  <h2><span class="no">8</span>Atom Computing 2022：⁸⁷Sr 核自旋与 AOD 逐点拉曼</h2>
+  <p class="meta">Katrina Barnes 等（Atom Computing, Berkeley）· Nat. Commun. 13, 2779 (2022) · <a href="https://arxiv.org/abs/2108.04790">arXiv:2108.04790</a> · DOI 10.1038/s41467-022-29977-z</p>
+  <p class="meta"><span class="tag">Sr-87</span><span class="tag">I=9/2</span><span class="tag">逐点拉曼</span><span class="tag">T₂*=21 s</span><span class="tag">π/2=223 μs</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>SLM 生成 10×11 = 110 个光镊（间距 4 μm），可重排成 7×3 = 21 个满占据 qubit；同一装置能装 14×14 里 100 多个原子。</li>
+    <li>461 nm 荧光成像；成像时用 ³P₁ 窄线冷却，保持原子不丢。</li>
+  </ul>
+
+  <h3>编码、态制备与读出</h3>
+  <ul>
+    <li>编码：⁸⁷Sr 基态 ¹S₀ 核自旋 <code>|↓⟩ = |F=9/2, m_F=−9/2⟩</code>，<code>|↑⟩ = |m_F=−7/2⟩</code>，11 G 磁场。</li>
+    <li>读出：把要“隐藏”的态相干转移到 ³P₀ 钟态（698 nm shelving），再成像剩下的态。shelving 态在强阱光下因三重态内拉曼散射寿命降到 ~1 s，但足够单次读出。</li>
+    <li>隔离：I=9/2 的相邻态 <code>m_F=−5/2</code> 在弱场下与 qubit 跃迁简并，会产生泄漏；他们加一束近共振于 <code>|L⟩ → ³P₁, F=7/2, m_F=−7/2</code> 的强光，把这个泄漏跃迁移开，散射率压到 ~1 Hz。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>两束拉曼</strong>：经 ³P₁, F=7/2 中间态耦合核自旋；两束同源，各自过一对正交 AOD（vAOD/hAOD），用 AOD 的 RF 幅度/相位做逐点幅度与相位控制。</li>
+    <li><strong>EOM 侧带</strong>：每束一个 EOM，用一阶侧带驱动双光子过程，同时提供快速脉冲整形和中间态失谐调节。</li>
+    <li><strong>并行方式</strong>：同一列（或行）的原子可同时驱动（最多 7 个），不同列串行，三组脉冲覆盖 21 个 qubit；这样每个 qubit 的门是独立的。</li>
+    <li><strong>参数</strong>：Rabi 1.16 kHz，π/2 = 223 μs。慢的原因正是上面那束隔离光：它的强度/偏振纯度限制了可用的拉曼失谐，从而限制 Rabi。</li>
+    <li><strong>相位</strong>：用“人为失谐”（advance phase）在 Ramsey 中读出相位；每点可编程。</li>
+  </ol>
+
+  <h3>相干</h3>
+  <table>
+    <tr><td class="k">T₁</td><td>&gt; 5 s（10 s 内无明显弛豫；受真空寿命 ~60 s 限制）</td></tr>
+    <tr><td class="k">T₂*</td><td>21(7) s（阵列平均）</td></tr>
+    <tr><td class="k">回波 T₂</td><td>42(6) s</td></tr>
+    <tr><td class="k">门长 / 相干</td><td>相干比门长 10⁵ 倍以上</td></tr>
+  </table>
+
+  <h3>结论与局限</h3>
+  <p>第一次展示“可逐点寻址的核自旋寄存器”，相干时间接近分钟级。局限：门很慢（223 μs），且并行受行/列限制；读出靠 shelving，寿命受阱光限制。它代表“相干优先”的路线，与 JILA 的“速度优先”形成对照。</p>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="p9">
+  <h2><span class="no">9</span>Harvard 2023：99.97% 拉曼门与 99.5% CZ 的同一套系统</h2>
+  <p class="meta">Simon J. Evered*, Dolev Bluvstein*, Marcin Kalinowski* 等，Mikhail D. Lukin（Harvard / MIT / QuEra）· Nature 622, 268 (2023) · <a href="https://arxiv.org/abs/2304.05420">arXiv:2304.05420</a> · DOI 10.1038/s41586-023-06481-y</p>
+  <p class="meta"><span class="tag">Rb-87</span><span class="tag">256 原子平台</span><span class="tag">拉曼 1 MHz</span><span class="tag">BB1 脉冲</span><span class="tag">δ_Raman 180 GHz</span></p>
+
+  <h3>平台</h3>
+  <ul>
+    <li>SLM 生成 850 nm 光镊，810 nm AOD 镊子做重排；先用 780 nm D2 的偏振梯度冷却，再用 795 nm D1 的 Λ 增强灰糖蜜冷却，径向平均声子数 <code>n̄ ≈ 1–2</code>，温度约 10 μK，阱深约 1 mK。</li>
+    <li>重排后可做缺陷-free 阵列；本文门在 20 原子（一行）到 60 原子（两行）上并行。</li>
+  </ul>
+
+  <h3>编码、态制备与读出（方法部分的关键改动）</h3>
+  <ul>
+    <li>编码：<code>|0⟩ = |F=1, m_F=0⟩</code>，<code>|1⟩ = |F=2, m_F=0⟩</code>。</li>
+    <li>态制备改成三步：先用 σ+ 780 nm 把原子泵到伸展态 <code>|F=2, m_F=+2⟩</code>（只散射几个光子，避免老方案 40–70 个泵浦周期带来的加热）；把磁场转 90°，让拉曼光有垂直于量子化轴的分量；再用两个拉曼 π 脉冲（Knill 复合脉冲 + 高斯包络）依次转到 <code>|F=1,m_F=+1⟩</code> 和 <code>|F=2,m_F=0⟩</code>；最后把磁场转回。泵浦保真度约 99.7–99.8%。</li>
+    <li>读出：D2 上 <code>F=2 → F′=3</code> 强光把 |1⟩ 推走，对 |0⟩ 成像；推走+成像综合保真度约 99.83%；电路前后背景损失约 0.25% / 0.1%。</li>
+  </ul>
+
+  <h3>单比特门怎么实现的</h3>
+  <ol>
+    <li><strong>拉曼系统</strong>：用他们此前的“色散光学”方案（Levine 等，PRA 105, 032618, 2022）：对激光做<strong>相位调制</strong>，再经啁啾布拉格光栅（CBG）的色散转为<strong>幅度调制</strong>，被动稳定、高效率、可承受高功率——替代传统的声光调制产生 6.8 GHz 边带。</li>
+    <li><strong>参数</strong>：全局拉曼 Rabi 频率 1 MHz；拉曼失谐 180 GHz（远失谐以压低散射）。</li>
+    <li><strong>脉冲</strong>：用 BB1 复合脉冲做鲁棒旋转（对脉冲面积误差不敏感）；Z 旋转直接由控制软件改相位。</li>
+    <li><strong>保真度</strong>：对 Haar 随机单比特旋转采样，测得 <strong>99.97%</strong>；作者说这与 180 GHz 失谐下的拉曼散射极限一致，因此进一步失谐还能提高。</li>
+    <li><strong>与两比特的关系</strong>：同一套系统里两比特用 420/1013 nm 双光子到 n=53，<code>Δ/2π = 7.8 GHz</code>，<code>Ω/2π = 4.6 MHz</code>；单比特门和 CZ 共用全局光，只是波长与脉冲不同。</li>
+  </ol>
+
+  <h3>Rydberg 激发与 CZ（对照用）</h3>
+  <table>
+    <tr><td class="k">Rydberg 态</td><td>53S₁/₂；420 nm σ+ + 1013 nm σ−</td></tr>
+    <tr><td class="k">单光子 Rabi</td><td>Ω₄₂₀ = 2π×237 MHz；Ω₁₀₁₃ = 2π×303 MHz</td></tr>
+    <tr><td class="k">双光子</td><td>Δ/2π = 7.8 GHz（60 原子数据用 6.3 GHz）；Ω/2π = 4.6 MHz</td></tr>
+    <tr><td class="k">光斑</td><td>SLM 整形为平顶：10×10 μm（20 原子）/ 20×10 μm（60 原子）</td></tr>
+    <tr><td class="k">相互作用</td><td>间距 2 μm，V/2π ≈ 450 MHz；NA = 0.65</td></tr>
+    <tr><td class="k">CZ 保真度</td><td>99.52(4)%（Bell 衰减）；99.54(2)%（全局 RB）；60 原子 99.48(2)%</td></tr>
+  </table>
+
+  <h3>单比特门相关的误差讨论</h3>
+  <p>两比特门的主要误差是 Rydberg 衰减、耦合到另一个 m_J、中间态散射，以及 ground–Rydberg <code>T₂* = 3 μs</code>（激光光强涨落 + 有限温度）。单比特门本身的 99.97% 已经低于两比特门误差一个量级，所以整套系统的瓶颈明确是两比特门，而不是单比特门。作者对 99.9% CZ 的路径是<strong>估计</strong>：失谐再远 2 倍、里德堡寿命 3 倍、<code>T₂*</code> 2 倍，或 Rabi 提高 3 倍。</p>
+
+  <h3>结论与位置</h3>
+  <p>这是目前公开的、在真实多原子系统上单比特门保真度最高的之一（&gt;99.97%），且与 99.5% 的 CZ 共用一套光路，直接支撑了后续 280 物理比特的逻辑处理器（Bluvstein 等，Nature 2024）。它的“实现细节”价值在于：<strong>把拉曼驱动做成被动稳定的色散系统、用 BB1 压脉冲误差、把失谐推到 180 GHz 压散射</strong>——这三点是 99.97% 的直接来源。</p>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="p10">
+  <h2><span class="no">10</span>横向对比</h2>
+  <table>
+    <thead><tr><th>工作</th><th>编码</th><th>驱动</th><th>门时间</th><th>单比特保真度</th><th>寻址方式</th></tr></thead>
+    <tbody>
+      <tr><td>Saffman 2015</td><td>Cs 超精细</td><td>微波</td><td>Clifford ~185 μs</td><td>0.9983（全局）/ 0.9923（单点）</td><td>459 nm Stark 束 + δ=√15Ω</td></tr>
+      <tr><td>Weiss 2016</td><td>Cs 超精细</td><td>微波 + 880 nm</td><td>~250 μs 序列</td><td>0.9962</td><td>交叉光束靶向相位</td></tr>
+      <tr><td>武汉 2018</td><td>Rb 超精细</td><td>微波（魔强度阱）</td><td>Clifford 75.7 μs</td><td>误差 3.0×10⁻⁵</td><td>全局</td></tr>
+      <tr><td>Harvard 2018</td><td>Rb 基态–Rydberg</td><td>420+1013 nm</td><td>π ~ 250 ns（Ω=2 MHz）</td><td>相位门对比度受探测限制</td><td>809 nm 单点光移</td></tr>
+      <tr><td>Caltech 2020</td><td>Sr 钟态–Rydberg</td><td>316.6 nm 单光子</td><td>π = 70 ns</td><td>0.9951 / 校正 0.9967</td><td>全局</td></tr>
+      <tr><td>Princeton 2022</td><td>Yb 核自旋</td><td>RF</td><td>π/2 ≈ 1.5 ms（换算）</td><td>0.99959</td><td>全局</td></tr>
+      <tr><td>JILA 2022</td><td>Yb 核自旋</td><td>单束拉曼</td><td>π/2 = 170 ns</td><td>误差 5.2×10⁻³</td><td>全局（可扩展）</td></tr>
+      <tr><td>Atom Computing 2022</td><td>Sr-87 核自旋</td><td>双束拉曼 + AOD</td><td>π/2 = 223 μs</td><td>未报 RB；T₂* = 21 s</td><td>逐点（行/列并行）</td></tr>
+      <tr><td>Harvard 2023</td><td>Rb 超精细</td><td>色散系统拉曼</td><td>Ω = 1 MHz</td><td>0.9997</td><td>全局（可扩展）</td></tr>
+    </tbody>
+  </table>
+  <p>两条主线很清楚：<strong>碱金属超精细 + 拉曼</strong>走“速度与保真度”，已经把单比特门做到 10⁻⁴ 以下；<strong>碱土/镱核自旋</strong>走“相干时间”，天然没有差分光移，但驱动慢、且两比特门还弱。微波路线则是“稳但慢”，靠魔强度阱也能进 10⁻⁵。</p>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="p11">
+  <h2><span class="no">11</span>误差机理小结</h2>
+  <table>
+    <thead><tr><th>误差源</th><th>物理图像</th><th>典型量级</th><th>对策与代表工作</th></tr></thead>
+    <tbody>
+      <tr><td>差动光移（DLS）</td><td>阱光对两个超精细态的光移不同，且随光强/位置变化</td><td>η ~ 10⁻³；阵列内失谐可达 100 Hz；T₂* 1–14 ms</td><td>魔强度阱（武汉 2018）、魔波长、回波</td></tr>
+      <tr><td>微波 Rabi 慢</td><td>超精细劈裂在 GHz，微波 Rabi 只有 kHz</td><td>Clifford 75–185 μs</td><td>拉曼提速（JILA 170 ns；Harvard 1 MHz）</td></tr>
+      <tr><td>拉曼/中间态散射</td><td>经激发态虚耦合，有限失谐下真实布居</td><td>碱金属 T₁ ~ 0.5–1 s；Rb 双光子散射 ~80 μs</td><td>增大失谐（Harvard 180 GHz）、暗态、单光子（Sr）</td></tr>
+      <tr><td>激光相位噪声</td><td>~1 MHz 处的高频噪声直接变成 Rydberg 失谐</td><td>Rabi 相干 7 → 27 μs</td><td>参考腔滤波 + 注入锁定（Harvard 2018）</td></tr>
+      <tr><td>多普勒</td><td>有限温度下每颗原子随机失谐</td><td>10 μK → 43.5 kHz</td><td>回波、拉曼边带冷却（JILA n̄≈0.14）</td></tr>
+      <tr><td>寻址串扰</td><td>聚焦光斑溢出到邻居</td><td>单点 0.992 vs 全局 0.998；串扰 0.2%–5%</td><td>δ/Ω=√15（Saffman）、靶向相位（Weiss）、AOD 闭环</td></tr>
+      <tr><td>核自旋特有</td><td>无超精细耦合 → DLS≈0；限制变成磁场与光泄漏</td><td>T₂* 秒级；T₁ 数十秒</td><td>磁场稳定、挡光、magic 波长（Yb 486.78 nm）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">一句话总结：<strong>单比特门本身已经不是里德堡平台的瓶颈</strong>。Rb 拉曼已经到 99.97%（Harvard 2023）、微波 + 魔强度阱到 3×10⁻⁵（武汉 2018）、Yb 核自旋 RB 到 99.959%（Princeton 2022）。真正卡住整机的是两比特门（Harvard CZ 99.5%，Yb CZ 83%）、原子损失、并行寻址串扰与校准开销。</div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section id="p12">
+  <h2><span class="no">12</span>补充与延伸</h2>
+  <h3>两篇值得配套读的</h3>
+  <ul>
+    <li><strong>Levine 等，PRA 105, 032618 (2022)</strong>：Harvard 拉曼驱动系统的专门论文——相位调制 + 啁啾布拉格光栅（CBG）转成幅度调制，被动稳定、高效率、支持高功率。这是 Harvard 2023 单比特门 99.97% 的硬件基础。<a href="https://arxiv.org/abs/2110.14645">arXiv:2110.14645</a> · DOI 10.1103/PhysRevA.105.032618</li>
+    <li><strong>Bluvstein 等，Nature 2024</strong>：在同一平台上用 280 个物理比特做逻辑处理器，单比特门沿用本文方案。<a href="https://arxiv.org/abs/2312.03982">arXiv:2312.03982</a> · DOI 10.1038/s41586-023-06927-3</li>
+  </ul>
+  <h3>综述</h3>
+  <ul>
+    <li>M. Saffman，<em>Quantum computing with atomic qubits and Rydberg interactions: progress and challenges</em>，J. Phys. B 49, 202001 (2016) · DOI 10.1088/0953-4075/49/20/202001</li>
+    <li>M. Morgado, S. Whitlock，<em>Quantum simulation and computing with Rydberg-interacting qubits</em>，AVS Quantum Sci. 3, 023501 (2021) · DOI 10.1116/5.0036562</li>
+  </ul>
+  <h3>说明</h3>
+  <p>本文所有数字来自对应论文的 arXiv 全文；标注“换算”的是我按 <code>π/2 = 1/(4Ω)</code> 之类关系推的，“作者估计”处是论文自己的预测。若你要某一篇的补充材料级细节（例如 Saffman 的 24 个 Clifford 脉冲表、Harvard 的 BB1 相位表、Yb 的 Z 门时序），可以再单独展开。</p>
+</section>
+
+<footer>
+  整理：光镊（DSH Bot）· 生成日期 2026-10-23 · 数据源：各论文 arXiv 全文（未使用二手转述）
+</footer>
+</main>
+</div>
+<div style="position:fixed;left:16px;bottom:16px;z-index:9999;font:14px/1.4 -apple-system,'PingFang SC','Microsoft YaHei',sans-serif"><a href="../labs.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.18)">← 返回博客专题</a></div>
+</body>
+</html>
