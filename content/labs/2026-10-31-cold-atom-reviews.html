@@ -140,7 +140,7 @@ kbd{background:#eef2f6;border:1px solid #dbe3ea;border-bottom-width:2px;border-r
 
 <div class="toolbar">
   <div class="trow">
-    <input type="search" id="q" placeholder="搜标题或期刊…（按 / 聚焦，Esc 清空）" autocomplete="off">
+    <input type="search" id="q" placeholder="搜标题、作者、期刊、单位、分类、标签、年份（空格分隔多个词；按 / 聚焦，Esc 清空）" autocomplete="off">
     <select id="sort">
       <option value="c">按引用数</option>
       <option value="yd">按年份（新→旧）</option>
@@ -203,7 +203,14 @@ function facetsOf(e){
   for(const f of FACETS){ if(f.re.test(t)) out.push(f.id); }
   return out;
 }
-const DATA = RAW.map((e,i)=>({id:i, ...e, src:srcOf(e), f:facetsOf(e)}));
+const CATNAME = {}; for(const k in CATS) CATNAME[k] = (CATS[k].n || "");
+const FACNAME = {}; for(const f of FACETS) FACNAME[f.id] = (f.n || "");
+function hayOf(e){
+  const parts = [e.t, e.j, e.ai || "", (e.au || []).join(" "), CATNAME[e.cat] || "", String(e.y)];
+  for (const f of e.f) parts.push(FACNAME[f] || "");
+  return parts.join(" ").toLowerCase();
+}
+const DATA = RAW.map((e,i)=>{ const o = {id:i, ...e}; o.src = srcOf(o); o.f = facetsOf(o); o.h = hayOf(o); return o; });
 
 const state = {q:"", cats:new Set(), facs:new Set(), srcs:new Set(), sort:"c"};
 
@@ -213,7 +220,7 @@ function active(){
     if(state.cats.size && !state.cats.has(e.cat)) return false;
     if(state.srcs.size && !state.srcs.has(e.src)) return false;
     if(state.facs.size){ for(const f of state.facs) if(!e.f.includes(f)) return false; }
-    if(q && !((e.t+" "+e.j).toLowerCase().includes(q))) return false;
+    if(q){ const toks = q.split(/\s+/).filter(Boolean); for(const tok of toks) if(!e.h.includes(tok)) return false; }
     return true;
   });
 }
