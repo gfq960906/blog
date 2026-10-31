@@ -15,7 +15,11 @@ const files = [];
 let broken = 0;
 let checked = 0;
 for (const f of files) {
-  const html = fs.readFileSync(f, "utf8");
+  // 去掉 <script> / <style> 里的内容：JS 模板串（如 href="' + esc(u) + '"）不是真实链接
+  const html = fs
+    .readFileSync(f, "utf8")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "");
   for (const m of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
     let u = m[1];
     if (/^(https?:|mailto:|tel:|#|data:|javascript:)/.test(u)) continue;

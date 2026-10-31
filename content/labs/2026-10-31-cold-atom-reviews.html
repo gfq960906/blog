@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- meta: {"title":"冷原子综述全图（2000–2026）· 完整版","date":"2026-10-31","summary":"139 篇冷原子方向综述，按实验形态分 8 类，附 12 个技术要素交叉索引、时间分布、必读 15 篇，以及检索口径与已知边界。","tag":"综述汇总","group":"综述","short":"冷原子综述全图","tags":["冷原子","综述","里德堡","光晶格"]} -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>冷原子综述全图（2000–2026）· 完整版</title>
+<style>
+:root{
+  --ink:#15202b; --muted:#5d6a78; --line:#e2e8ef; --bg:#fbfcfd; --card:#fff;
+  --accent:#0b6b3a; --link:#0b5fa8; --warn:#b45309;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 0 60px;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  line-height:1.62;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{padding:34px 0 10px}
+h1{font-size:25px;margin:0 0 8px;letter-spacing:.2px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 4px}
+.kpi{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 6px}
+.kbox{flex:1 1 118px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px 12px}
+.kbox .v{font-size:20px;font-weight:700;color:var(--accent);line-height:1.25}
+.kbox .k{font-size:11.5px;color:var(--muted)}
+.toolbar{position:sticky;top:0;z-index:20;background:rgba(251,252,253,.96);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin:18px 0 6px;padding:10px 0 9px}
+.trow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:7px}
+.trow:last-child{margin-bottom:0}
+input[type=search]{flex:1 1 240px;min-width:180px;padding:7px 11px;border:1px solid var(--line);
+  border-radius:7px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink)}
+input[type=search]:focus{outline:2px solid #cfe4da;outline-offset:0;border-color:#9dc9b3}
+select{padding:6px 8px;border:1px solid var(--line);border-radius:7px;font-size:13px;
+  font-family:inherit;background:#fff;color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;background:#fff;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;
+  transition:.12s}
+.chip:hover{border-color:#b7c6d4;color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip .n{opacity:.62;font-variant-numeric:tabular-nums}
+.lbl{font-size:11.5px;color:#8b96a3;margin-right:2px;white-space:nowrap}
+.count{font-size:12.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+h2{font-size:18px;margin:34px 0 4px;padding-bottom:7px;border-bottom:2px solid var(--ink)}
+h3{font-size:15px;margin:22px 0 6px;color:#2a3746}
+.lead{font-size:12.8px;color:var(--muted);margin:5px 0 10px}
+table{width:100%;border-collapse:collapse;background:var(--card);font-size:13.4px;
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th{background:#1b2733;color:#fff;text-align:left;padding:7px 10px;font-size:12.3px;font-weight:600}
+td{padding:8px 10px;border-bottom:1px solid #eef2f6;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f5f9fb}
+td.yy{width:52px;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+td.cc{width:58px;text-align:right;white-space:nowrap;color:var(--accent);font-weight:600;
+  font-variant-numeric:tabular-nums}
+td.jj{width:170px;color:var(--muted);font-size:12.6px}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.fx{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.fx span{font-size:11px;background:#eef4ff;color:#1d4ed8;border-radius:4px;padding:1px 6px}
+.fx span.cn{background:#fdf2f8;color:#be185d}
+.fx span.bk{background:#f3f0ff;color:#6d28d9}
+.fx span.pv{background:#f0f7f2;color:#15803d}
+.au{font-size:12px;color:#6b7887;margin-top:2px;line-height:1.45}
+.note{background:#fff9ee;border-left:3px solid var(--warn);padding:11px 14px;font-size:13px;
+  margin:14px 0;border-radius:0 6px 6px 0}
+.note b{color:#7c3a00}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:10px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+.card .h{font-size:13.5px;font-weight:700;margin-bottom:3px;display:flex;justify-content:space-between;gap:8px}
+.card .h em{font-style:normal;color:var(--muted);font-weight:400;font-size:11.5px}
+.card ul{margin:6px 0 0;padding-left:16px}
+.card li{font-size:12.3px;color:#3c4a59;margin-bottom:2px}
+.card li a{color:#2b5f8e}
+.bars{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin:12px 0}
+.bar{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.bar .lab{width:56px;font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.bar .trk{flex:1;background:#eef2f6;border-radius:4px;height:14px;overflow:hidden}
+.bar .fil{height:100%;background:linear-gradient(90deg,#0b6b3a,#3f9e6b);border-radius:4px}
+.bar .num{width:34px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{color:var(--muted);font-size:13.5px;padding:22px 0;text-align:center}
+h2,h3{scroll-margin-top:96px}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 17px;margin:16px 0 4px}
+.toc .ttl{font-size:14px;font-weight:700;letter-spacing:.3px}
+.toc .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(198px,1fr));gap:2px 22px;margin-top:6px}
+.toc .grp{font-size:11.5px;color:#8b96a3;margin:8px 0 3px;letter-spacing:.4px}
+.toc a{display:block;font-size:13px;padding:1.5px 0;line-height:1.45}
+.toc a span{color:#9aa5b1;font-size:11.5px;margin-left:5px}
+#up{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+  background:#fff;color:var(--ink);font-size:13px;cursor:pointer;box-shadow:0 3px 12px rgba(20,35,50,.12);
+  display:none;z-index:40;font-family:inherit}
+#up:hover{border-color:#b7c6d4}
+#up.on{display:block}
+footer{margin-top:36px;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#8b96a3}
+kbd{background:#eef2f6;border:1px solid #dbe3ea;border-bottom-width:2px;border-radius:4px;
+  padding:0 5px;font-size:11px;font-family:inherit}
+@media(max-width:640px){
+  td.jj{display:none}
+  .kpi .kbox{flex:1 1 46%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>冷原子方向综述全图（2000–2026）</h1>
+  <p class="sub">按<b>实验形态</b>分类：系综 / 光晶格 / 单原子阵列。每条都能点开 DOI 或 arXiv 核对。</p>
+  <p class="sub" style="font-size:12.5px">编制日期 2026-10-31 ／ 完整版 v2 ／ 数据源：Crossref（RMP、Rep. Prog. Phys.、Nature Reviews Physics、Annual Review of Cold Atoms、AAMOP 章节、中文期刊、Science/Nature Physics/Adv. Phys. 专题综述）+ arXiv 综述预印本</p>
+  <div class="kpi" id="kpi"></div>
+
+  <div class="toc" id="toc">
+    <div class="ttl">目录</div>
+    <div class="cols">
+      <div>
+        <div class="grp">总览</div>
+        <a href="#top15">必读：引用最高的 15 篇</a>
+        <a href="#cats-intro">分类口径与八类总表</a>
+        <a href="#facets">技术要素交叉索引</a>
+        <a href="#years">时间分布</a>
+      </div>
+      <div>
+        <div class="grp">按实验形态</div>
+        <a href="#cat-A">A　系综 / 体量子气体</a>
+        <a href="#cat-B">B　光晶格</a>
+        <a href="#cat-C">C　单原子阵列 / 光镊 / 里德堡</a>
+        <a href="#cat-D">D　精密测量 / 时钟 / 干涉</a>
+        <a href="#cat-E">E　腔 QED 与光-原子界面</a>
+        <a href="#cat-F">F　冷分子 / 少体 / 碰撞</a>
+        <a href="#cat-G">G　冷却与操控技术</a>
+        <a href="#cat-H">H　路线图 / 方法学 / 社区报告</a>
+      </div>
+      <div>
+        <div class="grp">方法与说明</div>
+        <a href="#method">检索方法、数据口径与已知边界</a>
+        <a href="#log">修订记录（v1 → v2）</a>
+        <a href="#tips">怎么用这份表</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="trow">
+    <input type="search" id="q" placeholder="搜标题或期刊…（按 / 聚焦，Esc 清空）" autocomplete="off">
+    <select id="sort">
+      <option value="c">按引用数</option>
+      <option value="yd">按年份（新→旧）</option>
+      <option value="ya">按年份（旧→新）</option>
+      <option value="t">按标题</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="trow" id="catRow"><span class="lbl">类别</span></div>
+  <div class="trow" id="facRow"><span class="lbl">技术要素</span></div>
+  <div class="trow" id="srcRow"><span class="lbl">来源</span></div>
+</div>
+
+<main id="app"></main>
+
+<button id="up" title="回到目录" onclick="document.getElementById('toc').scrollIntoView({behavior:'smooth'})">↑ 目录</button>
+
+<footer>
+  冷原子综述全图 v2 ｜ 生成于 2026-10-31 ｜ 条目信息全部来自 Crossref / arXiv 返回值，未收录无法核实的条目。
+  引用数为 Crossref <code>is-referenced-by-count</code>，与 Google Scholar 口径不同，只用于排序、不宜跨库比较。
+</footer>
+</div>
+
+<script id="rawdata" type="application/json">[{"y":2000,"t":"Electromagnetic trapping of cold atoms","u":"https://doi.org/10.1088/0034-4885/63/9/202","j":"Reports on Progress in Physics","c":156,"cat":"G","au":["V. I. Balykin","Vladimir G. Minogin","Vladilen S Letokhov"],"ai":"Russian Academy of Sciences"},{"y":2001,"t":"Bose-Einstein condensation in the alkali gases: Some fundamental concepts","u":"https://doi.org/10.1103/revmodphys.73.307","j":"Reviews of Modern Physics","c":1727,"cat":"A","au":["Anthony J. Leggett"],"ai":"University of Illinois Urbana-Champaign"},{"y":2002,"t":"Nobel lecture: When atoms behave as waves: Bose-Einstein condensation and the atom laser","u":"https://doi.org/10.1103/revmodphys.74.1131","j":"Reviews of Modern Physics","c":711,"cat":"A","au":["Wolfgang Ketterle"],"ai":"MIT-Harvard Center for Ultracold Atoms"},{"y":2002,"t":"Resonant nonlinear magneto-optical effects in atoms","u":"https://doi.org/10.1103/revmodphys.74.1153","j":"Reviews of Modern Physics","c":745,"cat":"G","au":["Dmitry Budker","Wojciech Gawlik","Derek F. Jackson Kimball","Simon Rochester","Valeriy V. Yashchuk","Antoine Weis"],"ai":"Lawrence Berkeley National Laboratory"},{"y":2002,"t":"Nobel Lecture: Bose-Einstein condensation in a dilute gas, the first 70 years and some recent experiments","u":"https://doi.org/10.1103/revmodphys.74.875","j":"Reviews of Modern Physics","c":707,"cat":"A","au":["Eric Cornell","Carl Wieman"],"ai":"National Institute of Standards and Technology"},{"y":2003,"t":"Tutorial on Experimental Physics of Ultracold Gases","u":"https://doi.org/10.1002/3527603417.ch5","j":"Interactions in Ultracold Gases","c":1,"cat":"A","au":["Allard P. Mosk"],"ai":"Foundation For Fundamental Research On Matter"},{"y":2003,"t":"Colloquium: Trapping and manipulating photon states in atomic ensembles","u":"https://doi.org/10.1103/revmodphys.75.457","j":"Reviews of Modern Physics","c":1041,"cat":"E","au":["Mikhail D. Lukin"],"ai":"Harvard University"},{"y":2004,"t":"Theory of the weakly interacting Bose gas","u":"https://doi.org/10.1103/revmodphys.76.599","j":"Reviews of Modern Physics","c":439,"cat":"A","au":["Jens O. Andersen"]},{"y":2004,"t":"Physics with coherent matter waves","u":"https://doi.org/10.1088/0034-4885/67/6/r03","j":"Reports on Progress in Physics","c":156,"cat":"A","au":["Kai Bongs","Klaus Sengstock"]},{"y":2005,"t":"Colloquium: Bulk Bogoliubov excitations in a Bose-Einstein condensate","u":"https://doi.org/10.1103/revmodphys.77.187","j":"Reviews of Modern Physics","c":176,"cat":"A","au":["Roee Ozeri","Nadav Y. Katz","Jeff Steinhauer","Nir Davidson"],"ai":"Weizmann Institute of Science"},{"y":2006,"t":"Production of cold molecules via magnetically tunable Feshbach resonances","u":"https://doi.org/10.1103/revmodphys.78.1311","j":"Reviews of Modern Physics","c":980,"cat":"F","au":["Thorsten Köhler","Krzysztof Góral","Paul S. Julienne"],"ai":"University of Oxford"},{"y":2006,"t":"Photoassociation Spectroscopy of Ultracold Atoms and the Study of 鈥淧hysicist鈥檚 Molecules,鈥?a review","u":"https://doi.org/10.1364/ls.2006.ltue1","j":"Frontiers in Optics","c":0,"cat":"F","au":["K. M. Jones","Eite Tiesinga","Paul D. Lett","Paul S. Julienne"],"ai":"National Institute of Standards and Technology"},{"y":2006,"t":"Ultracold photoassociation spectroscopy: Long-range molecules and atomic scattering","u":"https://doi.org/10.1103/revmodphys.78.483","j":"Reviews of Modern Physics","c":783,"cat":"F","au":["K. M. Jones","Eite Tiesinga","Paul D. Lett","Paul S. Julienne"],"ai":"Williams College"},{"y":2006,"t":"Dynamics of Bose-Einstein condensates in optical lattices","u":"https://doi.org/10.1103/revmodphys.78.179","j":"Reviews of Modern Physics","c":1534,"cat":"B","au":["O. Morsch","Markus K. Oberthaler"],"ai":"Istituto Nazionale di Fisica Nucleare, Sezione di Pisa"},{"y":2006,"t":"Colloquium: Weakly interacting, dilute Bose gases in 2D","u":"https://doi.org/10.1103/revmodphys.78.1111","j":"Reviews of Modern Physics","c":144,"cat":"A","au":["Anna Posazhennikova"],"ai":"Karlsruhe Institute of Technology"},{"y":2007,"t":"Magnetic microtraps for ultracold atoms","u":"https://doi.org/10.1103/revmodphys.79.235","j":"Reviews of Modern Physics","c":520,"cat":"G","au":["József Fortágh","Claus Zimmermann"],"ai":"University of Tübingen"},{"y":2008,"t":"Many-body physics with ultracold gases","u":"https://doi.org/10.1103/revmodphys.80.885","j":"Reviews of Modern Physics","c":7373,"cat":"A","au":["Immanuel Bloch","Jean Dalibard","W. Zwerger"],"ai":"Johannes Gutenberg University Mainz"},{"y":2008,"t":"Theory of ultracold atomic Fermi gases","u":"https://doi.org/10.1103/revmodphys.80.1215","j":"Reviews of Modern Physics","c":1792,"cat":"A","au":["S. Giorgini","Лев П. Питаевский","S. Stringari"],"ai":"University of Trento"},{"y":2009,"t":"Rotating trapped Bose-Einstein condensates","u":"https://doi.org/10.1103/revmodphys.81.647","j":"Reviews of Modern Physics","c":1082,"cat":"A","au":["Alexander L. Fetter"],"ai":"Stanford University"},{"y":2009,"t":"The physics of dipolar bosonic quantum gases","u":"https://doi.org/10.1088/0034-4885/72/12/126401","j":"Reports on Progress in Physics","c":1449,"cat":"A","au":["Thierry Lahaye","C Menotti","L Santos","Maciej Lewenstein","T Pfau"],"ai":"University of Stuttgart"},{"y":2009,"t":"Theory of radio frequency spectroscopy experiments in ultracold Fermi gases and their relation to photoemission in the cuprates","u":"https://doi.org/10.1088/0034-4885/72/12/122501","j":"Reports on Progress in Physics","c":44,"cat":"A","au":["Qijin Chen","Yan He","Chih-Chun Chien","K Levin"]},{"y":2009,"t":"The formation and interactions of cold and ultracold molecules: new challenges for interdisciplinary physics","u":"https://doi.org/10.1088/0034-4885/72/8/086401","j":"Reports on Progress in Physics","c":172,"cat":"F","au":["Olivier Dulieu","C. Gabbanini"],"ai":"Université Paris-Sud"},{"y":2010,"t":"Imbalanced Feshbach-resonant Fermi gases","u":"https://doi.org/10.1088/0034-4885/73/7/076501","j":"Reports on Progress in Physics","c":206,"cat":"F","au":["Leo Radzihovsky","Daniel E. Sheehy"],"ai":"University of Colorado Boulder"},{"y":2010,"t":"Quantum gases and optical speckle: a new tool to simulate disordered quantum systems","u":"https://doi.org/10.1088/0034-4885/73/6/062401","j":"Reports on Progress in Physics","c":17,"cat":"A","au":["Philippe Bouyer"],"ai":"Université Paris-Sud"},{"y":2010,"t":"Quantum information with Rydberg atoms","u":"https://doi.org/10.1103/revmodphys.82.2313","j":"Reviews of Modern Physics","c":2718,"cat":"C","au":["Mark E. Saffman","Thad G Walker","Klaus Mølmer"],"ai":"University of Wisconsin–Madison"},{"y":2010,"t":"Ultra-cold polarized Fermi gases","u":"https://doi.org/10.1088/0034-4885/73/11/112401","j":"Reports on Progress in Physics","c":209,"cat":"A","au":["Frédéric Chevy","Christophe Mora"],"ai":"Laboratoire Kastler Brossel"},{"y":2010,"t":"Feshbach resonances in ultracold gases","u":"https://doi.org/10.1103/revmodphys.82.1225","j":"Reviews of Modern Physics","c":3570,"cat":"F","au":["Cheng Chin","Rudolf Grimm","Paul S. Julienne","Eite Tiesinga"],"ai":"University of Chicago"},{"y":2010,"t":"Quantum interface between light and atomic ensembles","u":"https://doi.org/10.1103/revmodphys.82.1041","j":"Reviews of Modern Physics","c":1164,"cat":"E","au":["Klemens Hammerer","Anders Søndberg Sørensen","Eugene Simon Polzik"],"ai":"Austrian Academy of Sciences"},{"y":2011,"t":"Colloquium : Physics of optical lattice clocks","u":"https://doi.org/10.1103/revmodphys.83.331","j":"Reviews of Modern Physics","c":247,"cat":"D","au":["Andrei Derevianko","Hidetoshi Katori"],"ai":"University of Nevada, Reno"},{"y":2011,"t":"Cooling in strongly correlated optical lattices: prospects and challenges","u":"https://doi.org/10.1088/0034-4885/74/5/054401","j":"Reports on Progress in Physics","c":149,"cat":"B","au":["David C. McKay","Brian DeMarco"],"ai":"University of Illinois Urbana-Champaign"},{"y":2011,"t":"Quantum repeaters based on atomic ensembles and linear optics","u":"https://doi.org/10.1103/revmodphys.83.33","j":"Reviews of Modern Physics","c":1883,"cat":"E","au":["Nicolas Sangouard","Christoph Simon","Hugues de Riedmatten","Nicolas Gisin"],"ai":"University of Geneva"},{"y":2011,"t":"One dimensional bosons: From condensed matter systems to ultracold gases","u":"https://doi.org/10.1103/revmodphys.83.1405","j":"Reviews of Modern Physics","c":973,"cat":"A","au":["Miguel A. Cazalilla","R. Citro","Thierry Giamarchi","E. Orignac","Marcos Rigol"],"ai":"Material Physics Center"},{"y":2011,"t":"Colloquium : Artificial gauge potentials for neutral atoms","u":"https://doi.org/10.1103/revmodphys.83.1523","j":"Reviews of Modern Physics","c":1894,"cat":"A","au":["Jean Dalibard","Fabrice Gerbier","Gediminas Juzeliūnas","Patrik Öhberg"],"ai":"Centre National de la Recherche Scientifique"},{"y":2012,"t":"Annual Review of Cold Atoms and Molecules","u":"https://doi.org/10.1142/8632","j":"Annual Review of Cold Atoms and Molecules","c":13,"cat":"F","au":["Kirk W. Madison","Yiqiu Wang","Ana María Rey","Kai Bongs"],"ai":"University of British Columbia"},{"y":2012,"t":"Can one trust quantum simulators?","u":"https://doi.org/10.1088/0034-4885/75/8/082401","j":"Reports on Progress in Physics","c":218,"cat":"H","au":["Philipp Hauke","Fernando Cucchietti","Luca Tagliacozzo","Ivan Deutsch","Maciej Lewenstein"],"ai":"Institute of Photonic Sciences"},{"y":2012,"t":"Few-body physics with ultracold atomic and molecular systems in traps","u":"https://doi.org/10.1088/0034-4885/75/4/046401","j":"Reports on Progress in Physics","c":192,"cat":"F","au":["D. Blume"],"ai":"Washington State University"},{"y":2013,"t":"Cold atoms in cavity-generated dynamical optical potentials","u":"https://doi.org/10.1103/revmodphys.85.553","j":"Reviews of Modern Physics","c":880,"cat":"E","au":["Helmut Ritsch","P. Domokos","Ferdinand Brennecke","Tilman Esslinger"],"ai":"Universität Innsbruck"},{"y":2013,"t":"Engineering novel optical lattices","u":"https://doi.org/10.1088/0034-4885/76/8/086401","j":"Reports on Progress in Physics","c":145,"cat":"B","au":["Patrick Windpassinger","K. Sengstock"],"ai":"Universität Hamburg"},{"y":2013,"t":"Spectroscopy, Manipulation and Trapping of Neutral Atoms, Molecules, and Other Particles using Optical Nanofibers: A Review","u":"http://arxiv.org/abs/1306.5821v1","j":"arXiv","c":0,"cat":"E","src":"pre","au":["Michael J. Morrissey","Kieran Deasy","Mary Frawley","Ravi Kumar","Eugen Prel","Laura Russell","Viet Giang Truong","Síle Nic Chormaic"]},{"y":2013,"t":"Fermi gases in one dimension: From Bethe ansatz to experiments","u":"https://doi.org/10.1103/revmodphys.85.1633","j":"Reviews of Modern Physics","c":437,"cat":"A","au":["Xi‐Wen Guan","Murray T. Batchelor","Chaohong Lee"],"ai":"Australian National University"},{"y":2013,"t":"Spinor Bose gases: Symmetries, magnetism, and quantum dynamics","u":"https://doi.org/10.1103/revmodphys.85.1191","j":"Reviews of Modern Physics","c":823,"cat":"A","au":["Dan Stamper-Kurn","Masahito Ueda"],"ai":"Lawrence Berkeley National Laboratory"},{"y":2014,"t":"Non-standard Hubbard models in optical lattices: a review","u":"http://arxiv.org/abs/1406.0181v3","j":"arXiv","c":0,"cat":"B","src":"pre","au":["Omjyoti Dutta","Mariusz Gajda","Philipp Hauke","Maciej Lewenstein","Dirk-Sören Lühmann","Boris A. Malomed","Tomasz Sowiński","Jakub Zakrzewski"]},{"y":2014,"t":"Ultracold Fermi gases with emergent SU(N) symmetry","u":"https://doi.org/10.1088/0034-4885/77/12/124401","j":"Reports on Progress in Physics","c":305,"cat":"A","au":["Miguel A. Cazalilla","Ana Maria Rey"],"ai":"National Tsing Hua University"},{"y":2014,"t":"Controlling interactions between highly magnetic atoms with Feshbach resonances","u":"https://doi.org/10.1088/0034-4885/77/9/093901","j":"Reports on Progress in Physics","c":46,"cat":"F","au":["Svetlana Kotochigova"],"ai":"Temple University"},{"y":2014,"t":"Light-induced gauge fields for ultracold atoms","u":"https://doi.org/10.1088/0034-4885/77/12/126401","j":"Reports on Progress in Physics","c":1120,"cat":"A","au":["Nathan Goldman","Gediminas Juzeliūnas","Patrik Öhberg","Ian B. Spielman"],"ai":"Centre National de la Recherche Scientifique"},{"y":2014,"t":"Polarons, dressed molecules and itinerant ferromagnetism in ultracold Fermi gases","u":"https://doi.org/10.1088/0034-4885/77/3/034401","j":"Reports on Progress in Physics","c":421,"cat":"F","au":["Pietro Massignan","Matteo Zaccanti","Georg M Bruun"],"ai":"Institute of Photonic Sciences"},{"y":2014,"t":"Topological aspects in spinor Bose鈥揈instein condensates","u":"https://doi.org/10.1088/0034-4885/77/12/122401","j":"Reports on Progress in Physics","c":48,"cat":"A","au":["Masahito Ueda"],"ai":"The University of Tokyo"},{"y":2015,"t":"Cavity-based quantum networks with single atoms and optical photons","u":"https://doi.org/10.1103/revmodphys.87.1379","j":"Reviews of Modern Physics","c":959,"cat":"E","au":["Andreas Reiserer","Gerhard Rempe"],"ai":"Delft University of Technology"},{"y":2015,"t":"Quantum simulations of lattice gauge theories using ultracold atoms in optical lattices","u":"https://doi.org/10.1088/0034-4885/79/1/014401","j":"Reports on Progress in Physics","c":434,"cat":"B","au":["Erez Zohar","J. I. Cirac","Benni Reznik"],"ai":"Max Planck Institute of Quantum Optics"},{"y":2015,"t":"Optical atomic clocks","u":"https://doi.org/10.1103/revmodphys.87.637","j":"Reviews of Modern Physics","c":2302,"cat":"D","au":["Andrew D. Ludlow","Martin M. Boyd","Jun Ye","E. Peik","Piet O. Schmidt"],"ai":"National Institute of Standards and Technology"},{"y":2015,"t":"Physics of higher orbital bands in optical lattices: a review","u":"http://arxiv.org/abs/1508.06285v2","j":"arXiv","c":0,"cat":"B","src":"pre","au":["Xiaopeng Li","W. Vincent Liu"]},{"y":2015,"t":"Degenerate quantum gases with spin鈥搊rbit coupling: a review","u":"https://doi.org/10.1088/0034-4885/78/2/026001","j":"Reports on Progress in Physics","c":616,"cat":"A","au":["Hui Zhai"],"ai":"Tsinghua University"},{"y":2016,"t":"Tutorial: Calculation of Rydberg interaction potentials","u":"http://arxiv.org/abs/1612.08053v2","j":"arXiv","c":0,"cat":"C","src":"pre","au":["Sebastian Weber","Christoph Tresp","Henri Menke","Alban Urvoy","Ofer Firstenberg","Hans Peter Büchler","Sebastian Hofferberth"]},{"y":2016,"t":"Efimov Physics: a review","u":"http://arxiv.org/abs/1610.09805v3","j":"arXiv","c":0,"cat":"F","src":"pre","au":["Pascal Naidon","Shimpei Endo"]},{"y":2016,"t":"Quantum-gas microscopes: a new tool for cold-atom quantum simulators","u":"https://doi.org/10.1093/nsr/nww023","j":"National Science Review","c":91,"cat":"B","au":["Stefan Kuhr"],"ai":"University of Strathclyde"},{"y":2016,"t":"Quantum computing with atomic qubits and Rydberg interactions: Progress and challenges","u":"http://arxiv.org/abs/1605.05207v2","j":"arXiv","c":0,"cat":"C","src":"pre","au":["M. Saffman"]},{"y":2016,"t":"Non-Elastic Processes in Atom Rydberg-Atom Collisions: Review of State of Art and Problems","u":"http://arxiv.org/abs/1611.06333v1","j":"arXiv","c":0,"cat":"F","src":"pre","au":["A. A. Mihajlov","V. A. Srećković","Lj. M. Ignjatović","A. N. Klyucharev","M. S. Dimitrijević","N. M. Sakan"]},{"y":2016,"t":"Single atom detection in ultracold quantum gases: a review of current progress","u":"https://doi.org/10.1088/0034-4885/79/5/054401","j":"Reports on Progress in Physics","c":96,"cat":"G","au":["Herwig Ott"],"ai":"University of Kaiserslautern"},{"y":2017,"t":"Colloquium: Atomic quantum gases in periodically driven optical lattices","u":"https://doi.org/10.1103/revmodphys.89.011004","j":"Reviews of Modern Physics","c":1117,"cat":"B","au":["André Eckardt"],"ai":"Max Planck Institute for the Physics of Complex Systems"},{"y":2017,"t":"Review of pseudogaps in strongly interacting Fermi gases","u":"https://doi.org/10.1088/1361-6633/aa7e53","j":"Reports on Progress in Physics","c":59,"cat":"A","au":["Erich J. Mueller"],"ai":"Cornell University"},{"y":2017,"t":"The Fulde-Ferrell-Larkin-Ovchinnikov state for ultracold fermions in lattice and harmonic potentials: a review","u":"http://arxiv.org/abs/1706.07076v2","j":"arXiv","c":0,"cat":"B","src":"pre","au":["Jami J. Kinnunen","Jildou E. Baarsma","Jani-Petri Martikainen","Päivi Törmä"]},{"y":2018,"t":"Composite laser-pulses spectroscopy for high-accuracy optical clocks: a review of recent progress and perspectives","u":"https://doi.org/10.1088/1361-6633/aac9e9","j":"Reports on Progress in Physics","c":58,"cat":"D","au":["T. Zanon-Willette","R. Lefèvre","Rémi Metzdorff","Nicolas Sillitoe","Sylvain Almonacil","Marco Minissale","Emeric de Clercq","А. В. Тайченачев","Valeriy I. Yudin","E. Arimondo"],"ai":"Centre National de la Recherche Scientifique"},{"y":2018,"t":"Quantum metrology with nonclassical states of atomic ensembles","u":"https://doi.org/10.1103/revmodphys.90.035005","j":"Reviews of Modern Physics","c":1630,"cat":"E","au":["Luca Pezzè","Augusto Smerzi","Markus K. Oberthaler","Roman Schmied","Philipp Treutlein"],"ai":"Quantum Science and Technology in Arcetri"},{"y":2018,"t":"Quantum computing with neutral atoms","u":"https://doi.org/10.1093/nsr/nwy088","j":"National Science Review","c":62,"cat":"C","au":["Mark E. Saffman"],"ai":"University of Wisconsin–Madison"},{"y":2018,"t":"Highly charged ions: Optical clocks and applications in fundamental physics","u":"https://doi.org/10.1103/revmodphys.90.045005","j":"Reviews of Modern Physics","c":301,"cat":"D","au":["M. G. Kozlov","Marianna S. Safronova","J. R. Crespo López-Urrutia","Piet O. Schmidt"],"ai":"Kurchatov Institute"},{"y":2018,"t":"Atomic clocks for geodesy","u":"https://doi.org/10.1088/1361-6633/aab409","j":"Reports on Progress in Physics","c":252,"cat":"D","au":["T. E. Mehlstäubler","Gesine Grosche","Christian Lisdat","Piet O. Schmidt","Heiner Denker"],"ai":"Physikalisch-Technische Bundesanstalt"},{"y":2019,"t":"Taking atom interferometric quantum sensors from the laboratory to real-world applications","u":"https://doi.org/10.1038/s42254-019-0117-4","j":"Nature Reviews Physics","c":364,"cat":"D","au":["Kai Bongs","Michael Holynski","Jamie Vovrosh","Philippe Bouyer","G. Condon","Ernst Maria Rasel","Christian Schubert","Wolfgang P. Schleich","Albert Roura"],"ai":"University of Birmingham"},{"y":2019,"t":"Rydberg atom quantum technologies","u":"https://doi.org/10.1088/1361-6455/ab52ef","j":"Journal of Physics B: Atomic, Molecular and Optical Physics","c":405,"cat":"C","au":["Charles S. Adams","J D Pritchard","J P Shaffer"],"ai":"Durham University"},{"y":2019,"t":"One-dimensional mixtures of several ultracold atoms: a review","u":"https://doi.org/10.1088/1361-6633/ab3a80","j":"Reports on Progress in Physics","c":127,"cat":"A","au":["Tomasz Sowiński","Miguel Ángel García-March"],"ai":"Institute of Physics"},{"y":2019,"t":"Topological bands for ultracold atoms","u":"https://doi.org/10.1103/revmodphys.91.015005","j":"Reviews of Modern Physics","c":842,"cat":"B","au":["Nigel R. Cooper","Jean Dalibard","Ian B. Spielman"],"ai":"University of Cambridge"},{"y":2020,"t":"Many-body physics with individually controlled Rydberg atoms","u":"https://doi.org/10.1038/s41567-019-0733-z","j":"Nature Physics","c":1244,"cat":"C","au":["Antoine Browaeys","Thierry Lahaye"],"ai":"Centre National de la Recherche Scientifique"},{"y":2020,"t":"Roadmap on Atomtronics: State of the art and perspective","u":"http://arxiv.org/abs/2008.04439v5","j":"arXiv","c":0,"cat":"H","src":"pre","au":["L. Amico","M. Boshier","G. Birkl","A. Minguzzi","C. Miniatura","L. -C. Kwek","D. Aghamalyan","V. Ahufinger","D. Anderson","N. Andrei","A. S. Arnold","M. Baker","T. A. Bell","T. Bland","J. P. Brantut","D. Cassettari","W. J. Chetcuti","F. Chevy","R. Citro","S. De Palo","R. Dumke","M. Edwards","R. Folman","J. Fortagh","S. A. Gardiner","B. M. Garraway","G. Gauthier","A. Günther","T. Haug","C. Hufnagel","M. Keil","W. von Klitzing","P. Ireland","M. Lebrat","W. Li","L. Longchambon","J. Mompart","O. Morsch","P. Naldesi","T. W. Neely","M. Olshanii","E. Orignac","S. Pandey","A. Pérez-Obiol","H. Perrin","L. Piroli","J. Polo","A. L. Pritchard","N. P. Proukakis","C. Rylands","H. Rubinsztein-Dunlop","F. Scazza","S. Stringari","F. Tosto","A. Trombettoni","N. Victorin","D. Wilkowski","K. Xhani","A. Yakimenko"]},{"y":2020,"t":"Tools for quantum simulation with ultracold atoms in optical lattices","u":"https://doi.org/10.1038/s42254-020-0195-3","j":"Nature Reviews Physics","c":473,"cat":"B","au":["Florian Schäfer","Takeshi Fukuhara","Seiji Sugawa","Yosuke Takasu","Yoshiro Takahashi"],"ai":"Kyoto University"},{"y":2020,"t":"Quantum equilibration, thermalization and prethermalization in ultracold atoms","u":"https://doi.org/10.1038/s42254-020-0237-x","j":"Nature Reviews Physics","c":151,"cat":"A","au":["Masahito Ueda"],"ai":"The University of Tokyo"},{"y":2020,"t":"New states of matter with fine-tuned interactions: quantum droplets and dipolar supersolids","u":"https://doi.org/10.1088/1361-6633/abc9ab","j":"Reports on Progress in Physics","c":239,"cat":"A","au":["Fabian Böttcher","Jan-Niklas Schmidt","Jens Hertkorn","Kevin S H Ng","Sean D Graham","Mingyang Guo","Tim Langen","Tilman Pfau"],"ai":"University of Stuttgart"},{"y":2020,"t":"Controlling the interaction of ultracold alkaline-earth atoms","u":"https://doi.org/10.1038/s42254-020-0157-9","j":"Nature Reviews Physics","c":37,"cat":"A","au":["Ren Zhang","Yanting Cheng","Peng Zhang","Hui Zhai"],"ai":"Xi'an Jiaotong University"},{"y":2020,"t":"Overview of Rb Atomic Clocks and the Space Specifications","u":"https://doi.org/10.1142/9789813279490_0002","j":"Rubidium Atomic Clock","c":1,"cat":"D"},{"y":2020,"t":"Quantum computing with neutral atoms","u":"https://doi.org/10.22331/q-2020-09-21-327","j":"Quantum","c":551,"cat":"C","au":["Loïc Henriet","Lucas Béguin","Adrien Signoles","Thierry Lahaye","Antoine Browaeys","G. Reymond","Christophe Jurczak"],"ai":"Pasqal (France)"},{"y":2020,"t":"A concise review of Rydberg atom based quantum computation and quantum simulation","u":"http://arxiv.org/abs/2012.10614v2","j":"arXiv","c":0,"cat":"C","src":"pre","au":["Xiaoling Wu","Xinhui Liang","Yaoqi Tian","Fan Yang","Cheng Chen","Yong-Chun Liu","Meng Khoon Tey","Li You"]},{"y":2021,"t":"A trapped ion atomic clock in space","u":"https://doi.org/10.1038/s42254-021-00342-1","j":"Nature Reviews Physics","c":2,"cat":"H","au":["Iulia Georgescu"]},{"y":2021,"t":"Progress towards a neutral atom quantum computer","u":"https://doi.org/10.1117/12.2603522","j":"Photonics for Quantum","c":0,"cat":"C","au":["Jonathan P. King"],"ai":"Atom Computing (United States)"},{"y":2021,"t":"Advances in Atomtronics","u":"https://doi.org/10.3390/e23050534","j":"Entropy","c":8,"cat":"A","au":["Ron Pepino"],"ai":"Florida Southern College"},{"y":2021,"t":"RF dressing with two-component fermions in optical lattices","u":"https://doi.org/10.1038/s42254-021-00366-7","j":"Nature Reviews Physics","c":1,"cat":"B","au":["Sebastian Scherg"],"ai":"Max Planck Institute of Quantum Optics"},{"y":2021,"t":"Quantum simulation and computing with Rydberg-interacting qubits","u":"https://doi.org/10.1116/5.0036562","j":"AVS Quantum Science","c":366,"cat":"C","au":["M. Morgado","S. Whitlock"],"ai":"Centre National de la Recherche Scientifique"},{"y":2021,"t":"Review of quantum simulation based on Rydberg many-body system","u":"https://doi.org/10.1088/1674-1056/abd744","j":"Chinese Physics B","c":7,"cat":"C","au":["Zheng-Yuan Zhang","Dong-Sheng Ding","Bao‐Sen Shi"],"ai":"University of Science and Technology of China"},{"y":2022,"t":"Monte Carlo methods for impurity physics in ultracold Bose quantum gases","u":"https://doi.org/10.1038/s42254-022-00443-5","j":"Nature Reviews Physics","c":8,"cat":"A","au":["Luis A. Peña Ardila"],"ai":"Leibniz University Hannover"},{"y":2022,"t":"Dipolar physics: a review of experiments with magnetic quantum gases","u":"https://doi.org/10.1088/1361-6633/aca814","j":"Reports on Progress in Physics","c":391,"cat":"A","au":["Lauriane Chomaz","Igor Ferrier-Barbut","Francesca Ferlaino","B. Laburthe-Tolra","Benjamin Lev","Tilman Pfau"],"ai":"Universität Innsbruck"},{"y":2022,"t":"Invited Review: Micro-fabricated components for cold atom sensors","u":"http://arxiv.org/abs/2208.00680v1","j":"arXiv","c":0,"cat":"G","src":"pre","au":["J. P. McGilligan","K. Gallacher","P. F. Griffin","D. J. Paul","A. S. Arnold","E. Riis"]},{"y":2022,"t":"New trends in quantum integrability: recent experiments with ultracold atoms","u":"https://doi.org/10.1088/1361-6633/ac95a9","j":"Reports on Progress in Physics","c":35,"cat":"A","au":["Xi-Wen Guan","Peng He"],"ai":"Australian National University"},{"y":2022,"t":"Colloquium : Atomtronic circuits: From many-body physics to quantum technologies","u":"https://doi.org/10.1103/revmodphys.94.041001","j":"Reviews of Modern Physics","c":156,"cat":"A","au":["Luigi Amico A","Dana Anderson","M. G. Boshier","Jean-Philippe Brantut","L. C. Kwek","Anna Minguzzi","Wolf von Klitzing"]},{"y":2022,"t":"Stabilizing Gauge Theories in Quantum Simulators: A Brief Review","u":"http://arxiv.org/abs/2204.13709v1","j":"arXiv","c":0,"cat":"A","src":"pre","au":["Jad C. Halimeh","Philipp Hauke"]},{"y":2023,"t":"Supersolidity in ultracold dipolar gases","u":"https://doi.org/10.1038/s42254-023-00648-2","j":"Nature Reviews Physics","c":63,"cat":"A","au":["Alessio Recati","S. Stringari"],"ai":"University of Trento"},{"y":2023,"t":"Low-dimensional quantum gases in curved geometries","u":"https://doi.org/10.1038/s42254-023-00591-2","j":"Nature Reviews Physics","c":40,"cat":"A","au":["Andrea Tononi","Luca Salasnich"],"ai":"Centre National de la Recherche Scientifique"},{"y":2023,"t":"Quantum sensing of microwave electric fields based on Rydberg atoms","u":"https://doi.org/10.1088/1361-6633/acf22f","j":"Reports on Progress in Physics","c":100,"cat":"D","au":["Jinpeng Yuan","Wenguang Yang","Mingyong Jing","Hao Zhang","Yuechun Jiao","Weibin Li","Linjie Zhang","Liantuan Xiao","Suotang Jia"],"ai":"Shanxi University"},{"y":2023,"t":"Neutral atom quantum computing hardware: performance and end-user perspective","u":"https://doi.org/10.1140/epjqt/s40507-023-00190-1","j":"EPJ Quantum Technology","c":125,"cat":"C","au":["Karen Wintersperger","Florian Dommert","Thomas Ehmer","Andrey Hoursanov","Johannes Klepsch","Wolfgang Mauerer","Georg Reuber","Thomas Strohm","Ming Yin","Sebastian Markus Luber"],"ai":"Siemens (Germany)"},{"y":2023,"t":"Review and experimental benchmarking of machine learning algorithms for efficient optimization of cold atom experiments","u":"http://arxiv.org/abs/2312.13397v1","j":"arXiv","c":0,"cat":"G","src":"pre","au":["Oliver Anton","Victoria A. Henderson","Elisa Da Ros","Ivan Sekulic","Sven Burger","Philipp-Immanuel Schneider","Markus Krutzik"]},{"y":2023,"t":"A century of matter waves","u":"https://doi.org/10.1038/s42254-023-00592-1","j":"Nature Reviews Physics","c":2,"cat":"H","au":["Alison Wright"]},{"y":2023,"t":"Colloquium : Anomalous statistics of laser-cooled atoms in dissipative optical lattices","u":"https://doi.org/10.1103/revmodphys.95.031003","j":"Reviews of Modern Physics","c":33,"cat":"B","au":["Gadi Afek","Nir Davidson","David A. Kessler","Eli Barkai"]},{"y":2024,"t":"Advancements towards fault-tolerant quantum computing with neutral atoms","u":"https://doi.org/10.1117/12.3021792","j":"Quantum Information Science, Sensing, and Computation XVI","c":0,"cat":"C","au":["Benjamin Bloom"],"ai":"Atom Computing (United States)"},{"y":2024,"t":"Emergent U(1) lattice gauge theory in Rydberg atom arrays","u":"https://doi.org/10.1038/s42254-024-00749-6","j":"Nature Reviews Physics","c":37,"cat":"B","au":["Yanting Cheng","Hui Zhai"],"ai":"Institute of Theoretical Physics"},{"y":2024,"t":"Rydberg states of alkali atoms in atomic vapour as SI-traceable field probes and communications receivers","u":"https://doi.org/10.1038/s42254-024-00756-7","j":"Nature Reviews Physics","c":106,"cat":"D","au":["Noah Schlossberger","Nikunjkumar Prajapati","Samuel Berweger","Andrew P. Rotunno","Alexandra B. Artusio‐Glimpse","Matthew T. Simons","Abrar A. Sheikh","Eric B. Norrgard","Stephen Eckel","Christopher L. Holloway"],"ai":"National Institute of Standards and Technology"},{"y":2024,"t":"Continuously tunable single-photon level nonlinearity with Rydberg state wave-function engineering","u":"https://doi.org/10.1088/1361-6633/ad847e","j":"Reports on Progress in Physics","c":7,"cat":"E","au":["Biao Xu","Gen-Sheng Ye","Yue Chang","Tao Shi","Lin Li"],"ai":"Huazhong University of Science and Technology"},{"y":2024,"t":"Quantum mixtures of ultracold gases of neutral atoms","u":"https://doi.org/10.1038/s42254-024-00773-6","j":"Nature Reviews Physics","c":58,"cat":"A","au":["Cosetta Baroni","Giacomo Lamporesi","Matteo Zaccanti"],"ai":"Austrian Academy of Sciences"},{"y":2025,"t":"Impurities and polarons in bosonic quantum gases: a review on recent progress","u":"https://doi.org/10.1088/1361-6633/add94b","j":"Reports on Progress in Physics","c":43,"cat":"A","au":["Fabian Grusdt","Nader Mostaan","Eugene Demler","Luis A. Peña Ardila"],"ai":"Munich Center for Quantum Science and Technology"},{"y":2025,"t":"Progress in prospects in quantum computing with ultracold neutral atoms","u":"https://doi.org/10.15862/83mnnpk25.01","j":"LaserPhys Youth School-Conference","c":0,"cat":"C","au":["Ilya I. Beterov"]},{"y":2025,"t":"Bayesian frequency metrology with optimal Ramsey interferometry in optical atomic clocks","u":"https://doi.org/10.1088/1361-6633/ae213d","j":"Reports on Progress in Physics","c":1,"cat":"D","au":["Timm Kielinski","Klemens Hammerer"],"ai":"Leibniz University Hannover"},{"y":2026,"t":"Colloquium : Strongly dipolar molecular Bose-Einstein condensates: From few- to many-body physics","u":"https://doi.org/10.1103/r55l-f93m","j":"Reviews of Modern Physics","c":2,"cat":"F","au":["Andreas Schindewolf","Jens Hertkorn","Ian Stevenson","Matteo Ciardi","Peter Groß","Dajun Wang","Tijs Karman","Goulven Quéméner","Sebastian Will","Thomas Pohl","Tim Langen"],"ai":"TU Wien"},{"y":2026,"t":"Ultracold atomic lattice systems for simulating topological phases: A review","u":"http://arxiv.org/abs/2606.16598v2","j":"arXiv","c":0,"cat":"B","src":"pre","au":["Bei-Bei Wang","Xiao-Dong Lin","Jinyi Zhang","Long Zhang"]},{"y":2026,"t":"Orbital-resolved three-body recombination across a p -wave Feshbach resonance in ultracold 6 Li","u":"https://doi.org/10.1088/1361-6633/ae413a","j":"Reports on Progress in Physics","c":3,"cat":"F","au":["Shaokun Liu","Z. P. Xu","Shuai Peng","Sijia Peng","Tangqian Shu","Jiaming Li","Le Luo"],"ai":"Sun Yat-sen University"},{"y":2026,"t":"Recent advances in Ultralong-range Rydberg molecules","u":"http://arxiv.org/abs/2603.09091v1","j":"arXiv","c":0,"cat":"C","src":"pre","au":["Jingxu Bai","Yuechun Jiao","Xiao-Qiang Shao","Weibin Li","Jianming Zhao"]},{"y":2026,"t":"Neutral Atom Quantum Computing: Principles, Routes, Progress, and Challenges","u":"http://arxiv.org/abs/2608.05010v2","j":"arXiv","c":0,"cat":"C","src":"pre","au":["Junchao Wang","Zeyuan Wang","Lei Li","Feng Wang","Shibo Liang","Keduo Yan"]},{"y":2026,"t":"Rydberg Atomic Quantum Radio: A Comprehensive Survey From Wireless Communication Perspective","u":"http://arxiv.org/abs/2607.05931v2","j":"arXiv","c":0,"cat":"D","src":"pre","au":["Yiyue Xiang","Neng Ye","Qihao Peng","Junrui Zhao","Qu Luo","Kai Yang","Jianping An","Pei Xiao"]},{"y":2026,"t":"Quantum simulation via synthetic dimension approach with cold atoms: A brief review","u":"https://doi.org/10.1016/j.qrl.2026.05.002","j":"Quantum Review Letters","c":0,"cat":"A","au":["Kaixuan Ren","Z K Li","Bo Yan","Tao Chen"],"ai":"Xi'an Jiaotong University"},{"y":2007,"t":"Ultracold atomic gases in optical lattices: mimicking condensed matter physics and beyond","u":"https://doi.org/10.1080/00018730701223200","j":"Advances in Physics","c":1899,"cat":"B","au":["Maciej Lewenstein","Anna Sanpera","V. Ahufinger","Bogdan Damski","Aditi Sen","Ujjwal Sen"],"ai":"Institució Catalana de Recerca i Estudis Avançats"},{"y":2012,"t":"Quantum simulations with ultracold quantum gases","u":"https://doi.org/10.1038/nphys2259","j":"Nature Physics","c":2104,"cat":"A","au":["Immanuel Bloch","Jean Dalibard","Sylvain Nascimbène"],"ai":"Max Planck Institute of Quantum Optics"},{"y":2017,"t":"Quantum simulations with ultracold atoms in optical lattices","u":"https://doi.org/10.1126/science.aal3837","j":"Science","c":1434,"cat":"B","au":["Christian Groß","Immanuel Bloch"],"ai":"Max Planck Institute of Quantum Optics"},{"y":2017,"t":"Cold molecules: Progress in quantum engineering of chemistry and quantum matter","u":"https://doi.org/10.1126/science.aam6299","j":"Science","c":451,"cat":"F","au":["John L. Bohn","Ana María Rey","Jun Ye"],"ai":"National Institute of Standards and Technology"},{"y":2016,"t":"Experimental investigations of dipole–dipole interactions between a few Rydberg atoms","u":"https://doi.org/10.1088/0953-4075/49/15/152001","j":"Journal of Physics B","c":257,"cat":"C","au":["Antoine Browaeys","Daniel Barredo","Thierry Lahaye"],"ai":"Université Paris-Sud"},{"y":2021,"t":"量子微波及其接收方法综述","u":"https://doi.org/10.3788/jqo20212703.1001","j":"量子光学学报","c":null,"cat":"D","src":"cn","au":["粟栗 Li SU","周子恒 Zi-heng ZHOU","徐忻怡 Xin-yi XU","李曙光 Shu-guang LI","延英 Ying YAN"]},{"y":2026,"t":"里德伯原子量子接收机：进展、挑战与前瞻","u":"https://doi.org/10.3788/lop252394","j":"激光与光电子学进展","c":null,"cat":"D","src":"cn","au":["高伟超 Gao Weichao","吴金云 Wu Jinyun","程佩芸 Cheng Peiyun","李福全 Li Fuquan","张昊 Zhang Hao","张引发 Zhang Yinfa","杨剑 Yang Jian"]},{"y":2023,"t":"基于里德堡原子的无线电光学测量及其光谱处理技术（特邀）","u":"https://doi.org/10.3788/irla20230264","j":"红外与激光工程","c":null,"cat":"D","src":"cn","au":["吴金云 Wu Jinyun","杨剑 Yang Jian","高伟超 Gao Weichao","张引发 Zhang Yinfa"]},{"y":2026,"t":"基于里德堡原子的电磁测向技术研究进展","u":"https://doi.org/10.3788/lop252534","j":"激光与光电子学进展","c":null,"cat":"D","src":"cn","au":["胡星辰 Hu Xingchen","高勇 Gao Yong","刘沛城 Liu Peicheng","孙承熙 Sun Chengxi","张雨溪 Zhang Yuxi","李书锦 Li Shujin","王紫凡 Wang Zifan","王祎涵 Wang Yihan","吴昊 Wu Hao","任元 Ren Yuan"]},{"y":2026,"t":"里德堡原子电场测量与辐射计量新应用","u":"https://doi.org/10.3788/lop251511","j":"激光与光电子学进展","c":null,"cat":"D","src":"cn","au":["雷竞宇 Lei Jingyu","史俊 Shi Jun","何杰颖 He Jieying"]},{"y":2023,"t":"基于里德堡原子的无线电波测量","u":"https://doi.org/10.3788/lop230703","j":"激光与光电子学进展","c":null,"cat":"D","src":"cn","au":["郝赫 Hao He","寇军 Kou Jun","洪玄淼 Hong Xuanmiao","杜石桥 Du Shiqiao","黄媛媛 HUANG Yuan-yuan","秦国卿 Qin Guoqing","马骏超 Ma Junchao","史展 Shi Zhan","吴同 Wu Tong","张梦 Zhang Meng","高红卫 GAO Hong-wei","李贵兰 LI Gui-lan"]},{"y":2023,"t":"里德堡分子物理的研究进展","u":"https://doi.org/10.3788/jqo20232901.0002","j":"量子光学学报","c":null,"cat":"F","src":"cn","au":["郭淑荣 Shu-rong GUO","韩小萱 Xiao-xuan HAN","彭鹏 Peng PENG","乔笑斐 Xiao-fei QIAO"]},{"y":2019,"t":"Review of one-dimensional few-body systems in ultracold atomic physics","u":"https://doi.org/10.7498/aps.68.20181993","j":"物理学报","c":null,"cat":"F","src":"cn","au":["Yanxia Liu","Yunbo Zhang"]},{"y":2024,"t":"中国光学十大进展：超冷中性原子光钟及其量子参考体系囚禁方案（特邀）","u":"https://doi.org/10.3788/lop232669","j":"激光与光电子学进展","c":null,"cat":"D","src":"cn","au":["周彦桦 Zhou Yanhua","Hong Chang","汪涛 Wang Tao"]},{"y":2023,"t":"基于原子系综的相敏四波混频过程及其应用","u":"https://doi.org/10.3788/jqo20232902.0001","j":"量子光学学报","c":null,"cat":"E","src":"cn","au":["徐笑吟 Xiao-yin XU","刘胜帅 Sheng-shuai LIU","荆杰泰 Jie-tai JING"]},{"y":2025,"t":"Quantum Computer Using Neutral Atoms（日文）","u":"https://doi.org/10.1380/vss.68.167","j":"Vacuum and Surface Science","c":null,"cat":"C","src":"cn","au":["Shuta NAKAJIMA"],"ai":"Center for Quantum Information and Quantum Biology, The University of Osaka"},{"y":2008,"t":"Bose–Einstein Condensates in Disordered Potentials","u":"https://doi.org/10.1016/s1049-250x(08)00012-8","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"A","src":"book","au":["L. Fallani","C. Fort","M. Inguscio"],"ai":"European Laboratory for Non-Linear Spectroscopy"},{"y":2012,"t":"Engineered Open Systems and Quantum Simulations with Atoms and Ions","u":"https://doi.org/10.1016/b978-0-12-396482-3.00001-6","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"A","src":"book","au":["Markus Müller","Sebastian Diehl","Guido Pupillo","P. Zoller"],"ai":"Universidad Complutense de Madrid"},{"y":2022,"t":"Ultracold ion-atom experiments: cooling, chemistry, and quantum effects","u":"https://doi.org/10.1016/bs.aamop.2022.05.002","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"F","src":"book","au":["Rianne S. Lous","R. Gerritsma"],"ai":"Institute of Physics"},{"y":2023,"t":"Super- and subradiance in dilute disordered cold atomic samples: observations and interpretations","u":"https://doi.org/10.1016/bs.aamop.2023.04.002","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"E","src":"book","au":["William Guerin"],"ai":"Centre National de la Recherche Scientifique"},{"y":2023,"t":"Broadband quantum memory in atomic ensembles","u":"https://doi.org/10.1016/bs.aamop.2023.04.001","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"E","src":"book","au":["Kai Shinbrough","Donny R. Pearson","Bin Fang","Elizabeth A. Goldschmidt","Virginia O. Lorenz"],"ai":"University of Illinois Urbana-Champaign"},{"y":2008,"t":"Optical Trapping Takes Shape: The Use of Structured Light Fields","u":"https://doi.org/10.1016/s1049-250x(08)00015-3","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"G","src":"book","au":["Kishan Dholakia","Woei Ming Lee"],"ai":"University of St Andrews"},{"y":2012,"t":"Kilohertz-Driven Bose–Einstein Condensates in Optical Lattices","u":"https://doi.org/10.1016/b978-0-12-396482-3.00010-7","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"B","src":"book","au":["E. Arimondo","D. Ciampini","André Eckardt","Martin Holthaus","O. Morsch"],"ai":"University of Pisa"},{"y":2011,"t":"Accurate Evaluation of Parameters of Optical Lattice Clocks","u":"https://doi.org/10.1016/b978-0-12-385508-4.00009-7","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"D","src":"book","au":["Andrei Derevianko","S. G. Porsev"],"ai":"University of Nevada, Reno"},{"y":2010,"t":"Advances in Coherent Population Trapping for Atomic Clocks","u":"https://doi.org/10.1016/s1049-250x(10)59002-5","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"D","src":"book","au":["Vishal Shah","John E. Kitching"]},{"y":2013,"t":"Shortcuts to Adiabaticity","u":"https://doi.org/10.1016/b978-0-12-408090-4.00002-5","j":"Advances in Atomic, Molecular, and Optical Physics","c":null,"cat":"H","src":"book","au":["E. Torrontegui","Sara Ibañez","S. Martínez-Garaot","Michele Modugno","Adolfo del Campo","David Guéry-Odelin","Andreas Ruschhaupt","Xi Chen","Juan Gonzalo Muga"],"ai":"University of the Basque Country"}]</script>
+<script>
+const RAW = JSON.parse(document.getElementById("rawdata").textContent);
+
+const CATS = {
+  A:{n:"A 系综 / 体量子气体", d:"BEC、简并费米气、偶极气体、自旋、规范场、多体动力学。特征：一个宏观系综共享同一外场，整体读一个信号。"},
+  B:{n:"B 光晶格", d:"周期性势场装载、Hubbard 模型、量子气体显微镜、拓扑带。介于系综与阵列之间，可做到单格点分辨。"},
+  C:{n:"C 单原子阵列 / 光镊 / 里德堡", d:"光镊捕获单个原子、阵列重排、里德堡阻塞门、中性原子量子计算与模拟、擦除纠错。特征：每个原子是一个可单独寻址的比特。"},
+  D:{n:"D 精密测量 / 时钟 / 干涉", d:"光钟、原子干涉仪、重力仪、里德堡电场与微波传感、基本常数检验。"},
+  E:{n:"E 腔 QED 与光-原子界面", d:"腔模耦合、光子纠缠、量子网络、量子存储、EIT 与慢光。"},
+  F:{n:"F 冷分子 / 少体 / 碰撞", d:"超冷分子、Feshbach 共振、光缔合、Efimov 少体、冷碰撞与离子-原子混合。"},
+  G:{n:"G 冷却与操控技术", d:"激光冷却、蒸发冷却、磁阱与光阱、单原子成像装置、微加工与器件。"},
+  H:{n:"H 路线图 / 方法学 / 社区报告", d:"路线图、可信任性讨论、绝热捷径等方法学、战略综述。"}
+};
+
+const FACETS = [
+  {id:"tweez", n:"光镊 / 单原子", re:/tweezer|optical trap|single atom|single-atom|individually controlled|structured light|dipole trap|optical nanofib/i},
+  {id:"arr",   n:"阵列 / 比特",   re:/array|rearrang|assembl|neutral atom|neutral-atom|individually controlled|atom qubit|atomic qubit|quantum comput/i},
+  {id:"ryd",   n:"里德堡 / 阻塞", re:/rydberg|blockade|dressing/i},
+  {id:"img",   n:"成像与读出",   re:/imag|microscop|detection|readout|spectroscop/i},
+  {id:"ec",    n:"纠错 / 容错",   re:/error correction|fault|logical|erasure|surface code|repeater/i},
+  {id:"lat",   n:"光晶格 / Hubbard", re:/lattice|hubbard|band/i},
+  {id:"cool",  n:"冷却与囚禁",   re:/cool|magneto-optical|evaporat|trap/i},
+  {id:"met",   n:"测量 / 时钟",   re:/clock|metrolog|interferomet|sensor|frequency|electric field|micro ?wave|radio|field probe/i},
+  {id:"mol",   n:"分子 / 碰撞",   re:/molecul|feshbach|collision|efimov|few-body|photoassoc|chemistry/i},
+  {id:"mb",    n:"多体 / 模拟",   re:/many-body|many body|condensate|fermi|superfluid|quantum gas|simulat|polaron|droplet|supersolid/i},
+  {id:"top",   n:"规范场 / 拓扑", re:/gauge|topolog|spin-orbit|synthetic dimension|artificial/i},
+  {id:"cav",   n:"腔 / 光-原子",  re:/cavity|photon|light-matter|eit|slow light|quantum memory|quantum interface|superradiance|subradiance/i}
+];
+
+const SRC = {j:"期刊综述", cn:"中文期刊", book:"专著章节", pre:"arXiv 预印本", new:"期刊综述"};
+
+function esc(s){return (s||"").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function srcOf(e){ if(e.src) return e.src==="new"?"j":e.src; return /arxiv\.org/.test(e.u)?"pre":"j"; }
+function facetsOf(e){
+  const t=e.t+" "+e.j; const out=[];
+  for(const f of FACETS){ if(f.re.test(t)) out.push(f.id); }
+  return out;
+}
+const DATA = RAW.map((e,i)=>({id:i, ...e, src:srcOf(e), f:facetsOf(e)}));
+
+const state = {q:"", cats:new Set(), facs:new Set(), srcs:new Set(), sort:"c"};
+
+function active(){
+  const q=state.q.trim().toLowerCase();
+  return DATA.filter(e=>{
+    if(state.cats.size && !state.cats.has(e.cat)) return false;
+    if(state.srcs.size && !state.srcs.has(e.src)) return false;
+    if(state.facs.size){ for(const f of state.facs) if(!e.f.includes(f)) return false; }
+    if(q && !((e.t+" "+e.j).toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+function sortRows(rows){
+  const s=state.sort; const arr=rows.slice();
+  if(s==="c") arr.sort((a,b)=>(b.c??-1)-(a.c??-1));
+  else if(s==="yd") arr.sort((a,b)=>b.y-a.y||((b.c??-1)-(a.c??-1)));
+  else if(s==="ya") arr.sort((a,b)=>a.y-b.y||((b.c??-1)-(a.c??-1)));
+  else arr.sort((a,b)=>a.t.localeCompare(b.t,"en"));
+  return arr;
+}
+function citeTd(c){ return c===null||c===undefined? '<td class="cc" style="color:#a8b2bd;font-weight:400">—</td>' : '<td class="cc">'+c+'</td>'; }
+
+function fmtAu(a){
+  if(!a||!a.length) return "";
+  if(a.length<=3) return a.join("、");
+  return a[0]+" 等 "+a.length+" 人";
+}
+function auHtml(e){
+  if(!e.au||!e.au.length) return "";
+  return '<div class="au" title="'+esc(e.au.join("; "))+'">'+esc(fmtAu(e.au))
+    + (e.ai? '　·　'+esc(e.ai) : '') + '</div>';
+}
+function rowHtml(e){
+  const chips = e.f.map(f=>'<span>'+FACETS.find(x=>x.id===f).n+'</span>').join("")
+    + (e.src==="cn"?'<span class="cn">中文</span>':"")
+    + (e.src==="book"?'<span class="bk">专著章节</span>':"")
+    + (e.src==="pre"?'<span class="pv">arXiv</span>':"");
+  return '<tr><td class="yy">'+e.y+'</td><td><a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t)+'</a>'
+    + auHtml(e)
+    + '<div class="fx">'+chips+'</div></td><td class="jj">'+esc(e.j)+'</td>'+citeTd(e.c)+'</tr>';
+}
+function tableHtml(rows){
+  return '<table><thead><tr><th>年份</th><th>标题 / 技术要素</th><th>出处</th><th style="text-align:right">引用</th></tr></thead><tbody>'
+    + rows.map(rowHtml).join("") + '</tbody></table>';
+}
+
+function methodHtml(){
+  return `
+<h2 id="method">检索方法、数据口径与已知边界</h2>
+<div class="note" style="border-left-color:#0b6fa8;background:#f4f9fd">
+<b>一句话口径：</b>引用数为 Crossref 的 <code>is-referenced-by-count</code>，与 Google Scholar 不是一套数，只能用来排序、不能跨库比大小。所有条目都来自 Crossref 或 arXiv 的返回值，没有一条是凭印象补的。
+</div>
+<h3 id="tips">怎么用这份表</h3>
+<p class="lead">三种典型用法——查某个方向的起点，用「技术要素」筛一下再按引用排序；查最近两年的东西，把排序切到「年份（新→旧）」；查某一类实验形态的全貌，直接点目录里的 A–H。</p>
+
+<h3>数据是怎么来的</h3>
+<p class="lead" style="font-size:13.2px">
+<b>作者与单位字段</b>：全部来自 OpenAlex 的 <code>authorships</code>（按 DOI 批量匹配，121 条）＋ DataCite 的 arXiv DOI <code>10.48550/arXiv.*</code>（17 条）＋ Crossref（1 条）。表里默认显示前三位作者，超过三位显示「第一作者 等 N 人」，鼠标悬停可看全名单；作者行末尾是<b>第一作者单位</b>，用来快速判断是哪个组。第 139 条（World Scientific 的 Rb 原子钟章节）Crossref 与 DataCite 都没有作者字段，留空，不是漏抓。
+</p>
+<p class="lead" style="font-size:13.2px">
+① 按 ISSN 全量抓取三本综述主刊 2000 年后的全部条目：Reviews of Modern Physics 1076 条、Reports on Progress in Physics 1534 条、Nature Reviews Physics 998 条。<br>
+② 按 20 组专题词抓各刊专题综述，并用 arXiv API 补「里德堡阵列 / 中性原子量子计算」这类先在预印本成型的新方向。<br>
+③ 按冷原子相关性白名单过滤，剔除同词误命中（核物理、凝聚态、生物光镊、激光冷却固体）。<br>
+④ 只保留综述期刊全集，或标题含 review / progress / colloquium / roadmap 者；预印本按是否自述为综述判断。<br>
+⑤ 人工补齐标志性综述，并对每一条做 DOI 存在性核对。<br>
+<b>漏斗：原始候选 3917 条 → 冷原子相关 199 条 → 严格综述口径 129 条（v1）→ 剔除 16 条同词噪声、新增 26 条 → 139 条（v2）。</b>
+</p>
+
+<h3>v2 这一轮的通道变化（重要）</h3>
+<p class="lead" style="font-size:13.2px">
+上一版是本机 pwsh 直连外网抓的；<b>本轮该通道已断（TCP 连接被拒，curl 返回 000）</b>，改走 harness 的抓取通道直连 <code>api.crossref.org</code>，能稳定返回 200。代价是单次只能取一个 URL，所以本轮补数据是「按刊按词逐条取」，不是全库扫描。
+</p>
+
+<h3>已知边界，说在前面</h3>
+<div class="note">
+<b>① Nature / Science 的短篇综述，这条通道分不干净。</b>Crossref 不提供栏目类型字段，Review Article 和 News & Views 在元数据里都记成 journal-article。本轮只收了能反证的：Science 那两篇是靠它的勘误条目写着 “Erratum for the <b>Review</b> … by C. Gross and I. Bloch” 确认的。其余同类短文会漏，要补只能逐个 DOI 进页面看栏目。<br>
+<b>② 中文综述只覆盖了一部分。</b>Crossref 里《物理学报》多数条目只存英文题名、中文题名覆盖不全，用「综述」检索会大面积漏；CNKI / 万方 / 维普不在可及范围。本轮实收到 11 篇，集中在里德堡传感这条线上——这本身也是个信号：国内中文综述的产出重心在里德堡电场/微波测量，不在阵列门。<br>
+<b>③ 专著章节只收了 AAMOP 一个系列。</b>《Annual Review of Cold Atoms and Molecules》的单章、《Ultracold Atoms in Optical Lattices》这类专著里的章节没有系统收全。<br>
+<b>④ arXiv 依赖标题含 review 类词。</b>把教程式长文（比如某些组的实验方法长文）当综述，会漏；反过来，标题里带 review 但其实是研究论文的，会被误收，已尽量在剔除表里清掉。
+</div>
+`;
+}
+
+function logHtml(){
+  const killed = [
+    ["Laser cooling in solids / Laser cooling in solids: advances and prospects", "固体光学制冷，不是冷原子"],
+    ["Fröhlich polaron and bipolaron: recent developments", "凝聚态极化子理论"],
+    ["Bose-Einstein condensation in quantum magnets", "磁性材料，非冷原子"],
+    ["Exciton-polariton Bose-Einstein condensation", "半导体激子极化激元"],
+    ["Dipolar many-body complexes in stacked 2D heterobilayers", "二维材料，非冷原子"],
+    ["Ultrafast magneto-optical measurements … magnon–phonon", "纳米磁体，与冷原子无关"],
+    ["Polarons from first principles", "第一性原理计算，非冷原子"],
+    ["Understanding polaronic transport in complex oxides", "复杂氧化物输运"],
+    ["Author Correction: Taking atom interferometric quantum sensors …", "上一条的更正条目，重复"],
+    ["Chip-Scale Atomic Clock — [Book Review]", "书评，不是综述"],
+    ["BOOKS: “Annual Review of Cold Atoms and Molecules” … Reviewed by", "书评条目"],
+    ["Ticking toward an advanced atomic clock（Scilight）", "期刊新闻短讯"],
+    ["Holdover atomic clock landscape review", "工业守时设备报告"],
+    ["Spaceborne atomic clock performance review of BDS-3", "北斗卫星工程性能，非冷原子"],
+    ["Indium tin oxide films meet circular Rydberg atoms", "研究提案，不是综述"]
+  ];
+  let t = '<h2 id="log">修订记录（v1 → v2）</h2>';
+  t += '<p class="lead">v1 是 129 条；v2 是 139 条。不是简单加 10 条，而是「剔 16、补 26」。</p>';
+  t += '<h3>新增的 26 条，分三块</h3>';
+  t += '<p class="lead" style="font-size:13.2px">'
+     + '<b>标杆综述 5 篇</b>：Bloch/Dalibard/Nascimbène 2012 Nature Physics（2104 引）、Lewenstein 2007 Advances in Physics（1899 引）、Gross &amp; Bloch 2017 Science（1434 引）、Bohn/Rey/Ye 2017 Science 冷分子（451 引）、Browaeys/Barredo/Lahaye 2016 J. Phys. B 少体里德堡（257 引）。这五篇是 v1 真缺的。</p>'
+     + '<p class="lead" style="font-size:13.2px"><b>中文综述 11 篇</b>：来自《量子光学学报》《物理学报》《激光与光电子学进展》《红外与激光工程》，其中 6 篇是里德堡电场/微波/测向方向，1 篇里德堡分子，1 篇冷原子光钟，1 篇一维少体，1 篇原子系综四波混频，1 篇日文中性原子量子计算机短评。</p>'
+     + '<p class="lead" style="font-size:13.2px"><b>专著章节 10 篇</b>：AAMOP（Advances in Atomic, Molecular, and Optical Physics）系列，含无序势中的 BEC、离子-原子混合、超/亚辐射、宽带量子存储、结构光光阱、kHz 驱动晶格 BEC、光晶格钟参数、CPT 钟、绝热捷径。</p>';
+  t += '<h3>剔除的 16 条，逐条说明理由</h3>';
+  t += '<table><thead><tr><th>被剔除的条目</th><th>理由</th></tr></thead><tbody>'
+     + killed.map(k=>'<tr><td>'+(k[0])+'</td><td class="jj" style="width:220px">'+k[1]+'</td></tr>').join("")
+     + '</tbody></table>';
+  t += '<div class="note" style="margin-top:14px">这 16 条基本都是「关键词同词误命中」：<b>polaron</b>、<b>laser cooling</b>、<b>Bose-Einstein condensation</b>、<b>dipolar</b>、<b>Rydberg</b> 这几个词在凝聚态和材料里也高频出现。v1 靠规则初筛，没有逐条读题，因此带进来；v2 逐条核过并清掉。</div>';
+  return t;
+}
+
+
+function render(){
+  const rows = sortRows(active());
+  document.getElementById("count").textContent = "显示 " + rows.length + " / " + DATA.length + " 条";
+
+  let html = "";
+
+  // KPI
+  const withC = DATA.filter(e=>e.c!==null&&e.c!==undefined);
+  const top = withC.reduce((a,b)=>b.c>a.c?b:a, withC[0]);
+  const newest = DATA.reduce((a,b)=>b.y>a.y?b:a, DATA[0]);
+  document.getElementById("kpi").innerHTML = [
+    ["总数", DATA.length],
+    ["类别", Object.keys(CATS).length],
+    ["最高引用", top.c],
+    ["年份跨度", DATA.reduce((a,b)=>Math.min(a,b.y),9999) + "–" + newest.y]
+  ].map(([k,v])=>'<div class="kbox"><div class="v">'+esc(String(v))+'</div><div class="k">'+k+'</div></div>').join("");
+
+  // Top15 (unfiltered, always by cites)
+  const t15 = withC.slice().sort((a,b)=>b.c-a.c).slice(0,15);
+  html += '<h2 id="top15">必读：引用最高的 15 篇</h2>';
+  html += '<p class="lead">不论你怎么筛选，这一块恒定按 Crossref 引用数排序，用来回答「先从哪几篇读起」。</p>';
+  html += '<table><thead><tr><th>年份</th><th>标题</th><th>出处</th><th style="text-align:right">引用</th></tr></thead><tbody>'
+        + t15.map(e=>'<tr><td class="yy">'+e.y+'</td><td><a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t)+'</a>'+auHtml(e)+'</td><td class="jj">'+esc(e.j)+'</td>'+citeTd(e.c)+'</tr>').join("")
+        + '</tbody></table>';
+
+  // category sections（标题恒定渲染，筛选后仍可从目录跳转）
+  html += '<h2 id="cats-intro">按实验形态分八类</h2>';
+  for(const k of Object.keys(CATS)){
+    const rs = rows.filter(e=>e.cat===k);
+    const tot = DATA.filter(e=>e.cat===k).length;
+    html += '<h3 id="cat-'+k+'">'+CATS[k].n+' <span style="color:#8b96a3;font-weight:400;font-size:12.5px">· '+(rs.length===tot? tot+' 篇' : rs.length+' / '+tot+' 篇')+'</span></h3>';
+    html += '<p class="lead">'+CATS[k].d+'</p>';
+    html += rs.length ? tableHtml(rs) : '<div class="empty" style="padding:10px 0">当前筛选下这一类没有条目，点<a href="#toc">目录</a>或「清空筛选」。</div>';
+  }
+
+  // facet index
+  html += '<h2 id="facets">按技术要素交叉索引</h2>';
+  html += '<p class="lead">一篇综述常常同时属于多个要素，这里做的是多标签交叉索引——查实验细节时按这个找，比按类别找快。每格列出该要素下引用最高的 6 篇，点击上方按钮可筛选全表。</p>';
+  html += '<div class="grid">';
+  for(const f of FACETS){
+    const rs = DATA.filter(e=>e.f.includes(f));
+    if(!rs.length) continue;
+    const top6 = rs.slice().sort((a,b)=>(b.c??-1)-(a.c??-1)).slice(0,6);
+    html += '<div class="card"><div class="h"><span>'+f.n+'</span><em>'+rs.length+' 篇</em></div><ul>'
+      + top6.map(e=>'<li><a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t.length>70?e.t.slice(0,70)+"…":e.t)+'</a> <span style="color:#9aa5b1">'+e.y+'</span></li>').join("")
+      + '</ul></div>';
+  }
+  html += '</div>';
+
+  // year distribution
+  const bins = {};
+  DATA.forEach(e=>{ const b=Math.floor(e.y/5)*5; bins[b]=(bins[b]||0)+1; });
+  const keys = Object.keys(bins).map(Number).sort((a,b)=>a-b);
+  const maxb = Math.max(...keys.map(k=>bins[k]));
+  html += '<h2 id="years">时间分布</h2>';
+  html += '<p class="lead">按五年一档统计条目数。可以看出哪些方向是新近才成型的（右侧），哪些是 2000 年代就已经成熟的（左侧）。</p><div class="bars">';
+  for(const k of keys){
+    html += '<div class="bar"><div class="lab">'+k+'–'+(k+4)+'</div><div class="trk"><div class="fil" style="width:'+(100*bins[k]/maxb).toFixed(1)+'%"></div></div><div class="num">'+bins[k]+'</div></div>';
+  }
+  html += '</div>';
+
+  html += methodHtml();
+  html += logHtml();
+
+  document.getElementById("app").innerHTML = html;
+}
+
+function buildChips(){
+  const cRow=document.getElementById("catRow"), fRow=document.getElementById("facRow"), sRow=document.getElementById("srcRow");
+  [cRow,fRow,sRow].forEach(r=>r.querySelectorAll(".chip").forEach(x=>x.remove()));
+  const cntCat={}; DATA.forEach(e=>cntCat[e.cat]=(cntCat[e.cat]||0)+1);
+  for(const k of Object.keys(CATS)){
+    const b=document.createElement("button");
+    b.className="chip"; b.dataset.cat=k;
+    b.innerHTML = k+" <span class='n'>"+(cntCat[k]||0)+"</span>";
+    b.onclick=()=>{ state.cats.has(k)?state.cats.delete(k):state.cats.add(k); sync(); };
+    cRow.appendChild(b);
+  }
+  for(const f of FACETS){
+    const n=DATA.filter(e=>e.f.includes(f.id)).length;
+    if(!n) continue;
+    const b=document.createElement("button");
+    b.className="chip"; b.dataset.fac=f.id;
+    b.innerHTML = f.n+" <span class='n'>"+n+"</span>";
+    b.onclick=()=>{ state.facs.has(f.id)?state.facs.delete(f.id):state.facs.add(f.id); sync(); };
+    fRow.appendChild(b);
+  }
+  const srcCount={}; DATA.forEach(e=>srcCount[e.src]=(srcCount[e.src]||0)+1);
+  for(const k of ["j","cn","book","pre"]){
+    const b=document.createElement("button");
+    b.className="chip"; b.dataset.src=k;
+    b.innerHTML = SRC[k]+" <span class='n'>"+(srcCount[k]||0)+"</span>";
+    b.onclick=()=>{ state.srcs.has(k)?state.srcs.delete(k):state.srcs.add(k); sync(); };
+    sRow.appendChild(b);
+  }
+  const reset=document.createElement("button");
+  reset.className="chip"; reset.textContent="清空筛选"; reset.style.marginLeft="4px";
+  reset.onclick=()=>{ state.cats.clear(); state.facs.clear(); state.srcs.clear(); state.q=""; document.getElementById("q").value=""; sync(); };
+  sRow.appendChild(reset);
+}
+function sync(){
+  document.querySelectorAll("[data-cat]").forEach(b=>b.classList.toggle("on", state.cats.has(b.dataset.cat)));
+  document.querySelectorAll("[data-fac]").forEach(b=>b.classList.toggle("on", state.facs.has(b.dataset.fac)));
+  document.querySelectorAll("[data-src]").forEach(b=>b.classList.toggle("on", state.srcs.has(b.dataset.src)));
+  render();
+}
+
+document.getElementById("q").addEventListener("input", e=>{ state.q=e.target.value; render(); });
+document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; render(); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT"){ e.preventDefault(); document.getElementById("q").focus(); }
+  if(e.key==="Escape" && document.activeElement.id==="q"){ state.q=""; document.getElementById("q").value=""; render(); }
+});
+
+const upBtn = document.getElementById("up");
+window.addEventListener("scroll", ()=>{ upBtn.classList.toggle("on", window.scrollY > 620); }, {passive:true});
+
+buildChips();
+render();
+</script>
+</body>
+</html>
