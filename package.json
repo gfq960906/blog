@@ -1,0 +1,12 @@
+{
+  "name": "my-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "零依赖静态博客：写 Markdown，一条命令生成网站",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node serve.mjs",
+    "serve": "node serve.mjs --no-watch"
+  }
+}

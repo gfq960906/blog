@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中性原子量子计算：公司调研</title>
+<!-- meta: {"title":"中性原子量子计算：公司调研","date":"2026-10-27","summary":"四家主要玩家的技术路线、系统规模与工程进展梳理，附路线对比表。","tag":"调研报告"} -->
+<meta name="description" content="中性原子量子计算方向的四家主要公司梳理与路线对比">
+<style>
+  :root{
+    --ink:#12161d; --ink-soft:#39414d; --muted:#6b7480;
+    --paper:#f7f5f0; --card:#fff; --line:#e2ddd2; --accent:#2c5f8a; --accent-2:#b4763a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.75; font-size:16px;
+  }
+  .page{max-width:980px;margin:0 auto;padding:0 28px 80px}
+  header.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-block;padding:3px 10px;border-radius:6px;background:#e8eef5;color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:18px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:clamp(30px,4.6vw,44px);line-height:1.25;margin:0 0 14px;letter-spacing:-.01em}
+  .lede{font-size:18px;color:var(--ink-soft);max-width:40em;margin:0 0 22px}
+  .byline{color:var(--muted);font-size:13.5px;display:flex;gap:14px;flex-wrap:wrap}
+  .note{margin:26px 0 0;padding:12px 16px;border-left:3px solid var(--accent-2);background:#fdf6ec;color:#7a5325;font-size:13.5px;border-radius:0 8px 8px 0}
+  h2{font-family:Georgia,"Songti SC",serif;font-size:24px;margin:56px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:28px 0 8px}
+  p{margin:0 0 1.1em}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:34px 0 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .stat b{display:block;font-size:26px;font-family:Georgia,serif;line-height:1.2}
+  .stat span{color:var(--muted);font-size:13px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:22px 0 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card h3{margin:0 0 4px;font-size:18px}
+  .card .loc{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .card ul{margin:0;padding-left:18px;font-size:14.5px;color:var(--ink-soft)}
+  .card li{margin:.3em 0}
+  .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .pill{padding:2px 9px;border-radius:999px;background:#eef2f7;color:#43536a;font-size:12px}
+  table{width:100%;border-collapse:collapse;margin:22px 0 0;font-size:14.5px;background:var(--card)}
+  th,td{padding:12px 14px;border:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:#f1ede4;font-weight:650}
+  .scroll{overflow-x:auto;border-radius:12px}
+  blockquote{margin:22px 0;padding:6px 0 6px 20px;border-left:3px solid var(--line);color:var(--ink-soft);font-style:italic}
+  .foot{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  a{color:var(--accent)}
+  @media (max-width:640px){.page{padding:0 18px 60px}header.hero{padding:44px 0 30px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <span class="eyebrow">调研报告 · 量子计算</span>
+  <h1>中性原子量子计算：公司调研</h1>
+  <p class="lede">按技术路线、系统规模与工程进展，梳理这个方向上的几家主要玩家，并给出我自己的判断。</p>
+  <div class="byline">
+    <span>2026 年 10 月 27 日</span>
+    <span>·</span>
+    <span>阅读约 9 分钟</span>
+    <span>·</span>
+    <span>郭</span>
+  </div>
+  <div class="note">这是一个<b>专题页模板示例</b>：把你整理好的调研 HTML 直接放进 <code>content/labs/</code>，它就会出现在博客的「专题」板块里，样式完全由这个文件自己决定。</div>
+</header>
+
+<section class="stats">
+  <div class="stat"><b>4</b><span>重点跟踪的公司</span></div>
+  <div class="stat"><b>~1000+</b><span>公开报道的原子比特数</span></div>
+  <div class="stat"><b>3</b><span>主要技术分支</span></div>
+  <div class="stat"><b>2026 Q4</b><span>本次整理时间</span></div>
+</section>
+
+<h2>一、为什么看中性原子</h2>
+<p>中性原子路线最吸引人的地方在于「可扩展性」：原子由光镊阵列捕获，天生全同，不需要在制造环节控制公差；万亿级规模的阵列在物理上没有硬门槛，只是工程问题。</p>
+<p>再加上里德堡激发可以让远距离原子之间产生强相互作用，它的连接图比超导的最近邻拓扑要自由得多。</p>
+
+<blockquote>判断：短期看工程指标（保真度、循环速度），长期看规模化能力（阵列大小、光学系统成本）。中性原子在后者上明显占优。</blockquote>
+
+<h2>二、主要玩家</h2>
+
+<div class="cards">
+  <div class="card">
+    <h3>Pasqal</h3>
+    <div class="loc">法国 · 巴黎</div>
+    <ul>
+      <li>路线：里德堡中性原子阵列</li>
+      <li>强调模拟量子计算（analog）与数字化混合模式</li>
+      <li>与欧洲超算体系合作较多</li>
+    </ul>
+    <div class="tagrow"><span class="pill">里德堡</span><span class="pill">模拟 + 数字</span><span class="pill">欧洲生态</span></div>
+  </div>
+
+  <div class="card">
+    <h3>QuEra</h3>
+    <div class="loc">美国 · 波士顿</div>
+    <ul>
+      <li>路线：中性原子阵列 + 纠错导向</li>
+      <li>学术出身，公开结果多，纠错演示走在前列</li>
+      <li>同时提供云上访问</li>
+    </ul>
+    <div class="tagrow"><span class="pill">量子纠错</span><span class="pill">云平台</span><span class="pill">学术强</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Atom Computing</h3>
+    <div class="loc">美国 · 科罗拉多</div>
+    <ul>
+      <li>路线：碱土原子、核自旋编码</li>
+      <li>强调长相干时间与可扩展阵列</li>
+      <li>工业化工程实践较多</li>
+    </ul>
+    <div class="tagrow"><span class="pill">碱土原子</span><span class="pill">长相干</span><span class="pill">工程化</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Infleqtion</h3>
+    <div class="loc">美国 · 科罗拉多 / 英国</div>
+    <ul>
+      <li>路线：中性原子 + 冷原子平台</li>
+      <li>产品线较宽，含量子时钟与传感</li>
+      <li>商业化进度靠前</li>
+    </ul>
+    <div class="tagrow"><span class="pill">冷原子</span><span class="pill">传感</span><span class="pill">商业化</span></div>
+  </div>
+</div>
+
+<h2>三、路线对比</h2>
+<div class="scroll">
+<table>
+  <thead>
+    <tr><th>维度</th><th>中性原子</th><th>超导</th><th>离子阱</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>比特全同性</td><td>天然</td><td>需制造控制</td><td>天然</td></tr>
+    <tr><td>连接方式</td><td>任意（里德堡）</td><td>近邻为主</td><td>全连接（较慢）</td></tr>
+    <tr><td>规模化难度</td><td>低（光学成本高）</td><td>中（布线 / 稀释制冷）</td><td>高</td></tr>
+    <tr><td>门速度</td><td>中</td><td>快</td><td>慢</td></tr>
+    <tr><td>当前成熟度</td><td>快速上升</td><td>最高</td><td>高</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>四、我的判断</h2>
+<h3>1. 比特数不是最重要的指标</h3>
+<p>公开的原子数量已经不小，但真正决定路线的，是「能稳定地跑多久」和「错误率能不能往下走」。数量可以堆，稳定性堆不出来。</p>
+
+<h3>2. 纠错是分水岭</h3>
+<p>谁先跑出逻辑比特的净收益，谁就拿到下一阶段的话语权。这也是我更关注 QuEra 一类以纠错为主线的团队的原因。</p>
+
+<h3>3. 国内视角</h3>
+<p>国内在这个方向上起步稍晚，但在光学、激光、精密测量上的积累很长。值得持续跟踪高校与研究所的进展。</p>
+
+<h2>五、下一步</h2>
+<ul>
+  <li>逐家整理融资与团队背景（公开信息）</li>
+  <li>把「比特数 vs 保真度」做成一张可更新的对比图</li>
+  <li>补一份关键论文清单，挂到博客的「研究笔记」里</li>
+</ul>
+
+<div class="foot">
+  本文为个人学习整理的示例模板，数据请以官方渠道为准。页面由 <code>content/labs/2026-10-27-neutral-atom-companies.html</code> 提供。
+</div>
+
+</div>
+</body>
+</html>

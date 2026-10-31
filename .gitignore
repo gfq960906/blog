@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# 构建产物：默认提交（GitHub Pages 老式部署需要），
+# 若用 .github/workflows 自动构建，可取消下面这行的注释
+# dist/

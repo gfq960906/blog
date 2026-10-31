@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在 site.config.mjs 里填写 site.url 后重新构建即可生成完整 RSS -->
+<rss version="2.0"><channel><title>我的博客</title><link>/</link><description>记录工作与生活的地方</description></channel></rss>
