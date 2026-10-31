@@ -21,8 +21,8 @@ summary: 折腾了一个晚上，把博客搭起来了。记录一下为什么�
 整个站点只有三个部分：
 
 1. `content/posts/` 里放 Markdown 文件 —— 一篇文章就是一个 `.md`；
-2. 一条命令 `node build.mjs`，把 Markdown 编译成静态网页，输出到 `dist/`；
-3. 把 `dist/` 整个扔到任何静态托管（GitHub Pages / Netlify）上，就上线了。
+2. 一条命令 `node build.mjs`，把 Markdown 编译成静态网页，输出到 `docs/`；
+3. 把 `docs/` 提交推送，GitHub Pages 就会自动发布。
 
 没有数据库，没有后台，不需要服务器。文章本质上是**纯文本文件**，二十年后的软件大概都还读得懂。
 

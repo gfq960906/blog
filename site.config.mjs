@@ -15,8 +15,7 @@ export const site = {
 
   // 站点最终的公网地址，用于 RSS 和 sitemap。
   // 用 GitHub Pages 的话形如："https://<你的用户名>.github.io/blog"
-  // 还没部署就先空着，不影响本地预览。
-  url: "",
+  url: "https://gfq960906.github.io/blog",
 };
 
 // 首页每页显示多少篇文章

@@ -54,7 +54,7 @@
 <ul><li>把<strong>读完一篇论文之后的思考</strong>留下来，而不只是收藏链接；</li><li>把<strong>工作里踩过的坑</strong>写下来，下次别踩第二遍；</li><li>偶尔写点跟工作无关的东西，证明自己还活着。</li></ul>
 <h2 id="这套博客是怎么运转的">这套博客是怎么运转的</h2>
 <p>整个站点只有三个部分：</p>
-<ol><li><code>content/posts/</code> 里放 Markdown 文件 —— 一篇文章就是一个 <code>.md</code>；</li><li>一条命令 <code>node build.mjs</code>，把 Markdown 编译成静态网页，输出到 <code>dist/</code>；</li><li>把 <code>dist/</code> 整个扔到任何静态托管（GitHub Pages / Netlify）上，就上线了。</li></ol>
+<ol><li><code>content/posts/</code> 里放 Markdown 文件 —— 一篇文章就是一个 <code>.md</code>；</li><li>一条命令 <code>node build.mjs</code>，把 Markdown 编译成静态网页，输出到 <code>docs/</code>；</li><li>把 <code>docs/</code> 提交推送，GitHub Pages 就会自动发布。</li></ol>
 <p>没有数据库，没有后台，不需要服务器。文章本质上是<strong>纯文本文件</strong>，二十年后的软件大概都还读得懂。</p>
 <h2 id="写一篇新文章有多麻烦">写一篇新文章有多麻烦</h2>
 <p>不麻烦，三步：</p>

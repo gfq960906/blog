@@ -1,3 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 在 site.config.mjs 里填写 site.url 后重新构建即可生成完整 RSS -->
-<rss version="2.0"><channel><title>我的博客</title><link>/</link><description>记录工作与生活的地方</description></channel></rss>
+<rss version="2.0"><channel>
+  <title>我的博客</title>
+  <link>https://gfq960906.github.io/blog</link>
+  <description>记录工作与生活的地方</description>
+  <language>zh-CN</language>
+  <item>
+    <title>建一个自己的博客，从今天开始</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-30-hello-blog.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-30-hello-blog.html</guid>
+    <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+    <description>折腾了一个晚上，把博客搭起来了。记录一下为什么想写，以及这套东西是怎么运转的。</description>
+  </item>
+  <item>
+    <title>中性原子路线，为什么值得持续盯住</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-28-neutral-atom-note.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-28-neutral-atom-note.html</guid>
+    <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+    <description>整理了最近关于中性原子量子计算的一些零散思考：它的优势到底在哪，工程上的难点又卡在哪里。</description>
+  </item>
+  <item>
+    <title>周末去了城郊的那条河</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-25-weekend.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-25-weekend.html</guid>
+    <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+    <description>天气好得不像话，骑车去了城郊。没做什么特别的事，就是坐着看了很久的水。</description>
+  </item>
+  <item>
+    <title>一周工作复盘：把「查资料」变成可复用的东西</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-10-22-weekly-review.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-10-22-weekly-review.html</guid>
+    <pubDate>Thu, 22 Oct 2026 00:00:00 GMT</pubDate>
+    <description>这周花了大量时间在检索和整理上，反思了一下怎么让这些一次性的劳动沉淀成资产。</description>
+  </item>
+</channel></rss>
