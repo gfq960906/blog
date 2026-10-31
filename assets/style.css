@@ -571,7 +571,7 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 .toc a:hover, .toc a.current { color: var(--accent); text-decoration: none; }
 .toc .toc-3 { padding-left: 12px; font-size: 12.5px; }
 
-@media (max-width: 1240px) { .toc { display: none; } }
+@media (max-width: 1380px) { .toc { display: none; } }
 
 /* 上下篇 */
 .post-nav {
