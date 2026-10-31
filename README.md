@@ -57,7 +57,8 @@ blog/
 ├─ content/
 │  ├─ about.md            ← 「关于」页内容
 │  ├─ posts/              ← 【写文章放这里】一个 .md 一篇文章
-│  └─ labs/               ← 【放专题页】你自己的 HTML 报告整页放这里
+│  ├─ labs/               ← 【放专题页】你自己的 HTML 报告整页放这里
+│  └─ sources/            ← 原始稿备份（不会被发布，纯存档）
 └─ docs/                  ← 生成的网站（GitHub Pages 就发布这个目录，不要手改）
 ```
 
