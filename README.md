@@ -177,16 +177,18 @@ content/labs/2026-10-27-neutral-atom-companies.html
 
 ### 顺手把 HTML 报告变成一篇 Markdown 文章（可选）
 
-专题页只在「专题」板块和搜索里出现，不进 RSS 和文章列表。如果也想让它被订阅、被当成普通文章读，可以转一份 Markdown：
+专题页只在「专题」板块和搜索里出现，不进 RSS 和文章列表。如果也想让它被订阅、被当成普通文章读，一条命令搞定：
 
 ```powershell
-node tools/html2md.mjs content/sources/report.html content/sources/report.md
+node tools/make-post-from-report.mjs content/labs/2026-10-28-xxx.html 2026-10-28-xxx 2026-10-28-xxx
+#                                        ↑报告HTML                    ↑文章slug      ↑专题页slug（可省略）
 ```
 
-然后按「三、写一篇新文章」的方法加 frontmatter，放进 `content/posts/`。
+它会自动读取报告里的 `<!-- meta -->`（标题、日期、摘要、tags），转成 Markdown 写进
+`content/posts/<slug>.md`，并在文章开头加一行「这是文字版，报告版在这里」的链接。
 
 > 转换器在 `tools/html2md.mjs`，零依赖，保留标题层级、列表、表格、引用；
-> 页面里的 CSS 条形图会变成表格。转换完建议自己扫一眼，个别排版细节可能需要手改。
+> CSS 条形图会变成表格。转换完建议自己扫一眼，个别排版细节可能需要手改。
 
 ---
 
