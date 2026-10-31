@@ -38,3 +38,4 @@ git -c http.extraheader="AUTHORIZATION: basic $basic" `
 
 Write-Host "`n✓ 已推送。GitHub Pages 大约 30 秒后更新：" -ForegroundColor Green
 Write-Host "  https://gfq960906.github.io/blog/" -ForegroundColor Green
+exit 0
