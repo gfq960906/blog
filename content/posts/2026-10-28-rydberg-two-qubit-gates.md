@@ -5,8 +5,7 @@ category: research
 tags: [里德堡, 两比特门, 量子计算]
 summary: 门协议谱系、误差通道量级与十余篇实验细节，附三条硬件路线对比、保真度演进与通往 99.9% 的路径。
 ---
-
-> 📄 这是**文字版**，方便检索与订阅。带图表和完整排版的报告见专题页：[《里德堡原子两比特门》](../labs/2026-10-28-rydberg-two-qubit-gates.html)。
+> 📄 这是**文字版**，方便检索与订阅。带图表和完整排版的报告见专题页：[《两比特门》](../labs/2026-10-28-rydberg-two-qubit-gates.html)。
 
 ## §0 · 先看结论
 
@@ -53,17 +52,9 @@ summary: 门协议谱系、误差通道量级与十余篇实验细节，附三�
 
 控制原子打 π 脉冲进 |r⟩ → 目标原子打 2π 脉冲：若控制在 |0⟩，目标以 Ω 走完整 2π，回到 |1⟩ 并积累 −1；若控制在 |1⟩，blockade 使该跃迁失谐 B，2π 脉冲几乎无效果 → 控制再打 π 脉冲回 |0⟩。结果是一个 CZ（差一个单比特相位）。
 
-优点
-
-每个原子单独寻址，不依赖全局光束的均匀性；用现有声光偏转器就能扫多个站点。
-
-缺点
-
-总时长 ~4π/Ω 再加两段 gap；控制原子要在 |r⟩ 里等整个 2π 脉冲 + 两次 gap 的时间，**里德堡寿命和运动退相干直接在 gap 里累积**；三束脉冲各自的强度/相位误差独立叠加。
-
-实测例子
-
-Wilk 2010（Paris，200 ns 完成纠缠）、Isenhower 2010（Wisconsin，首个 CNOT）、Maller 2015（Cs 2D 阵列）、Graham 2019（121 站点，tπ=150 ns，t2π=220 ns，gap=300 ns）
+- **优点**：每个原子单独寻址，不依赖全局光束的均匀性；用现有声光偏转器就能扫多个站点。
+- **缺点**：总时长 ~4π/Ω 再加两段 gap；控制原子要在 |r⟩ 里等整个 2π 脉冲 + 两次 gap 的时间，**里德堡寿命和运动退相干直接在 gap 里累积**；三束脉冲各自的强度/相位误差独立叠加。
+- **实测例子**：Wilk 2010（Paris，200 ns 完成纠缠）、Isenhower 2010（Wisconsin，首个 CNOT）、Maller 2015（Cs 2D 阵列）、Graham 2019（121 站点，tπ=150 ns，t2π=220 ns，gap=300 ns）
 
 ### 2.2 双全局脉冲（2019，哈佛 Levine）
 
@@ -122,7 +113,7 @@ Jandura & Pupillo（Quantum 6, 712, 2022）用最优控制找到在 blockade 区
 
 以下按年份排列。每篇统一按「平台 / 编码与制备 / 激发与门协议 / 关键参数 / 标定与测量 / 误差与局限」六块写。没读到原文的地方我会注明。
 
-### 2010 · Paris（Browaeys / Grangier）· Wilk 等：第一次用 Rydberg blockade 造出纠缠arXiv:0908.0454
+### 2010 · Paris（Browaeys / Grangier）· Wilk 等：第一次用 Rydberg blockade 造出纠缠 · arXiv:0908.0454
 
 T. Wilk, A. Gaëtan, C. Evellin, J. Wolters, Y. Miroshnychenko, P. Grangier, A. Browaeys, *Entanglement of two individual neutral atoms using Rydberg blockade*, PRL 104, 010502 (2010). DOI: 10.1103/PhysRevLett.104.010502
 
@@ -149,21 +140,13 @@ T. Wilk, A. Gaëtan, C. Evellin, J. Wolters, Y. Miroshnychenko, P. Grangier, A. 
 
 #### 结果与误差
 
-剩余对
-
-61%，保真度 F_pairs = **0.75(7)** 实测
-
-损失
-
-每个原子 0.22(1)，总损失 0.39(2)。来源：中间态自发辐射落到 |↓⟩（~7%）、激发/映射光强噪声 5% 与频率噪声 3 MHz（~7%）、关阱期间 ~3%、探测 ~3%
-
-主要误差
-
-（1）blockade 不完全，~10% 概率双激发 → 映射成 |↓↓⟩，直接看到非零 ρ_↓↓=0.06；（2）自发辐射与激发不完美导致 ρ_↑↑=0.09 偏大；（3）运动：60 μK 下自由飞行，相位扩散 `⟨e^{iφ}⟩=0.94`，理论上限 0.97。用 600 ns 间隔重做，相干项掉一半，与模型 0.45 一致——**温度就是当时的最终限制**
+- **剩余对**：61%，保真度 F_pairs = **0.75(7)** 实测
+- **损失**：每个原子 0.22(1)，总损失 0.39(2)。来源：中间态自发辐射落到 |↓⟩（~7%）、激发/映射光强噪声 5% 与频率噪声 3 MHz（~7%）、关阱期间 ~3%、探测 ~3%
+- **主要误差**：（1）blockade 不完全，~10% 概率双激发 → 映射成 |↓↓⟩，直接看到非零 ρ_↓↓=0.06；（2）自发辐射与激发不完美导致 ρ_↑↑=0.09 偏大；（3）运动：60 μK 下自由飞行，相位扩散 `⟨e^{iφ}⟩=0.94`，理论上限 0.97。用 600 ns 间隔重做，相干项掉一半，与模型 0.45 一致——**温度就是当时的最终限制**
 
 历史位置：同月 Wisconsin 组（Isenhower 等）用 CNOT 得到类似结论，两篇背靠背发在 PRL 104。这一对论文把“Rydberg 门”从理论变成实验。
 
-### 2010 · Wisconsin（Saffman）· Isenhower 等：第一个中性原子 CNOTarXiv:0907.5552
+### 2010 · Wisconsin（Saffman）· Isenhower 等：第一个中性原子 CNOT · arXiv:0907.5552
 
 L. Isenhower, E. Urban, X. L. Zhang, A. T. Gill, T. Henage, T. A. Johnson, T. G. Walker, M. Saffman, *Demonstration of a neutral atom controlled-NOT quantum gate*, PRL 104, 010503 (2010). DOI: 10.1103/PhysRevLett.104.010503
 
@@ -177,7 +160,7 @@ L. Isenhower, E. Urban, X. L. Zhang, A. T. Gill, T. Henage, T. A. Johnson, T. G.
 
 注：本文我只读到摘要级信息（PDF 抓取失败），具体脉冲参数未取；如需可再补。
 
-### 2015 · Wisconsin（Saffman）· Maller 等：2D 阵列 + 把 AC Stark 相位讲清楚arXiv:1506.06416
+### 2015 · Wisconsin（Saffman）· Maller 等：2D 阵列 + 把 AC Stark 相位讲清楚 · arXiv:1506.06416
 
 K. M. Maller, M. T. Lichtman, T. Xia, Y. Sun, M. J. Piotrowicz, A. W. Carr, L. Isenhower, M. Saffman, *A Rydberg blockade CNOT gate and entanglement in a 2D array of neutral atom qubits*, PRA 92, 022336 (2015). DOI: 10.1103/PhysRevA.92.022336
 
@@ -201,21 +184,13 @@ Cs 原子，**7×7 = 49 站点**的蓝失谐光阱阵列（64 束 780 nm 弱重�
 
 #### 结果与误差
 
-Bell 保真度
-
-**0.73 ± 0.05**（不做 loss 后选择）实测；做后选择 0.79 ± 0.05
-
-宇称振幅
-
-0.391(6)；(P₀₀+P₁₁)/2 = 0.47(2)
-
-主要误差
-
-残余光移、原子温度（运动导致的光移抖动与多普勒）、激发光强/相位噪声、关阱损失
+- **Bell 保真度**：**0.73 ± 0.05**（不做 loss 后选择）实测；做后选择 0.79 ± 0.05
+- **宇称振幅**：0.391(6)；(P₀₀+P₁₁)/2 = 0.47(2)
+- **主要误差**：残余光移、原子温度（运动导致的光移抖动与多普勒）、激发光强/相位噪声、关阱损失
 
 历史位置：把门从“单对原子”推到 2D 阵列，并且第一次系统处理了双光子带来的 Stark 相位问题——后面所有双光子方案（Rb 420/1013、Cs 459/1038）都继承了这个分析框架。
 
-### 2019 · Harvard（Lukin）· Levine 等：两束全局脉冲、并行、第一次上 95%arXiv:1908.06101
+### 2019 · Harvard（Lukin）· Levine 等：两束全局脉冲、并行、第一次上 95% · arXiv:1908.06101
 
 H. Levine, A. Keesling, G. Semeghini, A. Omran, T. T. Wang, S. Ebadi, H. Bernien, M. Greiner, V. Vuletić, H. Pichler, M. D. Lukin, *Parallel implementation of high-fidelity multiqubit gates with neutral atoms*, PRL 123, 170503 (2019). DOI: 10.1103/PhysRevLett.123.170503
 
@@ -227,41 +202,22 @@ H. Levine, A. Keesling, G. Semeghini, A. Omran, T. T. Wang, S. Ebadi, H. Bernien
 
 里德堡态 `|r⟩ = |70S₁/₂, m_J=−1/2⟩`，420 + 1013 nm 双光子，全局耦合 **Ω/2π ≈ 3.5 MHz**；最近邻相互作用 **2π×24 MHz ≫ Ω**。协议就是 §2.2 描述的：两束等长 τ、等失谐 Δ 的全局脉冲，第二束跳相位 ξ。取 `Δ ≈ 0.377Ω`，`2τ ≈ 2.732π/Ω`。
 
-门时长
-
-**0.4 μs**（论文实测序列总时长）实测，比串行 4π/Ω 快约 1.5 倍
-
-相位抵消
-
-把 CZ 包在自旋回波里抵消里德堡光对超精细态的光移；再加一段短光移脉冲消单比特相位 φ。最终实现的是 CZ + 全局 X(π)
-
-漏损处理
-
-关阱、以及里德堡态布居导致的 loss 会让 |1⟩ 出现在 raw 数据里，他们单独测双超精细态布居，把泄漏上界从原始概率里扣掉，只报“保守下界”
+- **门时长**：**0.4 μs**（论文实测序列总时长）实测，比串行 4π/Ω 快约 1.5 倍
+- **相位抵消**：把 CZ 包在自旋回波里抵消里德堡光对超精细态的光移；再加一段短光移脉冲消单比特相位 φ。最终实现的是 CZ + 全局 X(π)
+- **漏损处理**：关阱、以及里德堡态布居导致的 loss 会让 |1⟩ 出现在 raw 数据里，他们单独测双超精细态布居，把泄漏上界从原始概率里扣掉，只报“保守下界”
 
 #### 结果
 
-Bell 态
-
-F ≥ **95.0(2)%**（下界，五个原子对并行；raw 95.9(2)%）实测
-
-门保真度
-
-扣除 SPAM（每原子 1.2(1)%）后 **≥97.4(3)%**
-
-CNOT
-
-由 CZ + 局域旋转构成，真值表保真度 96.5(3)%（SPAM 校正）
-
-Toffoli/CCZ
-
-三原子三角排列，中间原子被两侧 blockade，RedCRAB 优化脉冲，真值表 87.0(4)%；limited tomography 86.2(6)%
+- **Bell 态**：F ≥ **95.0(2)%**（下界，五个原子对并行；raw 95.9(2)%）实测
+- **门保真度**：扣除 SPAM（每原子 1.2(1)%）后 **≥97.4(3)%**
+- **CNOT**：由 CZ + 局域旋转构成，真值表保真度 96.5(3)%（SPAM 校正）
+- **Toffoli/CCZ**：三原子三角排列，中间原子被两侧 blockade，RedCRAB 优化脉冲，真值表 87.0(4)%；limited tomography 86.2(6)%
 
 #### 局限
 
 剩余误差主要是有限原子温度与里德堡动力学期间的激光散射。这条路线的真正突破在于**不需要单点寻址**：同一束光同时作用多个门站点，这就是后来“任意连接 + 高并行”架构的起点。
 
-### 2019 · Wisconsin（Saffman）· Graham 等：121 站点 2D 阵列，Bell 0.86arXiv:1908.06103
+### 2019 · Wisconsin（Saffman）· Graham 等：121 站点 2D 阵列，Bell 0.86 · arXiv:1908.06103
 
 T. M. Graham, M. Kwon, B. Grinkemeyer, Z. Marra, X. Jiang, M. T. Lichtman, Y. Sun, M. Ebert, M. Saffman, *Rydberg mediated entanglement in a two-dimensional neutral atom qubit array*, PRL 123, 230501 (2019). DOI: 10.1103/PhysRevLett.123.230501
 
@@ -292,19 +248,11 @@ Cs，**121 个站点**的二维阵列，由蓝失谐“光线网格”形成（8
 
 逐项用 χ 矩阵传播（能保留误差相关性），加总得 F_Bell = 0.853，与实测 0.86(2) 一致 —— 这说明**当时的误差已经被完全“解释清楚”了，不是神秘损耗**。
 
-Bell 保真度
+- **Bell 保真度**：**0.86(2)** raw；扣 SPAM 0.88；再扣单比特 0.89 实测
+- **分解**：(P₀₀+P₁₁)/2 = 0.47(2)，宇称振幅 0.391(6)
+- **局限**：温度（15 μK → 多普勒）、激光噪声、位置抖动；若换成满填充阵列串扰约再降 0.4%，边缘站点再降 ~2.1%
 
-**0.86(2)** raw；扣 SPAM 0.88；再扣单比特 0.89 实测
-
-分解
-
-(P₀₀+P₁₁)/2 = 0.47(2)，宇称振幅 0.391(6)
-
-局限
-
-温度（15 μK → 多普勒）、激光噪声、位置抖动；若换成满填充阵列串扰约再降 0.4%，边缘站点再降 ~2.1%
-
-### 2020 · Caltech（Endres）· Madjarov 等：碱土金属单光子激发，Bell ≥0.991arXiv:2001.04455
+### 2020 · Caltech（Endres）· Madjarov 等：碱土金属单光子激发，Bell ≥0.991 · arXiv:2001.04455
 
 I. S. Madjarov, J. P. Covey, A. L. Shaw, J. Choi, A. Kale, A. Cooper, H. Pichler, V. Schkolnik, J. R. Williams, M. Endres, *High-fidelity entanglement and detection of alkaline-earth Rydberg atoms*, Nat. Phys. 16, 857 (2020). DOI: 10.1038/s41567-020-0903-z
 
@@ -322,17 +270,9 @@ I. S. Madjarov, J. P. Covey, A. L. Shaw, J. Choi, A. Kale, A. Cooper, H. Pichler
 
 这点很重要，很多综述混过去了：他们**没有实现完整的 CZ 门**，而是用 blockade 区的集体 π 脉冲直接把 |gg⟩ 驱动到 W-Bell 态 `(|gr⟩+e^{iφ}|rg⟩)/√2`，然后用“π 时刻的布居 + 2π 时刻的纯度下界”给出 Bell 保真度的**保守下界**。所以他们的数字（0.991）严格来说是“W 态制备质量”，不是“CZ 门保真度”，两者不能直接和后来的 RB 数值比。
 
-激发
-
-316.6 nm 单光子，腰 18(1) μm，Ω_R ≈ 2π×6–7 MHz（30 mW；优化后可到 13 MHz）
-
-blockade
-
-3.6 μm、n=61 时 V_B ≈ 2π×130 MHz；集体增强 √2 → 实测 Ω̃ = 2π×8.5 MHz（关阱）/ 9.8 MHz（开阱）
-
-相干
-
-关阱：1/e 相干 ~42 个 Rabi 周期（τ_C ≈ 7 μs）；blockade 振荡 ~60 周期。当时已发表的最高值
+- **激发**：316.6 nm 单光子，腰 18(1) μm，Ω_R ≈ 2π×6–7 MHz（30 mW；优化后可到 13 MHz）
+- **blockade**：3.6 μm、n=61 时 V_B ≈ 2π×130 MHz；集体增强 √2 → 实测 Ω̃ = 2π×8.5 MHz（关阱）/ 9.8 MHz（开阱）
+- **相干**：关阱：1/e 相干 ~42 个 Rabi 周期（τ_C ≈ 7 μs）；blockade 振荡 ~60 周期。当时已发表的最高值
 
 #### 结果
 
@@ -351,7 +291,7 @@ blockade
 
 单光子 316.6 nm 的连续波功率是瓶颈（要更高 Ω 得靠腔或倍频升级）；3.6 μm 间距的 blockade 已够但不算强；还用“下界”而非完整过程层析，所以数字偏保守。
 
-### 2022 · Princeton（Thompson）· Ma 等：Yb 核自旋的第一次两比特门arXiv:2112.06799
+### 2022 · Princeton（Thompson）· Ma 等：Yb 核自旋的第一次两比特门 · arXiv:2112.06799
 
 S. Ma, A. P. Burgers, G. Liu, J. Wilson, B. Zhang, J. D. Thompson, *Universal gate operations on nuclear spin qubits in an optical tweezer array of ¹⁷¹Yb atoms*, PRX 12, 021028 (2022). DOI: 10.1103/PhysRevX.12.021028
 
@@ -361,7 +301,7 @@ S. Ma, A. P. Burgers, G. Liu, J. Wilson, B. Zhang, J. D. Thompson, *Universal ga
 
 这一篇的意义不在数字，而在证明“核自旋 + 里德堡”这条路能走：相干时间以秒计，干扰只来自门本身。一年后同一组把门保真度提到 0.98（见下）。
 
-### 2023 · Princeton（Thompson）· Ma 等：亚稳态 ³P₀ + 单光子激发 + erasure 转换arXiv:2305.05493
+### 2023 · Princeton（Thompson）· Ma 等：亚稳态 ³P₀ + 单光子激发 + erasure 转换 · arXiv:2305.05493
 
 S. Ma, G. Liu, P. Peng, B. Zhang, S. Jandura, J. Claes, A. P. Burgers, G. Pupillo, S. Puri, J. D. Thompson, *High-fidelity gates with mid-circuit erasure conversion in a metastable neutral atom qubit*, Nature 622, 279 (2023). DOI: 10.1038/s41586-023-06438-1
 
@@ -377,31 +317,17 @@ S. Ma, G. Liu, P. Peng, B. Zhang, S. Jandura, J. Claes, A. P. Burgers, G. Pupill
 
 #### 结果
 
-CZ 保真度
-
-**0.980(1)**（RB，误差 2.0(1)×10⁻²）实测
-
-Bell 态
-
-raw 0.866(12)；SPAM 0.872(6)，归一化后**内禀 0.99(2)**
-
-误差来源
-
-里德堡寿命 65(2) μs → 4×10⁻³；多普勒（2.94 μK）→ 5×10⁻³；模型预测 60% 的误差是泄漏
-
-erasure 转换
-
-每 2 个 CZ 插入一次 20 μs 快速成像（399 nm，I=4I_sat），条件化后误差降到 1.3(1)×10⁻²，约 **33% 的错误被转成可探测 erasure**；误伤存活量子比特的概率 1.4×10⁻⁴（等待 420 μs 让里德堡布居衰变回基态）
-
-单比特
-
-0.9990(1)；56% 的单比特错误可被转成 erasure
+- **CZ 保真度**：**0.980(1)**（RB，误差 2.0(1)×10⁻²）实测
+- **Bell 态**：raw 0.866(12)；SPAM 0.872(6)，归一化后**内禀 0.99(2)**
+- **误差来源**：里德堡寿命 65(2) μs → 4×10⁻³；多普勒（2.94 μK）→ 5×10⁻³；模型预测 60% 的误差是泄漏
+- **erasure 转换**：每 2 个 CZ 插入一次 20 μs 快速成像（399 nm，I=4I_sat），条件化后误差降到 1.3(1)×10⁻²，约 **33% 的错误被转成可探测 erasure**；误伤存活量子比特的概率 1.4×10⁻⁴（等待 420 μs 让里德堡布居衰变回基态）
+- **单比特**：0.9990(1)；56% 的单比特错误可被转成 erasure
 
 #### 局限 / 意义
 
 亚稳态寿命短于碱金属的拉曼极限 T₁，是存储上的劣势；但对亚微秒的门无所谓。真正的价值：**碱土金属的里德堡态被离子实极化率束缚**，里德堡衰变不会丢原子，可以被“等它衰变 + 成像”捕捉到——这是把 Rydberg loss 变成 erasure 的物理基础，后面 Surface code 的阈值提升就靠这个。
 
-### 2023 · Harvard（Lukin）· Evered 等：99.52%，并行 60 原子arXiv:2304.05420
+### 2023 · Harvard（Lukin）· Evered 等：99.52%，并行 60 原子 · arXiv:2304.05420
 
 S. J. Evered, D. Bluvstein, M. Kalinowski, S. Ebadi, T. Manovitz, H. Zhou, S. H. Li, A. A. Geim, T. T. Wang, N. Maskara, H. Levine, G. Semeghini, M. Greiner, V. Vuletić, M. D. Lukin, *High-fidelity parallel entangling gates on a neutral atom quantum computer*, Nature 622, 268 (2023). DOI: 10.1038/s41586-023-06481-y
 
@@ -431,29 +357,12 @@ S. J. Evered, D. Bluvstein, M. Kalinowski, S. Ebadi, T. Manovitz, H. Zhou, S. H.
 
 用全局随机基准（echo RB）：CZ 对之间夹全局 X 门消掉单比特相位，20 门序列，每点 300 组随机旋转，按 20,0,16,4,12,8 的循环顺序取数以避开漂移。三种方法互验：
 
-Bell 衰减
-
-99.52(4)%（单门后 raw Bell 98.0(2)%，SPAM 校正 99.4(4)%；不做 loss 扣除则 99.57(4)%）
-
-全局 RB（带 X）
-
-99.54(2)%
-
-全局 RB（不带 X）
-
-99.48(2)%
-
-平滑幅度门
-
-99.55(3)%
-
-60 原子并行
-
-99.48(2)%，站点间一致（10 个站点逐一拟合都在统计误差内）
-
-CCZ
-
-`ΩT/2π=1.751`（≈380 ns），21 原子并行，GHZ 保真度 97.9(2)%
+- **Bell 衰减**：99.52(4)%（单门后 raw Bell 98.0(2)%，SPAM 校正 99.4(4)%；不做 loss 扣除则 99.57(4)%）
+- **全局 RB（带 X）**：99.54(2)%
+- **全局 RB（不带 X）**：99.48(2)%
+- **平滑幅度门**：99.55(3)%
+- **60 原子并行**：99.48(2)%，站点间一致（10 个站点逐一拟合都在统计误差内）
+- **CCZ**：`ΩT/2π=1.751`（≈380 ns），21 原子并行，GHZ 保真度 97.9(2)%
 
 #### 误差预算（Extended Data Fig. 4，8 能级密度矩阵模拟）
 
@@ -475,7 +384,7 @@ CCZ
 
 要么：失谐再远 2 倍 + 里德堡寿命长 3 倍（更高 n）+ T₂* 长 2 倍 + 更大磁场压 m_J 耦合；要么：拉比频率再高 3 倍（同时压住 m_J 耦合）+ 失谐 2 倍。二者都不需要新物理，只需要激光与磁场工程。
 
-### 2025 · Caltech（Endres）· Tsai 等：时间最优门 + 保真度响应理论，0.9971arXiv:2407.20184
+### 2025 · Caltech（Endres）· Tsai 等：时间最优门 + 保真度响应理论，0.9971 · arXiv:2407.20184
 
 R. B.-S. Tsai, X. Sun, A. L. Shaw, R. Finkelstein, M. Endres, *Benchmarking and fidelity response theory of high-fidelity Rydberg entangling gates*, PRX Quantum 6, 010331 (2025). DOI: 10.1103/PRXQuantum.6.010331
 
@@ -491,21 +400,10 @@ R. B.-S. Tsai, X. Sun, A. L. Shaw, R. Finkelstein, M. Endres, *Benchmarking and 
 
 #### 结果与理论
 
-CZ 保真度
-
-**0.9971(5)**（对称子空间平均，扣除泄漏贡献）实测
-
-失真对比
-
-F_Haar 与 F_Sym 在低 Ω（慢门、衰变主导）时可差 12%（模型 `ε_Haar/ε_Sym = 2.9/2.6`）；极端情况可差 1.5 倍
-
-误差分解
-
-激光频率噪声（主要来自 ~1 MHz 伺服凸起）、强度噪声（主要来自 DC/逐发）、里德堡衰变、原子运动四项，随 Ω 变化
-
-预测
-
-用 FRT 外推：**≳0.999** 在现实的升级下可行
+- **CZ 保真度**：**0.9971(5)**（对称子空间平均，扣除泄漏贡献）实测
+- **失真对比**：F_Haar 与 F_Sym 在低 Ω（慢门、衰变主导）时可差 12%（模型 `ε_Haar/ε_Sym = 2.9/2.6`）；极端情况可差 1.5 倍
+- **误差分解**：激光频率噪声（主要来自 ~1 MHz 伺服凸起）、强度噪声（主要来自 DC/逐发）、里德堡衰变、原子运动四项，随 Ω 变化
+- **预测**：用 FRT 外推：**≳0.999** 在现实的升级下可行
 
 **保真度响应理论（FRT）**是这篇最值得记住的工具：把噪声 PSD 与“保真度响应函数” I(f) 卷积得到误差，`1−F ≈ Σ ∫ df S_j(f) I_j(f)`，其中 I(f) 可以从脉冲轨迹用闭合式算出。响应函数对 Ω 有标度律（频率噪声响应宽度 ∝Ω、幅度 ∝Ω⁻²；强度噪声响应宽度 ∝Ω、慢噪声敏感度不变），因此一套通用曲线可以覆盖不同门速。它还能用来反推激光频率噪声、比较不同协议。
 
@@ -513,7 +411,7 @@ F_Haar 与 F_Sym 在低 Ω（慢门、衰变主导）时可差 12%（模型 `ε_
 
 SSB 仍依赖“误差为小扰动”的前提；F_Sym 不是 F_Haar，与超导/离子平台的“平均门保真度”不完全可比。Sr 的单光子 316.6 nm 功率仍是 Ω 的瓶颈（7.7 MHz 已是当前上限）。
 
-### 2026 · Harvard（Lukin）· Evered 等：99.854%，71 ns，10 小时不重标arXiv:2604.25987
+### 2026 · Harvard（Lukin）· Evered 等：99.854%，71 ns，10 小时不重标 · arXiv:2604.25987
 
 S. J. Evered, M. Xu, S. H. Li, A. A. Geim, J. P. Bonilla Ataides, M. Kalinowski, D. Bluvstein, N. Maskara, C. Kokail, M. Greiner, V. Vuletić, M. D. Lukin, *High-fidelity entangling gates and nonlocal circuits with neutral atoms*, arXiv:2604.25987 (2026).
 
@@ -525,63 +423,23 @@ S. J. Evered, M. Xu, S. H. Li, A. A. Geim, J. P. Bonilla Ataides, M. Kalinowski,
 
 #### 激发与门参数（全面升级）
 
-里德堡态
-
-`53S₁/₂, m_J=−1/2`，420 nm(σ⁻) + **1015 nm**(σ⁺)，中间态失谐 **Δ/2π = 7.8 GHz**
-
-拉比
-
-峰值 **Ω/2π ≈ 17 MHz**；单光子 Ω₄₂₀,peak = 2π×670 MHz、Ω₁₀₁₅ = 2π×460 MHz；`Ω = √(3/4)·Ω₄₂₀Ω₁₀₁₅/(2Δ)`
-
-间距/blockade
-
-**1.73 μm**，blockade 能量 **≈950 MHz**；门期间关阱几百 ns
-
-磁场
-
-**13.7 G**（此前 8.5 G），两个 m_J 里德堡态劈裂 **38.5 MHz**，把对 |r′⟩(m_J=+1/2) 的耦合压到可忽略
-
-门时长
-
-平滑幅度门 `ΩT/2π=1.207` → **≈71 ns** 换算
-
-波形修正
-
-在平滑幅度上再乘切比雪夫多项式修正；线性项系数 c₁ = −0.214（改善 0.02–0.03%），其余 <0.01，把脉冲不对称补回来
-
-冷却
-
-只用 3D PGC（温度已成小误差项），12 μK；径向/轴向声子频率 80/20 kHz，位置抖动 σ ≈ 70/270 nm
+- **里德堡态**：`53S₁/₂, m_J=−1/2`，420 nm(σ⁻) + **1015 nm**(σ⁺)，中间态失谐 **Δ/2π = 7.8 GHz**
+- **拉比**：峰值 **Ω/2π ≈ 17 MHz**；单光子 Ω₄₂₀,peak = 2π×670 MHz、Ω₁₀₁₅ = 2π×460 MHz；`Ω = √(3/4)·Ω₄₂₀Ω₁₀₁₅/(2Δ)`
+- **间距/blockade**：**1.73 μm**，blockade 能量 **≈950 MHz**；门期间关阱几百 ns
+- **磁场**：**13.7 G**（此前 8.5 G），两个 m_J 里德堡态劈裂 **38.5 MHz**，把对 |r′⟩(m_J=+1/2) 的耦合压到可忽略
+- **门时长**：平滑幅度门 `ΩT/2π=1.207` → **≈71 ns** 换算
+- **波形修正**：在平滑幅度上再乘切比雪夫多项式修正；线性项系数 c₁ = −0.214（改善 0.02–0.03%），其余 <0.01，把脉冲不对称补回来
+- **冷却**：只用 3D PGC（温度已成小误差项），12 μK；径向/轴向声子频率 80/20 kHz，位置抖动 σ ≈ 70/270 nm
 
 #### 结果
 
-raw CZ
-
-**99.854(4)%**实测
-
-loss 后选择
-
-**99.941(3)%**
-
-loss 占比
-
-0.087(5)% = 总误差的 ~60%；每原子每门 0.054(2)%；**存在两原子关联损失**（>一半来自双原子同时丢）
-
-泄漏
-
-F=1 流形布居每原子每门增长 0.008(1)%；后选择另一原子正确时 0.004(1)%（说明保真度可能被高估 ~2×0.004%）
-
-稳定性
-
-10 小时不重标定维持 99.85%；~200 万次重复，raw 与 loss-PS 的返回概率都服从泊松
-
-敏感性
-
-1015 nm 功率 +0.1% 即掉保真度（差分光移 ~50 MHz）；束位置需稳到几百 nm；420 nm 的敏感度约弱 4 倍（光移小 4 倍）
-
-电路
-
-20 原子 cluster state 反复“编–解”，raw 99.843(6)%、loss-PS 99.956(5)%，15 小时稳定；非局域电路（10/20 比特）的 XEB 与含噪模拟一致
+- **raw CZ**：**99.854(4)%**实测
+- **loss 后选择**：**99.941(3)%**
+- **loss 占比**：0.087(5)% = 总误差的 ~60%；每原子每门 0.054(2)%；**存在两原子关联损失**（>一半来自双原子同时丢）
+- **泄漏**：F=1 流形布居每原子每门增长 0.008(1)%；后选择另一原子正确时 0.004(1)%（说明保真度可能被高估 ~2×0.004%）
+- **稳定性**：10 小时不重标定维持 99.85%；~200 万次重复，raw 与 loss-PS 的返回概率都服从泊松
+- **敏感性**：1015 nm 功率 +0.1% 即掉保真度（差分光移 ~50 MHz）；束位置需稳到几百 nm；420 nm 的敏感度约弱 4 倍（光移小 4 倍）
+- **电路**：20 原子 cluster state 反复“编–解”，raw 99.843(6)%、loss-PS 99.956(5)%，15 小时稳定；非局域电路（10/20 比特）的 XEB 与含噪模拟一致
 
 #### 误差预算（Table S2）
 

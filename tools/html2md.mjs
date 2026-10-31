@@ -201,7 +201,17 @@ function blocks(children, ctx = {}) {
     switch (n.tag) {
       case "h1": case "h2": case "h3": case "h4": case "h5": case "h6": {
         const level = Number(n.tag[1]);
-        let t = cleanInline(inline(n));
+        let t = "";
+        for (const c of n.children) {
+          const cls = String((c.attrs && c.attrs.class) || "");
+          if (c.tag === "span" && /(^|\s)id(\s|$)/.test(cls)) {
+            const extra = cleanInline(inline(c));
+            if (extra) t += ` · ${extra}`;
+          } else {
+            t += inline(c);
+          }
+        }
+        t = cleanInline(t);
         const first = n.children.find((c) => !(c.tag === "#text" && !c.text.trim()));
         const firstCls = String((first && first.attrs && first.attrs.class) || "");
         if (first && first.tag === "span" && /(^|\s)(no|num)(\s|$)/.test(firstCls)) {
@@ -210,7 +220,7 @@ function blocks(children, ctx = {}) {
             t = prefix + " · " + t.slice(prefix.length);
           }
         }
-        if (t) push("#".repeat(Math.min(level, 6)) + " " + t);
+        if (t) push("#".repeat(Math.min(level, 6)) + " " + t.replace(/([^\s\]])\[/g, "$1 [").trim());
         break;
       }
       case "p": {
@@ -236,6 +246,21 @@ function blocks(children, ctx = {}) {
         } else {
           inner.forEach(push);
         }
+        break;
+      }
+      case "dl": {
+        const lines = [];
+        let cur = "";
+        for (const c of n.children) {
+          if (c.tag === "dt") cur = cleanInline(inline(c));
+          else if (c.tag === "dd") {
+            const v = blocks(c.children, ctx).join(" ") || cleanInline(inline(c));
+            if (cur) lines.push(`- **${cur}**：${v}`);
+            else lines.push(`- ${v}`);
+            cur = "";
+          }
+        }
+        if (lines.length) push(lines.join("\n"));
         break;
       }
       case "blockquote": {
