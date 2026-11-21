@@ -1,12 +1,14 @@
-/* 站点交互：主题切换 / 分类过滤 / 站内搜索 / 阅读进度 */
+/* 站点交互：主题切换 / 站内搜索 / 阅读进度 */
 (function () {
   "use strict";
 
   /* ---------- 主题 ---------- */
   const root = document.documentElement;
   const key = "blog-theme";
-  const saved = localStorage.getItem(key);
-  if (saved) root.setAttribute("data-theme", saved);
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) root.setAttribute("data-theme", saved);
+  } catch { /* 浏览器禁用本地存储时使用当前主题。 */ }
 
   const toggle = document.getElementById("theme-toggle");
   if (toggle) {
@@ -14,21 +16,7 @@
       const current = root.getAttribute("data-theme") || "light";
       const next = current === "dark" ? "light" : "dark";
       root.setAttribute("data-theme", next);
-      localStorage.setItem(key, next);
-    });
-  }
-
-  /* ---------- 分类过滤 ---------- */
-  const filters = document.getElementById("filters");
-  if (filters) {
-    filters.addEventListener("click", function (e) {
-      const btn = e.target.closest(".chip");
-      if (!btn) return;
-      const val = btn.dataset.filter;
-      filters.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === btn));
-      document.querySelectorAll("#post-list .post-card").forEach((card) => {
-        card.style.display = val === "all" || card.dataset.cat === val ? "" : "none";
-      });
+      try { localStorage.setItem(key, next); } catch { /* 此次切换仍然有效。 */ }
     });
   }
 
@@ -67,65 +55,127 @@
   }
 
   /* ---------- 站内搜索 ---------- */
-  const input = document.getElementById("search-input");
-  if (input) {
+  const searchForm = document.getElementById("search-form");
+  if (searchForm) {
+    const input = searchForm.elements.q;
+    const scope = searchForm.elements.scope;
     const results = document.getElementById("search-results");
-    const empty = document.getElementById("search-empty");
-    let data = null;
+    const status = document.getElementById("search-status");
+    const index = JSON.parse(document.getElementById("search-data").textContent);
+    const data = index.map((entry) => ({
+      entry,
+      title: entry.title.toLowerCase(),
+      labels: [entry.cat, ...entry.tags].join(" ").toLowerCase(),
+      summary: entry.summary.toLowerCase(),
+      text: entry.text.toLowerCase(),
+    }));
 
-    const load = fetch("search-index.json")
-      .then((r) => r.json())
-      .then((json) => (data = json))
-      .catch(function () {
-        empty.hidden = false;
-        empty.textContent = "搜索索引加载失败，请通过本地服务器或部署后的网址访问。";
-      });
+    function highlight(element, text, pattern) {
+      if (!pattern) { element.textContent = text; return; }
+      let end = 0;
+      for (const match of text.matchAll(pattern)) {
+        element.append(text.slice(end, match.index));
+        const mark = document.createElement("mark");
+        mark.textContent = match[0];
+        element.append(mark);
+        end = match.index + match[0].length;
+      }
+      element.append(text.slice(end));
+    }
 
-    const render = function (list) {
-      results.innerHTML = list
-        .map(function (p) {
-          return (
-            '<article class="post-card">' +
-            '<div class="card-meta"><time>' + p.dateText + "</time>" +
-            '<span class="cat-name">' + p.cat + "</span></div>" +
-            '<h2 class="card-title"><a href="' + p.href + '">' + p.title + "</a></h2>" +
-            (p.summary ? '<p class="card-summary">' + p.summary + "</p>" : "") +
-            "</article>"
-          );
-        })
-        .join("");
-      empty.hidden = list.length > 0;
-      if (!list.length) empty.textContent = "没有找到相关内容，换个词试试？";
-    };
+    function excerpt(text, pos) {
+      const start = Math.max(0, pos - 30);
+      const end = Math.min(text.length, start + 125);
+      return (start ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "");
+    }
 
-    const search = function () {
-      if (!data) return;
-      const q = input.value.trim().toLowerCase();
-      if (!q) { results.innerHTML = ""; empty.hidden = true; return; }
-      const terms = q.split(/\s+/);
-      const scored = data
-        .map(function (p) {
-          const hay = (p.title + " " + p.summary + " " + p.tags.join(" ") + " " + p.text).toLowerCase();
-          let score = 0;
-          terms.forEach(function (t) {
-            if (!hay.includes(t)) return;
-            if (p.title.toLowerCase().includes(t)) score += 10;
-            if (p.tags.join(" ").toLowerCase().includes(t)) score += 5;
-            score += 1;
-          });
-          return { p: p, score: score };
-        })
-        .filter((x) => x.score > 0)
-        .sort((a, b) => b.score - a.score || (a.p.date < b.p.date ? 1 : -1))
-        .map((x) => x.p);
-      render(scored);
-    };
+    function resultCard(item, terms, pattern) {
+      const p = item.entry;
+      const card = document.createElement("article");
+      card.className = "post-card";
+      const meta = document.createElement("div");
+      meta.className = "card-meta";
+      const kind = p.kind === "lab" ? "专题" : "文章";
+      const labels = [kind, p.cat, ...p.tags.filter((tag) =>
+        terms.some((term) => tag.toLowerCase().includes(term)))];
+      const label = document.createElement("span");
+      highlight(label, [...new Set(labels)].join(" · "), pattern);
+      meta.append(label);
+      if (p.date) {
+        const time = document.createElement("time");
+        time.dateTime = p.date;
+        time.textContent = p.dateText;
+        meta.append(time);
+      }
+      const heading = document.createElement("h2");
+      heading.className = "card-title";
+      const link = document.createElement("a");
+      link.href = p.href;
+      highlight(link, p.title, pattern);
+      heading.append(link);
+      const context = document.createElement("p");
+      context.className = "search-excerpt";
+      const bodyTerm = terms.find((term) => !item.summary.includes(term) && item.text.includes(term));
+      const snippet = bodyTerm ? excerpt(p.text, item.text.indexOf(bodyTerm)) : p.summary || excerpt(p.text, 0);
+      highlight(context, snippet, pattern);
+      card.append(meta, heading, context);
+      return card;
+    }
 
-    input.addEventListener("input", search);
-    load.then(search);
+    function render() {
+      const terms = [...new Set(input.value.trim().toLowerCase().split(/\s+/).filter(Boolean))];
+      const matches = [];
+      for (const item of data) {
+        const p = item.entry;
+        if (scope.value && scope.value !== p.kind && scope.value !== p.scope) continue;
+        let score = 0;
+        const matched = terms.every((term) => {
+          if (item.title.includes(term)) score += 10;
+          else if (item.labels.includes(term)) score += 5;
+          else if (item.summary.includes(term)) score += 3;
+          else if (item.text.includes(term)) score += 1;
+          else return false;
+          return true;
+        });
+        if (matched) matches.push({ item, score });
+      }
+      matches.sort((a, b) => b.score - a.score || b.item.entry.date.localeCompare(a.item.entry.date));
+      const escaped = terms.sort((a, b) => b.length - a.length)
+        .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      const pattern = escaped.length ? new RegExp(escaped.join("|"), "gi") : null;
+      results.replaceChildren(...matches.map(({ item }) => resultCard(item, terms, pattern)));
+      status.textContent = matches.length
+        ? `共 ${matches.length} 条${terms.length ? "搜索结果" : "记录"}`
+        : "没有找到匹配的记录。试试更短的关键词，或切换搜索范围。";
+    }
 
-    const q = new URLSearchParams(location.search).get("q");
-    if (q) { input.value = q; load.then(search); }
+    const offline = location.protocol === "file:";
+    function restore() {
+      const params = new URLSearchParams(offline && location.hash.startsWith("#?")
+        ? location.hash.slice(2) : location.search);
+      input.value = params.get("q") || "";
+      scope.value = params.get("scope") || "";
+      if (scope.selectedIndex < 0) scope.value = "";
+      render();
+    }
+    function update(method) {
+      const url = new URL(location.href);
+      const params = new URLSearchParams();
+      if (input.value.trim()) params.set("q", input.value.trim());
+      if (scope.value) params.set("scope", scope.value);
+      if (offline) url.hash = "?" + params.toString();
+      else url.search = params.toString();
+      if (url.href !== location.href) history[method](null, "", url);
+      render();
+    }
+    input.addEventListener("input", () => update("replaceState"));
+    scope.addEventListener("change", () => update("pushState"));
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      update("replaceState");
+    });
+    window.addEventListener("popstate", restore);
+    restore();
   }
 
   /* ---------- 代码块一键复制 ---------- */

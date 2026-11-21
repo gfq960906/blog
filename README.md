@@ -4,19 +4,31 @@
 
 一个**零依赖**的静态博客：写 Markdown → 一条命令生成网站 → 扔到任何静态托管上就能访问。
 
-不需要安装任何 npm 包，不需要数据库，不需要服务器。整个项目只有一个 `node build.mjs`。
+用 Node.js 运行 `node build.mjs` 即可生成静态网页，无须安装 npm 包。
 
 ---
 
-## 〇、日常更新只要一条命令
+## 〇、记一篇学习笔记
+
+**在网页上写**　从首页打开「写笔记」，填好标题、正文和分类。浏览器会在当前设备暂存一份草稿，关闭页面后仍可回来接着写。点「导出 Markdown」，把下载的 `.md` 文件放进项目的 `content/posts/`，然后按下文预览或发布。在另一台设备继续写时，可带走导出的 Markdown 文件。
+
+**在终端里写**　在博客项目目录打开终端。下面的命令会创建 `content/posts/rydberg-blockade.md`，归入「研究笔记」，并加上两个可供检索的标签。
+
+```powershell
+node new-post.mjs "里德堡阻塞的物理图像" rydberg-blockade --study --tags "中性原子, 里德堡" --draft
+```
+
+1. 打开这份 Markdown，把一句话结论写进 `summary`。正文模板有「学习问题」「核心笔记」「待验证的问题」「参考资料」四节，可以按需删改。
+2. 在本地编辑草稿。准备预览时，删除文件开头的 `draft: true`，运行 `node serve.mjs`，打开终端打印的地址。之后每次保存，刷新浏览器即可查看。
+3. 准备发布时，按第五节的 GitHub Pages 步骤提交并推送到 `main`。网站展示的是构建生成的 `docs/`。公开仓库中已提交的草稿源码也可以被读到。
+
+在已配置好 Git 认证的 Windows 电脑上，也可运行发布脚本。它也兼容原 DeepSeek Harness 目录旁安装的 GitHub CLI。
 
 ```powershell
 .\deploy.ps1
 ```
 
-或者直接**双击 `deploy.cmd`**（效果一样，避免 PowerShell 执行策略报错）。
-
-它会自动：构建 → 提交 → 推送。GitHub Pages 大约 30 秒后更新。
+也可以双击 `deploy.cmd`。脚本会构建网站、提交当前工作区的改动并推送。任何一步失败时，脚本会停下来。推送成功后，由 GitHub Pages 发布。
 
 ---
 
@@ -58,7 +70,7 @@ blog/
 │  ├─ about.md            ← 「关于」页内容
 │  ├─ posts/              ← 【写文章放这里】一个 .md 一篇文章
 │  ├─ labs/               ← 【放专题页】你自己的 HTML 报告整页放这里
-│  └─ sources/            ← 原始稿备份（不会被发布，纯存档）
+│  └─ sources/            ← 原始稿备份（保存在仓库中，构建时跳过）
 └─ docs/                  ← 生成的网站（GitHub Pages 就发布这个目录，不要手改）
 ```
 
@@ -84,7 +96,7 @@ content/posts/2026-11-05-quantum-weekly.md
 
 文件开头必须有这一段（叫 frontmatter），中间用 `---` 包起来：
 
-```markdown
+````markdown
 ---
 title: 标题写这里
 date: 2026-11-05
@@ -113,21 +125,30 @@ summary: 一句话摘要，会显示在文章列表里
 # 代码块
 print("hello")
 ```
-```
+````
 
 保存后：
 
 - 如果 `node serve.mjs` 还开着，刷新页面就能看到（自动重建）；
 - 否则手动跑一次 `node build.mjs`。
 
-### 懒人版：一条命令生成空白文章
+### 用命令新建文章
 
 ```bash
 node new-post.mjs "周末去爬山" weekend-hike
 # ✓ 已创建：content/posts/weekend-hike.md
 ```
 
-它会自动填好日期和 frontmatter，你只管写正文。第二个参数不写也行（会自动用日期命名）。
+它会填好本机日期，普通文章归入 `essay`。省略网址名时，以日期和序号命名。指定的网址名已被使用时，命令会提示另选名称。
+
+| 可选参数 | 用途 |
+| --- | --- |
+| `--study` | 使用学习笔记模板，默认归入 `research` |
+| `--category work` | 选择分类，优先于模板的默认值。可选键名来自 `site.config.mjs` 的 `categories` |
+| `--tags "量子计算, 文献整理"` | 可写多个标签，用中文或英文逗号分隔 |
+| `--draft` | 创建草稿。删除 `draft: true` 并重新构建后，网站将收录它 |
+
+一篇文章选一个分类。标签可以跨分类复用，例如读论文的研究笔记和项目复盘都可以使用「量子计算」。运行 `node new-post.mjs --help` 可查看当前可选分类。以后在 `site.config.mjs` 中添加的分类也会出现在这里。
 
 ### 可用字段
 
@@ -236,7 +257,7 @@ git push                       # 3. 推送，GitHub 自动更新网站
 | 分类名称和颜色 | `site.config.mjs` 里的 `categories` |
 | 整体配色、字体、间距 | `assets/style.css` 顶部的 CSS 变量 |
 | 「关于」页 | `content/about.md` |
-| 首页大标题 | `site.config.mjs` 的 `title` + `description` |
+| 首页标题与简介 | `build.mjs` 的首页模板、`site.config.mjs` 的 `description` |
 | 页头导航项 | `build.mjs` 里的 `nav()` 函数 |
 
 ---

@@ -8,10 +8,10 @@ export const site = {
   title: "我的博客",
 
   // 副标题 / 一句话介绍，显示在首页大标题下面
-  description: "记录工作与生活的地方",
+  description: "记录论文阅读、实验进展，以及工作与生活里的发现。",
 
   // 你的名字或昵称
-  author: "fqguo",
+  author: "郭",
 
   // 站点最终的公网地址，用于 RSS 和 sitemap。
   // 用 GitHub Pages 的话形如："https://<你的用户名>.github.io/blog"

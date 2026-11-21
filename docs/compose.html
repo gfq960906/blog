@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>写笔记 · 我的博客</title>
+<meta name="description" content="记录论文阅读、实验进展，以及工作与生活里的发现。">
+<meta name="author" content="郭">
+<meta property="og:type" content="website">
+<meta property="og:title" content="写笔记 · 我的博客">
+<meta property="og:description" content="记录论文阅读、实验进展，以及工作与生活里的发现。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231b2a4a'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle' fill='%23f4f1ea' font-family='Georgia,serif'%3E%E5%8D%9A%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="alternate" type="application/rss+xml" title="我的博客" href="feed.xml">
+<script>(function(){try{var t=localStorage.getItem("blog-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+
+</head>
+<body class="">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html" aria-label="我的博客首页">
+      <span class="brand-mark"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5c3.2-.9 6.1-.4 9 1.4 2.9-1.8 5.8-2.3 9-1.4v14c-3.2-.9-6.1-.4-9 1.4-2.9-1.8-5.8-2.3-9-1.4zM12 6v14"/></svg></span>
+      <span class="brand-text">我的博客</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航"><a href="index.html">首页</a><a href="posts.html">文章</a><a href="labs.html">专题</a><a href="tags.html">标签</a><a href="about.html">关于</a></nav>
+    <div class="header-tools">
+      <a class="search-link" href="search.html" title="搜索" aria-label="搜索">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </a>
+      <button id="theme-toggle" class="theme-toggle" title="切换深浅色" aria-label="切换深浅色">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+      </button>
+      <a class="write-link" href="compose.html" aria-label="写笔记"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 12-12a2.2 2.2 0 0 1 3 3L7 20l-4 1zM14 7l3 3"/></svg><span>写笔记</span></a>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+
+<link rel="stylesheet" href="assets/compose.css">
+<section class="page-head">
+  <h1>写笔记</h1>
+  <p class="page-sub">草稿保存在当前浏览器。写完后可导出 Markdown，放入博客的 <code>content/posts/</code> 目录。</p>
+</section>
+<noscript><p>请启用 JavaScript 以保存草稿或导出笔记。</p></noscript>
+<form id="note-editor" class="note-editor" method="dialog" autocomplete="off">
+  <div class="note-writing">
+    <label for="note-title">标题</label>
+    <input id="note-title" name="title" type="text" placeholder="这篇笔记记录什么？" required>
+    <label for="note-body">正文 <small>Markdown</small></label>
+    <textarea id="note-body" name="body" rows="15" placeholder="从一个问题、一次实验或一段阅读开始……" required></textarea>
+  </div>
+  <fieldset class="note-details">
+    <legend>笔记信息</legend>
+    <label for="note-category">分类</label>
+    <select name="category" id="note-category" required><option value="work">工作记录</option><option value="life">生活随笔</option><option value="research" selected>研究笔记</option><option value="essay">随笔感想</option></select>
+    <label for="note-date">日期</label>
+    <input type="date" name="date" id="note-date" required>
+    <label for="note-tags">标签 <small>用逗号分隔</small></label>
+    <input name="tags" id="note-tags" type="text" placeholder="如 中性原子，文献整理">
+    <label for="note-summary">摘要 <small>选填</small></label>
+    <input name="summary" id="note-summary" type="text" placeholder="写下一句话结论">
+  </fieldset>
+  <div class="note-actions">
+    <button type="submit" class="note-download" disabled>导出 Markdown</button>
+    <button type="button" class="note-new" disabled>新建空白笔记</button>
+    <span class="note-status" role="status" aria-live="polite"></span>
+  </div>
+</form>
+<script defer src="assets/compose.js"></script>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© 2026 郭</span>
+    <span class="dot">·</span>
+    <a href="feed.xml">RSS</a>
+    <span class="dot">·</span>
+    <a href="posts.html">归档</a>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

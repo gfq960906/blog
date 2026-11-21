@@ -5,8 +5,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { site, categories, labGroups } from "./site.config.mjs";
+import { composePage } from "./tools/compose-page.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
@@ -43,11 +45,37 @@ function encodeUrlPath(s) {
 }
 
 function tagSlug(tag) {
-  return tag.trim().replace(/\s+/g, "-").replace(/[\\/:*?"<>|#%&{}]/g, "");
+  // 普通中文标签保留原有网址，短小写名称可直接跨平台用作文件名。
+  const portable = /^[a-z0-9\u4e00-\u9fff-]+$/.test(tag) && Buffer.byteLength(tag) <= 120;
+  const reserved = /^(con|prn|aux|nul|com\d|lpt\d)$/i.test(tag);
+  if (portable && !reserved) return tag;
+  const stem = tag.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").slice(0, 20).replace(/^-+|-+$/g, "");
+  const digest = createHash("sha256").update(tag).digest("hex").slice(0, 24);
+  return `${stem || "tag"}~${digest}`;
 }
 
 function catInfo(key) {
-  return categories[key] || { name: key || "未分类", color: "#6b7280" };
+  return Object.hasOwn(categories, key) ? categories[key] : { name: key || "未分类", color: "#6b7280" };
+}
+
+function categoryPath(key) {
+  // Keep ordinary category URLs readable and map arbitrary keys to portable filenames.
+  const standard = /^[a-z][a-z0-9-]*$/.test(key) && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(key);
+  return `categories/${standard ? key : "_" + Buffer.from(String(key)).toString("hex")}.html`;
+}
+
+const iconPaths = {
+  book: '<path d="M3 4.5c3.2-.9 6.1-.4 9 1.4 2.9-1.8 5.8-2.3 9-1.4v14c-3.2-.9-6.1-.4-9 1.4-2.9-1.8-5.8-2.3-9-1.4zM12 6v14"/>',
+  research: '<circle cx="12" cy="12" r="1.3"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(55 12 12)"/>',
+  work: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M3 12c5 3 13 3 18 0M10 13h4"/>',
+  life: '<path d="M21 3c0 9-2 15-9 16-5 .8-9-2.5-8-7.4C5.4 5.3 13.6 6.3 21 3ZM3 21l12-12"/>',
+  essay: '<path d="m4 17 12-12a2.2 2.2 0 0 1 3 3L7 20l-4 1zM14 7l3 3"/>',
+  folder: '<path d="M3 6h6l2 2h10v11H3z"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+};
+
+function icon(key) {
+  return `<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">${Object.hasOwn(iconPaths, key) ? iconPaths[key] : iconPaths.folder}</svg>`;
 }
 
 /* ---------------------------------------------------------- */
@@ -65,6 +93,16 @@ function parseFrontmatter(raw) {
     const key = line.slice(0, idx).trim();
     let val = line.slice(idx + 1).trim();
     if (val === "") { data[key] = ""; continue; }
+    // 编辑器以 JSON 兼容的 YAML 标量和数组保存引号、反斜杠等字符。
+    if (val.startsWith('"') || /^\[\s*"/.test(val)) {
+      try {
+        const parsed = JSON.parse(val);
+        if (typeof parsed === "string" || (Array.isArray(parsed) && parsed.every(item => typeof item === "string"))) {
+          data[key] = parsed;
+          continue;
+        }
+      } catch { /* 手写的标签列表和引号沿用下方解析方式。 */ }
+    }
     if (/^\[.*\]$/.test(val)) {
       data[key] = val
         .slice(1, -1)
@@ -138,18 +176,20 @@ function mdToHtml(src) {
   let i = 0;
 
   const isBlank = (l) => l.trim() === "";
+  const openingFence = /^ {0,3}(`{3,})([^`]*)$/;
 
   while (i < lines.length) {
     const line = lines[i];
 
     // ---- 代码块 ----
-    const fence = line.match(/^```(\S*)\s*$/);
+    const fence = line.match(openingFence);
     if (fence) {
-      const lang = fence[1] || "";
+      const lang = fence[2].trim().split(/\s+/, 1)[0];
+      const closingFence = new RegExp("^ {0,3}`{" + fence[1].length + ",}\\s*$");
       const buf = [];
       i++;
-      while (i < lines.length && !/^```\s*$/.test(lines[i])) buf.push(lines[i++]);
-      i++; // 跳过结束 ```
+      while (i < lines.length && !closingFence.test(lines[i])) buf.push(lines[i++]);
+      if (i < lines.length) i++;
       out.push(
         `<pre><code${lang ? ` class="language-${escAttr(lang)}"` : ""}>${esc(buf.join("\n"))}</code></pre>`
       );
@@ -262,7 +302,7 @@ function mdToHtml(src) {
       const buf = [];
       while (i < lines.length && !isBlank(lines[i])) {
         const l = lines[i];
-        if (/^(#{1,6})\s/.test(l) || /^```/.test(l) || /^>\s?/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l)) break;
+        if (/^(#{1,6})\s/.test(l) || openingFence.test(l) || /^>\s?/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l)) break;
         buf.push(l);
         i++;
       }
@@ -291,12 +331,13 @@ function readPosts() {
     const slug = data.slug || f.replace(/\.md$/, "");
     const date = data.date ? new Date(String(data.date).replace(/\//g, "-")) : new Date();
     const { html, toc } = mdToHtml(body);
+    const tags = Array.isArray(data.tags) ? data.tags : data.tags ? [data.tags] : [];
     posts.push({
       slug,
       title: data.title || slug,
       date: isNaN(date) ? new Date() : date,
       category: data.category || "essay",
-      tags: Array.isArray(data.tags) ? data.tags : data.tags ? [data.tags] : [],
+      tags: [...new Set(tags.map(tag => String(tag).trim()).filter(Boolean))],
       summary: data.summary || "",
       cover: data.cover || "",
       body,
@@ -307,6 +348,23 @@ function readPosts() {
   }
   posts.sort((a, b) => b.date - a.date);
   return posts;
+}
+
+// 索引阅读时可见的文字。保留表格单元和段落之间的空格，行内强调不拆词。
+function searchText(html) {
+  const entities = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
+  return html
+    .replace(/<(script|style|head)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<\/?(?:p|div|section|h[1-6]|li|th|td|br|hr|pre|blockquote|dt|dd)\b[^>]*>/gi, " ")
+    .replace(/<\/?[a-z][^>]*>/gi, "")
+    .replace(/&(amp|lt|gt|quot|apos|nbsp|#\d+|#x[\da-f]+);/gi, (match, ref) => {
+      if (!ref.startsWith("#")) return entities[ref.toLowerCase()];
+      const code = /^#x/i.test(ref) ? parseInt(ref.slice(2), 16) : Number(ref.slice(1));
+      return code <= 0x10ffff ? String.fromCodePoint(code) : match;
+    })
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function readLabs() {
@@ -325,14 +383,19 @@ function readLabs() {
         try { meta = JSON.parse(metaM[1]); } catch { /* ignore */ }
       }
       const descM = raw.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
-      const text = raw
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<!--[\s\S]*?-->/g, " ")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 1200);
+      // 交互式综述把公开的文献卡片放在 rawdata 中，由浏览器排版。
+      const rawData = raw.match(/<script\b(?=[^>]*\bid=["']rawdata["'])(?=[^>]*\btype=["']application\/json["'])[^>]*>([\s\S]*?)<\/script>/i);
+      let bibliography = "";
+      if (rawData) {
+        try {
+          const entries = JSON.parse(rawData[1]);
+          if (Array.isArray(entries)) {
+            bibliography = entries.filter(Boolean).map((row) =>
+              [row.t, row.au, row.j, row.y, row.ai].flat().filter(Boolean).join(" ")
+            ).join(" ");
+          }
+        } catch { /* HTML 报告仍可按可见正文检索。 */ }
+      }
       return {
         name,
         title: meta.title || (titleM ? titleM[1].trim() : name),
@@ -342,7 +405,8 @@ function readLabs() {
         group: meta.group || "其他",
         short: meta.short || meta.title || (titleM ? titleM[1].trim() : name),
         post: meta.post || "",
-        text,
+        tags: Array.isArray(meta.tags) ? meta.tags : [],
+        text: [searchText(raw), bibliography].filter(Boolean).join(" "),
       };
     })
     .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
@@ -362,7 +426,7 @@ function nav(rel, active) {
   ];
   return items
     .map(([href, label]) => {
-      const isActive = active === href ? ' class="active"' : "";
+      const isActive = active === href ? ' class="active" aria-current="page"' : "";
       return `<a href="${rel}${href}"${isActive}>${label}</a>`;
     })
     .join("");
@@ -393,11 +457,11 @@ ${head}
 <body class="${bodyClass}">
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="${rel}index.html">
-      <span class="brand-mark">${esc(site.title.slice(0, 1))}</span>
+    <a class="brand" href="${rel}index.html" aria-label="${escAttr(site.title)}首页">
+      <span class="brand-mark">${icon("book")}</span>
       <span class="brand-text">${esc(site.title)}</span>
     </a>
-    <nav class="site-nav">${nav(rel, active)}</nav>
+    <nav class="site-nav" aria-label="主导航">${nav(rel, active)}</nav>
     <div class="header-tools">
       <a class="search-link" href="${rel}search.html" title="搜索" aria-label="搜索">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -406,6 +470,7 @@ ${head}
         <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
       </button>
+      <a class="write-link" href="${rel}compose.html" aria-label="写笔记">${icon("essay")}<span>写笔记</span></a>
     </div>
   </div>
 </header>
@@ -432,7 +497,7 @@ function postCard(p, rel) {
   <div class="card-meta">
     <time datetime="${isoDate(p.date)}">${fmtDate(p.date)}</time>
     <span class="cat-dot" style="--c:${cat.color}"></span>
-    <span class="cat-name">${esc(cat.name)}</span>
+    <a class="cat-name" href="${rel}${categoryPath(p.category)}">${esc(cat.name)}</a>
     <span class="read-time">${p.minutes} 分钟</span>
   </div>
   <h2 class="card-title"><a href="${rel}posts/${encodeURIComponent(p.slug)}.html">${esc(p.title)}</a></h2>
@@ -478,99 +543,83 @@ export function build({ quiet = false } = {}) {
     tagMap.get(k).posts.push(p);
   }
 
+  const collections = [...new Set([...Object.keys(categories), ...posts.map((p) => p.category)])]
+    .map((key) => ({ key, ...catInfo(key), items: posts.filter((p) => p.category === key) }))
+    .filter((collection) => collection.items.length)
+    .sort((a, b) => b.items.length - a.items.length);
+  const tagsSorted = [...tagMap.entries()].sort((a, b) => b[1].posts.length - a[1].posts.length);
+
   /* ---- 首页 ---- */
-  const latest = posts.slice(0, 8);
   const homeBody = `
-<section class="hero">
-  <h1 class="hero-title">${esc(site.title)}</h1>
-  <p class="hero-desc">${esc(site.description)}</p>
-  <div class="hero-stats">
-    <span><strong>${posts.length}</strong> 篇记录</span>
-    <span><strong>${tagMap.size}</strong> 个标签</span>
-    <span><strong>${labs.length}</strong> 个专题</span>
-  </div>
+<section class="notebook-hero">
+  <h1>学习笔记</h1>
+  <p>${esc(site.description)}</p>
+  <form class="home-search" role="search" action="search.html" method="get">
+    ${icon("search")}
+    <input type="search" name="q" aria-label="搜索笔记和专题" placeholder="搜索笔记、标签或正文关键词" required>
+    <button type="submit">搜索</button>
+  </form>
 </section>
+${collections.length ? `<section class="shelf">
+  <div class="home-heading"><h2>笔记分类</h2><span>${posts.length} 篇记录</span></div>
+  <div class="collection-grid">${collections.map((c) => `
+    <a class="collection-card" href="${categoryPath(c.key)}" style="--collection-color:${escAttr(c.color)}">
+      <span class="collection-icon">${icon(c.key)}</span><span><strong>${esc(c.name)}</strong><small>${c.items.length} 篇记录</small></span>
+    </a>`).join("")}
+  </div>
+</section>` : ""}
+<div class="home-columns">
+  <section class="recent-notes">
+    <div class="home-heading"><h2>最近更新</h2><a href="posts.html">全部文章</a></div>
+    <div class="post-list">${posts.slice(0, 6).map((p) => postCard(p, "")).join("\n") || '<p class="empty">还没有已发布的笔记。</p>'}</div>
+  </section>
+  <aside class="home-aside">
+    ${labs.length ? `<section class="aside-panel">
+      <div class="home-heading"><h2>专题与报告</h2><a href="labs.html">全部专题</a></div>
+      <ul class="report-index">${labs.slice(0, 4).map((l) => `<li><a href="labs/${encodeURIComponent(l.name)}.html">
+        <small>${esc(l.group)}</small><strong>${esc(l.short)}</strong></a></li>`).join("")}</ul>
+    </section>` : ""}
+    ${tagsSorted.length ? `<section class="aside-panel">
+      <div class="home-heading"><h2>常用标签</h2><a href="tags.html">全部标签</a></div>
+      <div class="quick-tags">${tagsSorted.slice(0, 8).map(([slug, tag]) => `<a href="tags/${encodeURIComponent(slug)}.html"># ${esc(tag.name)}</a>`).join("")}</div>
+    </section>` : ""}
+  </aside>
+</div>`;
+  writeFile("index.html", layout({ body: homeBody, active: "index.html", bodyClass: "page-home" }));
 
-<section class="section">
-  <div class="section-head">
-    <h2>最近记录</h2>
-    <div class="filters" id="filters">
-      <button class="chip active" data-filter="all">全部</button>
-      ${Object.entries(categories)
-        .filter(([k]) => posts.some((p) => p.category === k))
-        .map(([k, v]) => `<button class="chip" data-filter="${k}">${esc(v.name)}</button>`)
-        .join("")}
-    </div>
-  </div>
-  <div class="post-list" id="post-list">
-    ${latest.map((p) => postCard(p, "")).join("\n")}
-  </div>
-  ${
-    posts.length > latest.length
-      ? `<p class="more"><a class="btn-ghost" href="posts.html">查看全部 ${posts.length} 篇 →</a></p>`
-      : ""
+  /* ---- 文章列表和分类归档 ---- */
+  function archiveBody(collection) {
+    const rel = collection ? "../" : "";
+    const entries = collection ? collection.items : posts;
+    const current = ' class="chip active" aria-current="page"';
+    return `<section class="page-head">
+      <h1>${collection ? esc(collection.name) : "全部文章"}</h1>
+      <p class="page-sub">${entries.length} 篇记录 · 按日期排列</p>
+    </section>
+    <nav class="filters archive-filters" aria-label="按分类浏览">
+      <a href="${rel}posts.html"${collection ? ' class="chip"' : current}>全部</a>
+      ${collections.map((c) => `<a href="${rel}${categoryPath(c.key)}"${c === collection ? current : ' class="chip"'}>${esc(c.name)} <span>${c.items.length}</span></a>`).join("")}
+    </nav>
+    <div class="post-list">${entries.map((p) => postCard(p, rel)).join("\n") || '<p class="empty">还没有已发布的笔记。</p>'}</div>`;
   }
-</section>
-
-${
-  labs.length
-    ? `<section class="section">
-  <div class="section-head"><h2>专题与报告</h2><a class="tiny-link" href="labs.html">全部 →</a></div>
-  <div class="lab-grid">
-    ${labs
-      .slice(0, 4)
-      .map(
-        (l) => `<a class="lab-card" href="labs/${encodeURIComponent(l.name)}.html">
-      <span class="lab-tag">${esc(l.tag)}</span>
-      <h3>${esc(l.title)}</h3>
-      <p>${esc(l.summary)}</p>
-      ${l.date ? `<time>${fmtDate(l.date)}</time>` : ""}
-    </a>`
-      )
-      .join("\n")}
-  </div>
-</section>`
-    : ""
-}
-`;
-  writeFile("index.html", layout({ body: homeBody, active: "index.html" }));
-
-  /* ---- 文章列表 ---- */
-  const listBody = `
-<section class="page-head">
-  <h1>全部文章</h1>
-  <p class="page-sub">共 ${posts.length} 篇 · 按时间倒序</p>
-</section>
-<div class="filters" id="filters">
-  <button class="chip active" data-filter="all">全部</button>
-  ${Object.entries(categories)
-    .filter(([k]) => posts.some((p) => p.category === k))
-    .map(([k, v]) => `<button class="chip" data-filter="${k}">${esc(v.name)}</button>`)
-    .join("")}
-</div>
-<div class="post-list" id="post-list">
-${posts.map((p) => postCard(p, "")).join("\n")}
-</div>
-`;
-  writeFile("posts.html", layout({ title: "全部文章", body: listBody, active: "posts.html" }));
+  writeFile("posts.html", layout({ title: "全部文章", body: archiveBody(), active: "posts.html" }));
+  for (const c of collections) {
+    writeFile(categoryPath(c.key), layout({ title: c.name, body: archiveBody(c), rel: "../", active: "posts.html" }));
+  }
+  writeFile("compose.html", layout({ title: "写笔记", body: composePage(categories) }));
 
   /* ---- 文章详情 ---- */
   posts.forEach((p, idx) => {
     const cat = catInfo(p.category);
     const prev = posts[idx + 1]; // 更早
     const next = posts[idx - 1]; // 更新
-    const tocHtml = p.toc.length
-      ? `<nav class="toc" aria-label="目录">
-  <div class="toc-title">目录</div>
-  ${p.toc.map((t) => `<a class="toc-${t.level}" href="#${t.id}">${esc(t.text)}</a>`).join("\n  ")}
-</nav>`
-      : "";
+    const tocLinks = p.toc.map((t) => `<a class="toc-${t.level}" href="#${t.id}">${esc(t.text)}</a>`).join("\n");
 
     const body = `
 <article class="post">
   <div class="post-head">
     <div class="post-kicker">
-      <span class="cat-pill" style="--c:${cat.color}">${esc(cat.name)}</span>
+      <a class="cat-pill" href="../${categoryPath(p.category)}" style="--c:${cat.color}">${esc(cat.name)}</a>
       <time datetime="${isoDate(p.date)}">${fmtDate(p.date)}</time>
       <span>${p.minutes} 分钟阅读</span>
     </div>
@@ -579,8 +628,9 @@ ${posts.map((p) => postCard(p, "")).join("\n")}
     ${p.tags.length ? `<div class="card-tags">${p.tags.map((t) => `<a class="tag" href="../tags/${encodeURIComponent(tagSlug(t))}.html">#${esc(t)}</a>`).join(" ")}</div>` : ""}
   </div>
   <div class="post-body${p.toc.length ? " with-toc" : ""}">
+    ${tocLinks ? `<details class="toc-inline"><summary>文章目录 · ${p.toc.length} 节</summary><nav aria-label="文章目录">${tocLinks}</nav></details>` : ""}
     <div class="prose">${p.html}</div>
-    ${tocHtml}
+    ${tocLinks ? `<nav class="toc" aria-label="目录"><div class="toc-title">目录</div>${tocLinks}</nav>` : ""}
   </div>
   <nav class="post-nav">
     ${next ? `<a class="pn prev" href="${encodeURIComponent(next.slug)}.html"><span>← 更新的一篇</span><strong>${esc(next.title)}</strong></a>` : "<span></span>"}
@@ -604,7 +654,6 @@ ${posts.map((p) => postCard(p, "")).join("\n")}
   });
 
   /* ---- 标签 ---- */
-  const tagsSorted = [...tagMap.entries()].sort((a, b) => b[1].posts.length - a[1].posts.length);
   const tagsBody = `
 <section class="page-head">
   <h1>标签</h1>
@@ -695,7 +744,7 @@ ${g.items.map(labCard).join("\n")}
       const links = others
         .map((o) => `<a href="./${encodeURIComponent(o.name)}.html">${esc(o.short)}</a>`)
         .join("");
-      const postLink = l.post
+      const postLink = l.post && posts.some((p) => p.slug === l.post)
         ? `<a class="blog-xnav-post" href="../posts/${encodeURIComponent(l.post)}.html">读文字版</a>`
         : "";
       const bar = `<div class="blog-xnav"><span class="blog-xnav-t">相关</span>${links}${postLink}<a class="blog-xnav-all" href="../labs.html">全部专题 →</a></div>${xnavCss}`;
@@ -720,49 +769,62 @@ ${g.items.map(labCard).join("\n")}
   writeFile("about.html", layout({ title: "关于", body: aboutBody, active: "about.html" }));
 
   /* ---- 搜索 ---- */
-  const searchBody = `
-<section class="page-head">
-  <h1>搜索</h1>
-  <p class="page-sub">在 ${posts.length} 篇文章和 ${labs.length} 个专题里找点东西</p>
-</section>
-<div class="search-box">
-  <input id="search-input" type="search" placeholder="输入关键词，比如「量子」「周记」…" autocomplete="off" autofocus>
-</div>
-<div id="search-results" class="post-list"></div>
-<p id="search-empty" class="empty" hidden>没有找到相关内容。</p>
-`;
-  writeFile(
-    "search.html",
-    layout({
-      title: "搜索",
-      body: searchBody,
-      head: '<link rel="preload" href="search-index.json" as="fetch" crossorigin>',
-    })
-  );
-
   const index = [
     ...posts.map((p) => ({
       href: `posts/${encodeURIComponent(p.slug)}.html`,
       kind: "article",
       title: p.title,
+      date: isoDate(p.date),
       dateText: fmtDate(p.date),
+      scope: `category:${p.category}`,
       cat: catInfo(p.category).name,
       tags: p.tags,
       summary: p.summary,
-      text: p.body.replace(/[#>*`|-]/g, " ").replace(/\s+/g, " ").slice(0, 600),
+      text: searchText(p.html),
     })),
     ...labs.map((l) => ({
       href: `labs/${encodeURIComponent(l.name)}.html`,
       kind: "lab",
       title: l.title,
+      date: l.date ? isoDate(l.date) : "",
       dateText: l.date ? fmtDate(l.date) : "",
-      cat: l.tag || "专题",
-      tags: [l.tag].filter(Boolean),
+      scope: `group:${l.group}`,
+      cat: l.group,
+      tags: [...new Set([l.tag, ...l.tags].filter(Boolean))],
       summary: l.summary,
       text: l.text || "",
     })),
   ];
-  writeFile("search-index.json", JSON.stringify(index));
+  const searchData = JSON.stringify(index);
+  writeFile("search-index.json", searchData);
+  const scopeGroup = (kind, label) => {
+    const entries = index.filter((entry) => entry.kind === kind);
+    if (!entries.length) return "";
+    const choices = new Map(entries.map((entry) => [entry.scope, entry.cat]));
+    return `<optgroup label="${label}"><option value="${kind}">全部${label}</option>${
+      Array.from(choices, ([key, name]) => `<option value="${escAttr(key)}">${esc(name)}</option>`).join("")
+    }</optgroup>`;
+  };
+  const searchBody = `
+<section class="page-head">
+  <h1>站内搜索</h1>
+  <p class="page-sub">搜索 ${posts.length} 篇文章与 ${labs.length} 个专题的标题、标签和正文。</p>
+</section>
+<form id="search-form" class="search-box" action="search.html" method="get" role="search">
+  <label for="search-input">关键词</label>
+  <input id="search-input" name="q" type="search" placeholder="例如：里德堡、量子门" autocomplete="off">
+  <label for="search-scope">搜索范围</label>
+  <select id="search-scope" name="scope"><option value="">全部内容</option>${scopeGroup("article", "文章")}${scopeGroup("lab", "专题")}</select>
+</form>
+<noscript><p>启用 JavaScript 后可搜索正文，也可以浏览<a href="posts.html">所有文章</a>或<a href="labs.html">专题报告</a>。</p></noscript>
+<p id="search-status" role="status" aria-live="polite"></p>
+<div id="search-results" class="post-list"></div>
+<script id="search-data" type="application/json">${searchData.replace(/</g, "\\u003c")}</script>`;
+  writeFile("search.html", layout({
+    title: "站内搜索",
+    body: searchBody,
+    head: '<link rel="stylesheet" href="assets/search.css">',
+  }));
 
   /* ---- 404 ---- */
   writeFile(
@@ -815,6 +877,8 @@ ${items}
       `${base}/labs.html`,
       `${base}/tags.html`,
       `${base}/about.html`,
+      ...collections.map((c) => `${base}/${categoryPath(c.key)}`),
+      ...tagsSorted.map(([slug]) => `${base}/tags/${encodeURIComponent(slug)}.html`),
       ...posts.map((p) => `${base}/posts/${encodeURIComponent(p.slug)}.html`),
       ...labs.map((l) => `${base}/labs/${encodeURIComponent(l.name)}.html`),
     ];
