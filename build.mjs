@@ -1,5 +1,5 @@
 // ============================================================
-//  静态博客构建脚本 —— 纯 Node，零依赖
+//  静态博客构建脚本 —— Node.js，公式排版由随项目提供的 KaTeX 完成
 //  用法：node build.mjs
 // ============================================================
 
@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { site, categories, labGroups } from "./site.config.mjs";
 import { composePage } from "./tools/compose-page.mjs";
+import { mathMarker, markHtmlMath, typeset, mathStyles } from "./tools/math.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
@@ -122,14 +123,27 @@ function parseFrontmatter(raw) {
 /*  Markdown 渲染（够用版：标题/列表/表格/代码/引用/链接/图片） */
 /* ---------------------------------------------------------- */
 
-function inline(text) {
-  const codes = [];
-  let t = text.replace(/`([^`]+)`/g, (_m, c) => {
-    codes.push(c);
-    return `\u0000C${codes.length - 1}\u0000`;
+function protectInline(text) {
+  // Match code spans and link destinations first. A single dollar opens only
+  // before non-space text and closes only after non-space text, never before a digit.
+  const tokens = /(?<ticks>\x60+)(?!\x60)(?<code>[\s\S]*?)(?<!\x60)\k<ticks>(?!\x60)|!\[[^\]]*\]\([^)]*\)|\]\([^)]*\)|\\(?<literal>[$|\\])|\\\((?<paren>.+?)\\\)|\\\[(?<bracket>.+?)\\\]|\$\$(?<display>.+?)\$\$|\$(?![\s$])(?<math>(?:\\.|[^$\\])+?)(?<!\s)\$(?![\d$])/g;
+  const fragments = [];
+  const masked = text.replace(tokens, (token, ...args) => {
+    const g = args.at(-1);
+    let fragment;
+    if (g.code !== undefined) fragment = "<code>" + esc(g.code) + "</code>";
+    else if (g.literal !== undefined) fragment = esc(g.literal);
+    else if (g.math ?? g.paren ?? g.display ?? g.bracket) {
+      fragment = mathMarker(g.math ?? g.paren ?? g.display ?? g.bracket, g.display !== undefined || g.bracket !== undefined);
+    } else return token;
+    fragments.push(fragment);
+    return "\u0000F" + (fragments.length - 1) + "\u0000";
   });
+  return { masked, restore: (html) => html.replace(/\u0000F(\d+)\u0000/g, (_, i) => fragments[i]) };
+}
 
-  t = esc(t);
+function formatInline(text) {
+  let t = esc(text);
 
   // 图片
   t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_m, alt, src, title) => {
@@ -149,9 +163,17 @@ function inline(text) {
   t = t.replace(/~~([^~]+)~~/g, "<del>$1</del>");
   t = t.replace(/==([^=]+)==/g, "<mark>$1</mark>");
 
-  // 行内代码还原
-  t = t.replace(/\u0000C(\d+)\u0000/g, (_m, i) => `<code>${esc(codes[Number(i)])}</code>`);
   return t;
+}
+
+function inline(text) {
+  const { masked, restore } = protectInline(text);
+  return restore(formatInline(masked));
+}
+
+function tableCells(line) {
+  const { masked, restore } = protectInline(line.trim().replace(/^\|/, "").replace(/\|$/, ""));
+  return masked.split("|").map((cell) => restore(formatInline(cell.trim())));
 }
 
 function slugifyHeading(text, used) {
@@ -176,6 +198,7 @@ function mdToHtml(src) {
   let i = 0;
 
   const isBlank = (l) => l.trim() === "";
+  const displayStart = /^\s*(\$\$|\\\[)/;
   const openingFence = /^ {0,3}(`{3,})([^`]*)$/;
 
   while (i < lines.length) {
@@ -196,13 +219,34 @@ function mdToHtml(src) {
       continue;
     }
 
+    // ---- 独立公式 ----
+    const display = line.match(displayStart);
+    if (display) {
+      const end = display[1] === "$$" ? "$$" : "\\]";
+      let last = i;
+      const first = line.slice(display[0].length).trimEnd();
+      if (!first.endsWith(end)) {
+        last++;
+        while (last < lines.length && !lines[last].trimEnd().endsWith(end)) last++;
+      }
+      if (last < lines.length) {
+        const tex = [first, ...lines.slice(i + 1, last + 1)].join("\n").trimEnd().slice(0, -end.length);
+        out.push(mathMarker(tex, true));
+        i = last + 1;
+        continue;
+      }
+    }
+
     // ---- 标题 ----
     const h = line.match(/^(#{1,6})\s+(.*)$/);
     if (h) {
       const level = h[1].length;
       const text = h[2].trim();
       const id = slugifyHeading(text.replace(/[*`_]/g, ""), usedIds);
-      if (level === 2 || level === 3) toc.push({ level, text: text.replace(/[*`_]/g, ""), id });
+      if (level === 2 || level === 3) {
+        const { masked, restore } = protectInline(text);
+        toc.push({ level, label: restore(esc(masked.replace(/[*_]/g, ""))), id });
+      }
       out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
       i++;
       continue;
@@ -217,20 +261,18 @@ function mdToHtml(src) {
 
     // ---- 表格 ----
     if (line.includes("|") && i + 1 < lines.length && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i + 1])) {
-      const parseRow = (l) =>
-        l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
-      const headCells = parseRow(line);
+      const headCells = tableCells(line);
       i += 2;
       const rows = [];
       while (i < lines.length && lines[i].includes("|") && !isBlank(lines[i])) {
-        rows.push(parseRow(lines[i]));
+        rows.push(tableCells(lines[i]));
         i++;
       }
       let html = "<div class=\"table-wrap\"><table><thead><tr>";
-      html += headCells.map((c) => `<th>${inline(c)}</th>`).join("");
+      html += headCells.map((c) => `<th>${c}</th>`).join("");
       html += "</tr></thead><tbody>";
       for (const r of rows) {
-        html += "<tr>" + r.map((c) => `<td>${inline(c)}</td>`).join("") + "</tr>";
+        html += "<tr>" + r.map((c) => `<td>${c}</td>`).join("") + "</tr>";
       }
       html += "</tbody></table></div>";
       out.push(html);
@@ -293,7 +335,7 @@ function mdToHtml(src) {
     if (/^\s*</.test(line)) {
       const buf = [];
       while (i < lines.length && !isBlank(lines[i])) buf.push(lines[i++]);
-      out.push(buf.join("\n"));
+      out.push(markHtmlMath(buf.join("\n")));
       continue;
     }
 
@@ -302,7 +344,7 @@ function mdToHtml(src) {
       const buf = [];
       while (i < lines.length && !isBlank(lines[i])) {
         const l = lines[i];
-        if (/^(#{1,6})\s/.test(l) || openingFence.test(l) || /^>\s?/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l)) break;
+        if ((buf.length && displayStart.test(l)) || /^(#{1,6})\s/.test(l) || openingFence.test(l) || /^>\s?/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l)) break;
         buf.push(l);
         i++;
       }
@@ -434,6 +476,10 @@ function nav(rel, active) {
 
 function renderPage(assets, { title, desc, body, rel = "", active = "", head = "", bodyClass = "" }) {
   const fullTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.description}`;
+  if (body.includes('<span data-blog-math="')) {
+    body = typeset(body, fullTitle);
+    head += mathStyles(rel);
+  }
   const description = desc || site.description;
   const favicon =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231b2a4a'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle' fill='%23f4f1ea' font-family='Georgia,serif'%3E%E5%8D%9A%3C/text%3E%3C/svg%3E";
@@ -633,7 +679,7 @@ ${collections.length ? `<section class="shelf">
     const cat = catInfo(p.category);
     const prev = posts[idx + 1]; // 更早
     const next = posts[idx - 1]; // 更新
-    const tocLinks = p.toc.map((t) => `<a class="toc-${t.level}" href="#${t.id}">${esc(t.text)}</a>`).join("\n");
+    const tocLinks = p.toc.map((t) => `<a class="toc-${t.level}" href="#${t.id}">${t.label}</a>`).join("\n");
 
     const body = `
 <article class="post">
@@ -760,6 +806,12 @@ ${g.items.map(labCard).join("\n")}
 
     for (const l of labs) {
       let raw = fs.readFileSync(path.join(labsDir, `${l.name}.html`), "utf8");
+      raw = markHtmlMath(raw);
+      if (raw.includes('<span data-blog-math="')) {
+        raw = typeset(raw, l.name);
+        const stylesheet = mathStyles("../");
+        raw = /<\/head\s*>/i.test(raw) ? raw.replace(/<\/head\s*>/i, (tag) => stylesheet + tag) : stylesheet + raw;
+      }
       const others = labs.filter((x) => x.name !== l.name);
       const links = others
         .map((o) => `<a href="./${encodeURIComponent(o.name)}.html">${esc(o.short)}</a>`)

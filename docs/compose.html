@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="assets/style.css?v=9241fc83c82bd5af">
 <link rel="alternate" type="application/rss+xml" title="我的博客" href="feed.xml">
 <script>(function(){try{var t=localStorage.getItem("blog-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
-
+<link rel="stylesheet" href="assets/katex/0.19.1/katex.min.css"><style>.katex{font-size:1.06em}.katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden;padding:.35em 0}.katex-display>.katex{width:max-content;min-width:100%}</style>
 </head>
 <body class="">
 <header class="site-header">
@@ -37,7 +37,7 @@
 </header>
 <main class="wrap">
 
-<link rel="stylesheet" href="assets/compose.css?v=ee03f6eede74517d">
+<link rel="stylesheet" href="assets/compose.css?v=d807b412ad29bece">
 <section class="page-head">
   <h1>写笔记</h1>
   <p class="page-sub">草稿保存在当前浏览器。写完后可导出 Markdown，放入博客的 <code>content/posts/</code> 目录。</p>
@@ -49,6 +49,15 @@
     <input id="note-title" name="title" type="text" placeholder="这篇笔记记录什么？" required>
     <label for="note-body">正文 <small>Markdown</small></label>
     <textarea id="note-body" name="body" rows="15" placeholder="从一个问题、一次实验或一段阅读开始……" required></textarea>
+    <details class="note-math-help">
+      <summary>怎样写公式？</summary>
+      <p>行内写 <code>$B \gg \Omega$</code>，排版为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>≫</mo><mi mathvariant="normal">Ω</mi></mrow><annotation encoding="application/x-tex">B \gg \Omega</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≫</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord">Ω</span></span></span></span>。</p>
+      <p>单独一行的公式用双美元符号包围。</p>
+      <pre><code>$$
+B = \frac{C_6}{R^6}
+$$</code></pre>
+      <span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>B</mi><mo>=</mo><mfrac><msub><mi>C</mi><mn>6</mn></msub><msup><mi>R</mi><mn>6</mn></msup></mfrac></mrow><annotation encoding="application/x-tex">B = \frac{C_6}{R^6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.0077em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.0715em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span>
+    </details>
   </div>
   <fieldset class="note-details">
     <legend>笔记信息</legend>
