@@ -9,8 +9,10 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { site, categories, labGroups } from "./site.config.mjs";
 import { composePage } from "./tools/compose-page.mjs";
-import { mathMarker, markHtmlMath, typeset, mathStyles } from "./tools/math.mjs";
+import markdown from "./tools/markdown.cjs";
+import { typeset, mathStyles, katexVersion } from "./tools/math.mjs";
 
+const { mdToHtml, esc, markHtmlMath } = markdown;
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
 // 构建产物目录。用 GitHub Pages「分支 + /docs」方式发布时必须是 docs；
@@ -20,9 +22,6 @@ const DIST = path.join(ROOT, process.env.OUT_DIR || "docs");
 /* ---------------------------------------------------------- */
 /*  工具函数                                                   */
 /* ---------------------------------------------------------- */
-
-const esc = (s = "") =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const escAttr = esc;
 
@@ -117,245 +116,6 @@ function parseFrontmatter(raw) {
     }
   }
   return { data, body: raw.slice(m[0].length) };
-}
-
-/* ---------------------------------------------------------- */
-/*  Markdown 渲染（够用版：标题/列表/表格/代码/引用/链接/图片） */
-/* ---------------------------------------------------------- */
-
-function protectInline(text) {
-  // Match code spans and link destinations first. A single dollar opens only
-  // before non-space text and closes only after non-space text, never before a digit.
-  const tokens = /(?<ticks>\x60+)(?!\x60)(?<code>[\s\S]*?)(?<!\x60)\k<ticks>(?!\x60)|!\[[^\]]*\]\([^)]*\)|\]\([^)]*\)|\\(?<literal>[$|\\])|\\\((?<paren>.+?)\\\)|\\\[(?<bracket>.+?)\\\]|\$\$(?<display>.+?)\$\$|\$(?![\s$])(?<math>(?:\\.|[^$\\])+?)(?<!\s)\$(?![\d$])/g;
-  const fragments = [];
-  const masked = text.replace(tokens, (token, ...args) => {
-    const g = args.at(-1);
-    let fragment;
-    if (g.code !== undefined) fragment = "<code>" + esc(g.code) + "</code>";
-    else if (g.literal !== undefined) fragment = esc(g.literal);
-    else if (g.math ?? g.paren ?? g.display ?? g.bracket) {
-      fragment = mathMarker(g.math ?? g.paren ?? g.display ?? g.bracket, g.display !== undefined || g.bracket !== undefined);
-    } else return token;
-    fragments.push(fragment);
-    return "\u0000F" + (fragments.length - 1) + "\u0000";
-  });
-  return { masked, restore: (html) => html.replace(/\u0000F(\d+)\u0000/g, (_, i) => fragments[i]) };
-}
-
-function formatInline(text) {
-  let t = esc(text);
-
-  // 图片
-  t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_m, alt, src, title) => {
-    return `<img src="${src}" alt="${alt}"${title ? ` title="${title}"` : ""} loading="lazy">`;
-  });
-
-  // 链接（外链自动加 target=_blank）
-  t = t.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_m, label, href, title) => {
-    const external = /^https?:\/\//i.test(href);
-    const attrs = external ? ' target="_blank" rel="noopener"' : "";
-    return `<a href="${href}"${title ? ` title="${title}"` : ""}${attrs}>${label}</a>`;
-  });
-
-  // 粗体 / 斜体 / 删除线
-  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  t = t.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
-  t = t.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-  t = t.replace(/==([^=]+)==/g, "<mark>$1</mark>");
-
-  return t;
-}
-
-function inline(text) {
-  const { masked, restore } = protectInline(text);
-  return restore(formatInline(masked));
-}
-
-function tableCells(line) {
-  const { masked, restore } = protectInline(line.trim().replace(/^\|/, "").replace(/\|$/, ""));
-  return masked.split("|").map((cell) => restore(formatInline(cell.trim())));
-}
-
-function slugifyHeading(text, used) {
-  let base = text
-    .toLowerCase()
-    .replace(/[^\w\u4e00-\u9fa5\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-  if (!base) base = "section";
-  let id = base;
-  let n = 2;
-  while (used.has(id)) id = `${base}-${n++}`;
-  used.add(id);
-  return id;
-}
-
-function mdToHtml(src) {
-  const lines = src.replace(/\r\n/g, "\n").split("\n");
-  const out = [];
-  const toc = [];
-  const usedIds = new Set();
-  let i = 0;
-
-  const isBlank = (l) => l.trim() === "";
-  const displayStart = /^\s*(\$\$|\\\[)/;
-  const openingFence = /^ {0,3}(`{3,})([^`]*)$/;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    // ---- 代码块 ----
-    const fence = line.match(openingFence);
-    if (fence) {
-      const lang = fence[2].trim().split(/\s+/, 1)[0];
-      const closingFence = new RegExp("^ {0,3}`{" + fence[1].length + ",}\\s*$");
-      const buf = [];
-      i++;
-      while (i < lines.length && !closingFence.test(lines[i])) buf.push(lines[i++]);
-      if (i < lines.length) i++;
-      out.push(
-        `<pre><code${lang ? ` class="language-${escAttr(lang)}"` : ""}>${esc(buf.join("\n"))}</code></pre>`
-      );
-      continue;
-    }
-
-    // ---- 独立公式 ----
-    const display = line.match(displayStart);
-    if (display) {
-      const end = display[1] === "$$" ? "$$" : "\\]";
-      let last = i;
-      const first = line.slice(display[0].length).trimEnd();
-      if (!first.endsWith(end)) {
-        last++;
-        while (last < lines.length && !lines[last].trimEnd().endsWith(end)) last++;
-      }
-      if (last < lines.length) {
-        const tex = [first, ...lines.slice(i + 1, last + 1)].join("\n").trimEnd().slice(0, -end.length);
-        out.push(mathMarker(tex, true));
-        i = last + 1;
-        continue;
-      }
-    }
-
-    // ---- 标题 ----
-    const h = line.match(/^(#{1,6})\s+(.*)$/);
-    if (h) {
-      const level = h[1].length;
-      const text = h[2].trim();
-      const id = slugifyHeading(text.replace(/[*`_]/g, ""), usedIds);
-      if (level === 2 || level === 3) {
-        const { masked, restore } = protectInline(text);
-        toc.push({ level, label: restore(esc(masked.replace(/[*_]/g, ""))), id });
-      }
-      out.push(`<h${level} id="${id}">${inline(text)}</h${level}>`);
-      i++;
-      continue;
-    }
-
-    // ---- 分隔线 ----
-    if (/^\s*(---|\*\*\*|___)\s*$/.test(line)) {
-      out.push("<hr>");
-      i++;
-      continue;
-    }
-
-    // ---- 表格 ----
-    if (line.includes("|") && i + 1 < lines.length && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i + 1])) {
-      const headCells = tableCells(line);
-      i += 2;
-      const rows = [];
-      while (i < lines.length && lines[i].includes("|") && !isBlank(lines[i])) {
-        rows.push(tableCells(lines[i]));
-        i++;
-      }
-      let html = "<div class=\"table-wrap\"><table><thead><tr>";
-      html += headCells.map((c) => `<th>${c}</th>`).join("");
-      html += "</tr></thead><tbody>";
-      for (const r of rows) {
-        html += "<tr>" + r.map((c) => `<td>${c}</td>`).join("") + "</tr>";
-      }
-      html += "</tbody></table></div>";
-      out.push(html);
-      continue;
-    }
-
-    // ---- 引用块 ----
-    if (/^>\s?/.test(line)) {
-      const buf = [];
-      while (i < lines.length && /^>\s?/.test(lines[i])) {
-        buf.push(lines[i].replace(/^>\s?/, ""));
-        i++;
-      }
-      out.push(`<blockquote>${mdToHtml(buf.join("\n")).html}</blockquote>`);
-      continue;
-    }
-
-    // ---- 列表 ----
-    const ulm = line.match(/^(\s*)([-*+])\s+(.*)$/);
-    const olm = line.match(/^(\s*)(\d+)[.)]\s+(.*)$/);
-    if (ulm || olm) {
-      const ordered = Boolean(olm);
-      const items = [];
-      const baseIndent = (ordered ? olm[1] : ulm[1]).length;
-      while (i < lines.length) {
-        const l = lines[i];
-        const um = l.match(/^(\s*)([-*+])\s+(.*)$/);
-        const om = l.match(/^(\s*)(\d+)[.)]\s+(.*)$/);
-        const m2 = ordered ? om : um;
-        if (!m2) break;
-        const indent = m2[1].length;
-        if (indent > baseIndent + 1) {
-          // 嵌套一层
-          const sub = [];
-          while (i < lines.length) {
-            const s = lines[i].match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/);
-            if (!s || s[1].length <= baseIndent) break;
-            sub.push(lines[i]);
-            i++;
-          }
-          const subHtml = mdToHtml(sub.map((s) => s.trim()).join("\n")).html;
-          if (items.length) items[items.length - 1].children = subHtml;
-          else items.push({ text: "", children: subHtml });
-          continue;
-        }
-        items.push({ text: m2[3] });
-        i++;
-      }
-      const tag = ordered ? "ol" : "ul";
-      let html = `<${tag}>`;
-      for (const it of items) {
-        html += `<li>${inline(it.text || "")}${it.children ? it.children : ""}</li>`;
-      }
-      html += `</${tag}>`;
-      out.push(html);
-      continue;
-    }
-
-    // ---- 原始 HTML 块 ----
-    if (/^\s*</.test(line)) {
-      const buf = [];
-      while (i < lines.length && !isBlank(lines[i])) buf.push(lines[i++]);
-      out.push(markHtmlMath(buf.join("\n")));
-      continue;
-    }
-
-    // ---- 段落 ----
-    if (!isBlank(line)) {
-      const buf = [];
-      while (i < lines.length && !isBlank(lines[i])) {
-        const l = lines[i];
-        if ((buf.length && displayStart.test(l)) || /^(#{1,6})\s/.test(l) || openingFence.test(l) || /^>\s?/.test(l) || /^\s*([-*+]|\d+[.)])\s+/.test(l)) break;
-        buf.push(l);
-        i++;
-      }
-      if (buf.length) out.push(`<p>${inline(buf.join("\n").replace(/\n/g, " "))}</p>`);
-      continue;
-    }
-
-    i++;
-  }
-
-  return { html: out.join("\n"), toc };
 }
 
 /* ---------------------------------------------------------- */
@@ -587,8 +347,13 @@ function prepareAssets() {
   const css = fs.readFileSync(cssPath, "utf8");
   fs.writeFileSync(cssPath, css.replaceAll('url("optics-cover.webp")', `url("${versioned("optics-cover.webp")}")`));
 
-  const files = ["style.css", "site.js", "search.css", "compose.css", "compose.js"];
-  return Object.fromEntries(files.map((name) => [name, `assets/${versioned(name)}`]));
+  fs.copyFileSync(path.join(ROOT, "tools/markdown.cjs"), path.join(destination, "note-preview.js"));
+  const files = ["style.css", "site.js", "search.css", "compose.css", "compose.js", "note-preview.js"];
+  const assets = Object.fromEntries(files.map((name) => [name, `assets/${versioned(name)}`]));
+  const browserKatex = `katex/${katexVersion}/katex.min.js`;
+  fs.copyFileSync(path.join(ROOT, "tools/vendor/katex/katex.cjs"), path.join(destination, browserKatex));
+  assets["katex.js"] = `assets/${versioned(browserKatex)}`;
+  return assets;
 }
 
 export function build({ quiet = false } = {}) {

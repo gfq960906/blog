@@ -9,11 +9,52 @@
   const status = form.querySelector(".note-status");
   const download = form.querySelector(".note-download");
   const newNote = form.querySelector(".note-new");
+  const preview = document.getElementById("note-preview");
+  const emptyPreview = preview?.firstElementChild;
+  const previewStatus = form.querySelector(".note-preview-status");
+  const canPreview = preview && window.katex && typeof window.renderBlogNotePreview === "function";
+  let previewTimer;
   let storageUsable = true;
   let unsavedInput = false;
 
   function say(message) {
     if (status.textContent !== message) status.textContent = message;
+  }
+
+  function setPreviewStatus(message) {
+    if (previewStatus.textContent !== message) previewStatus.textContent = message;
+  }
+
+  function syncPreviewScroll() {
+    const sourceRange = fields.body.scrollHeight - fields.body.clientHeight;
+    if (preview && sourceRange > 0) {
+      preview.scrollTop = fields.body.scrollTop / sourceRange * (preview.scrollHeight - preview.clientHeight);
+    }
+  }
+
+  function updatePreview() {
+    clearTimeout(previewTimer);
+    if (!canPreview) return;
+    const markdown = fields.body.value;
+    if (!markdown.trim()) {
+      preview.replaceChildren(emptyPreview);
+      preview.scrollTop = 0;
+      setPreviewStatus("");
+      return;
+    }
+    try {
+      preview.innerHTML = window.renderBlogNotePreview(markdown, window.katex);
+      const errors = preview.querySelectorAll(".note-math-error").length;
+      setPreviewStatus(errors ? errors + " 处公式待检查" : "");
+      const body = fields.body;
+      if (document.activeElement === body && body.selectionEnd === markdown.length &&
+          body.scrollTop + body.clientHeight >= body.scrollHeight - 2) {
+        preview.scrollTop = preview.scrollHeight;
+      }
+    } catch {
+      preview.replaceChildren();
+      setPreviewStatus("预览暂时不可用，请刷新后重试。");
+    }
   }
 
   function today() {
@@ -47,6 +88,9 @@
     } catch {
       storageUsable = false;
       say("本机草稿暂时不可用，可导出 Markdown 保存。");
+    } finally {
+      updatePreview();
+      syncPreviewScroll();
     }
   }
 
@@ -70,6 +114,16 @@
 
   resetFields();
   restoreDraft();
+  if (canPreview) {
+    fields.body.addEventListener("input", () => {
+      clearTimeout(previewTimer);
+      previewTimer = setTimeout(updatePreview, 90);
+    });
+    fields.body.addEventListener("scroll", syncPreviewScroll, { passive: true });
+  } else if (preview) {
+    preview.replaceChildren();
+    setPreviewStatus("预览暂时不可用，请刷新后重试。");
+  }
   form.addEventListener("input", saveDraft);
   form.addEventListener("change", saveDraft);
   window.addEventListener("storage", event => {
@@ -118,6 +172,7 @@
       say("本机草稿暂时不可用，可导出 Markdown 保存。");
     }
     resetFields();
+    updatePreview();
     unsavedInput = false;
     fields.title.focus();
   });
