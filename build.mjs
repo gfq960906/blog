@@ -432,7 +432,7 @@ function nav(rel, active) {
     .join("");
 }
 
-function layout({ title, desc, body, rel = "", active = "", head = "", bodyClass = "" }) {
+function renderPage(assets, { title, desc, body, rel = "", active = "", head = "", bodyClass = "" }) {
   const fullTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.description}`;
   const description = desc || site.description;
   const favicon =
@@ -449,7 +449,7 @@ function layout({ title, desc, body, rel = "", active = "", head = "", bodyClass
 <meta property="og:title" content="${escAttr(fullTitle)}">
 <meta property="og:description" content="${escAttr(description)}">
 <link rel="icon" href="${favicon}">
-<link rel="stylesheet" href="${rel}assets/style.css">
+<link rel="stylesheet" href="${rel}${assets["style.css"]}">
 <link rel="alternate" type="application/rss+xml" title="${escAttr(site.title)}" href="${rel}feed.xml">
 <script>(function(){try{var t=localStorage.getItem("blog-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 ${head}
@@ -486,7 +486,7 @@ ${body}
     <a href="${rel}posts.html">归档</a>
   </div>
 </footer>
-<script src="${rel}assets/site.js" defer></script>
+<script src="${rel}${assets["site.js"]}" defer></script>
 </body>
 </html>`;
 }
@@ -527,6 +527,24 @@ function copyDir(src, dest) {
   }
 }
 
+function prepareAssets() {
+  const destination = path.join(DIST, "assets");
+  copyDir(path.join(ROOT, "assets"), destination);
+  const versioned = (name) => {
+    const bytes = fs.readFileSync(path.join(destination, name));
+    const hash = createHash("sha256").update(bytes).digest("hex").slice(0, 16);
+    return `${name}?v=${hash}`;
+  };
+
+  // Include the cover URL in the generated stylesheet before hashing the stylesheet itself.
+  const cssPath = path.join(destination, "style.css");
+  const css = fs.readFileSync(cssPath, "utf8");
+  fs.writeFileSync(cssPath, css.replaceAll('url("optics-cover.webp")', `url("${versioned("optics-cover.webp")}")`));
+
+  const files = ["style.css", "site.js", "search.css", "compose.css", "compose.js"];
+  return Object.fromEntries(files.map((name) => [name, `assets/${versioned(name)}`]));
+}
+
 export function build({ quiet = false } = {}) {
   const log = (...a) => { if (!quiet) console.log(...a); };
   const t0 = Date.now();
@@ -534,6 +552,8 @@ export function build({ quiet = false } = {}) {
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
 
+  const assets = prepareAssets();
+  const layout = (options) => renderPage(assets, options);
   const posts = readPosts();
   const labs = readLabs();
   const tagMap = new Map();
@@ -606,7 +626,7 @@ ${collections.length ? `<section class="shelf">
   for (const c of collections) {
     writeFile(categoryPath(c.key), layout({ title: c.name, body: archiveBody(c), rel: "../", active: "posts.html" }));
   }
-  writeFile("compose.html", layout({ title: "写笔记", body: composePage(categories) }));
+  writeFile("compose.html", layout({ title: "写笔记", body: composePage(categories, assets) }));
 
   /* ---- 文章详情 ---- */
   posts.forEach((p, idx) => {
@@ -823,7 +843,7 @@ ${g.items.map(labCard).join("\n")}
   writeFile("search.html", layout({
     title: "站内搜索",
     body: searchBody,
-    head: '<link rel="stylesheet" href="assets/search.css">',
+    head: `<link rel="stylesheet" href="${assets["search.css"]}">`,
   }));
 
   /* ---- 404 ---- */
@@ -891,7 +911,6 @@ ${items}
   }
 
   /* ---- 静态资源 ---- */
-  copyDir(path.join(ROOT, "assets"), path.join(DIST, "assets"));
   writeFile(".nojekyll", "");
 
   log(

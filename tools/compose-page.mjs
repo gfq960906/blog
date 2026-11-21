@@ -2,12 +2,12 @@ function escapeHtml(text) {
   return String(text).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export function composePage(categories) {
+export function composePage(categories, assets) {
   const options = Object.entries(categories).map(([key, category]) =>
     `<option value="${escapeHtml(key)}"${key === "research" ? " selected" : ""}>${escapeHtml(category.name)}</option>`
   );
   return `
-<link rel="stylesheet" href="assets/compose.css">
+<link rel="stylesheet" href="${assets["compose.css"]}">
 <section class="page-head">
   <h1>写笔记</h1>
   <p class="page-sub">草稿保存在当前浏览器。写完后可导出 Markdown，放入博客的 <code>content/posts/</code> 目录。</p>
@@ -37,5 +37,5 @@ export function composePage(categories) {
     <span class="note-status" role="status" aria-live="polite"></span>
   </div>
 </form>
-<script defer src="assets/compose.js"></script>`;
+<script defer src="${assets["compose.js"]}"></script>`;
 }
