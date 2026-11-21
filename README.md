@@ -10,12 +10,14 @@
 
 ## 〇、记一篇学习笔记
 
-**在网页上写**　从首页打开「写笔记」，填好标题、正文和分类。「实时预览」会随输入排版 Markdown 和 LaTeX，写错的公式旁会出现提示。浏览器会在当前设备暂存一份草稿，关闭页面后仍可回来接着写。点「导出 Markdown」，把下载的 `.md` 文件放进项目的 `content/posts/`，然后按下文预览或发布。在另一台设备继续写时，可带走导出的 Markdown 文件。
+**在网页上写**　从首页打开「写笔记」，填好标题、正文和分类，可按笔记用途再选一个子类。「实时预览」会随输入排版 Markdown 和 LaTeX，写错的公式旁会出现提示。浏览器会在当前设备暂存一份草稿，关闭页面后仍可回来接着写。点「导出 Markdown」，把下载的 `.md` 文件放进项目的 `content/posts/`，然后按下文预览或发布。在另一台设备继续写时，可带走导出的 Markdown 文件。
+
+**在目录里查**　点击首页的任一大类，即可按笔记类型跳转并查看目录。研究笔记可按理论推导、实验进展、文献阅读与综述、产业调研及研究思考浏览。标签用来记录笔记的主题，例如「量子力学」或「里德堡」。
 
 **在终端里写**　在博客项目目录打开终端。下面的命令会创建 `content/posts/rydberg-blockade.md`，归入「研究笔记」，并加上两个可供检索的标签。
 
 ```powershell
-node new-post.mjs "里德堡阻塞的物理图像" rydberg-blockade --study --tags "中性原子, 里德堡" --draft
+node new-post.mjs "里德堡阻塞的物理图像" rydberg-blockade --study --section theory --tags "中性原子, 里德堡" --draft
 ```
 
 1. 打开这份 Markdown，把一句话结论写进 `summary`。正文模板有「学习问题」「核心笔记」「待验证的问题」「参考资料」四节，可以按需删改。
@@ -101,6 +103,7 @@ content/posts/2026-11-05-quantum-weekly.md
 title: 标题写这里
 date: 2026-11-05
 category: work
+section: review
 tags: [量子计算, 周报]
 summary: 一句话摘要，会显示在文章列表里
 ---
@@ -159,6 +162,7 @@ node new-post.mjs "周末去爬山" weekend-hike
 | --- | --- |
 | `--study` | 使用学习笔记模板，默认归入 `research` |
 | `--category work` | 选择分类，优先于模板的默认值。可选键名来自 `site.config.mjs` 的 `categories` |
+| `--section theory` | 选择当前分类的子类。可选键名来自 `site.config.mjs` 中该分类的 `sections` |
 | `--tags "量子计算, 文献整理"` | 可写多个标签，用中文或英文逗号分隔 |
 | `--draft` | 创建草稿。删除 `draft: true` 并重新构建后，网站将收录它 |
 
@@ -171,6 +175,7 @@ node new-post.mjs "周末去爬山" weekend-hike
 | `title` | 标题（必填） |
 | `date` | 日期，`2026-11-05` 这种格式 |
 | `category` | 分类：`work` / `life` / `research` / `essay`（在 `site.config.mjs` 里可改） |
+| `section` | 选填子类，例如 `research` 下的 `theory`。空白或旧键名的笔记归入该大类的「未细分」 |
 | `tags` | 标签，`[标签1, 标签2]` |
 | `summary` | 摘要，列表页和搜索里用 |
 | `draft` | 写 `true` 就不发布这篇 |

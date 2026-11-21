@@ -9,8 +9,9 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const POSTS = path.join(ROOT, "content", "posts");
 const categoryList = Object.entries(categories).map(([key, { name }]) => `${key}（${name}）`).join("、");
 const usage = [
-  'node new-post.mjs "标题" [网址名] [--study] [--category 分类] [--tags "标签1,标签2"] [--draft]',
+  'node new-post.mjs "标题" [网址名] [--study] [--category 分类] [--section 子类] [--tags "标签1,标签2"] [--draft]',
   `可选分类为 ${categoryList}`,
+  "--section 选填，对应 site.config.mjs 中该分类的 sections 键。",
   "--study 使用学习笔记模板，默认分类为 research。普通文章默认归入 essay。",
   "--draft 先存为草稿，在 Markdown 中删除 draft: true 后即可参与构建。",
 ].join("\n");
@@ -21,6 +22,7 @@ function createPost() {
     options: {
       study: { type: "boolean" },
       category: { type: "string" },
+      section: { type: "string" },
       tags: { type: "string", default: "" },
       draft: { type: "boolean" },
       help: { type: "boolean", short: "h" },
@@ -33,6 +35,12 @@ function createPost() {
   if (/[\r\n]/.test(title + values.tags)) throw new Error("标题和标签应各写在一行。");
   const category = values.category ?? (values.study ? "research" : "essay");
   if (!Object.hasOwn(categories, category)) throw new Error(`请选择已配置的分类：${categoryList}`);
+  const sections = categories[category].sections ?? {};
+  const section = values.section;
+  if (section !== undefined && !Object.hasOwn(sections, section)) {
+    const choices = Object.entries(sections).map(([key, label]) => `${key}（${label}）`).join("、");
+    throw new Error(choices ? `${categories[category].name}的子类包括 ${choices}` : "当前分类没有可选子类。");
+  }
   const tags = [...new Set(values.tags.split(/[,，]/).map(tag => tag.trim()).filter(Boolean))];
 
   const now = new Date();
@@ -49,6 +57,7 @@ function createPost() {
     `title: ${JSON.stringify(title.trim())}`,
     `date: ${date}`,
     `category: ${category}`,
+    ...(section ? [`section: ${JSON.stringify(section)}`] : []),
     `tags: ${JSON.stringify(tags)}`,
     "summary:",
     ...(values.draft ? ["draft: true"] : []),

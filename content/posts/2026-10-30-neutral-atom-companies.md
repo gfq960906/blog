@@ -2,6 +2,7 @@
 title: 全球原子体系量子计算公司图谱 v2
 date: 2026-10-30
 category: research
+section: industry
 tags: [量子计算, 中性原子, 公司图谱]
 summary: 18 家 A 类原子体系公司、3 家科技巨头、5 家 B 类传感厂商的完整梳理，逐家官网核实，附收录口径与排除名单。
 ---

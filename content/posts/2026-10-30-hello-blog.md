@@ -2,6 +2,7 @@
 title: 建一个自己的博客，从今天开始
 date: 2026-10-30
 category: essay
+section: blog
 tags: [博客, 建站, 开始]
 summary: 折腾了一个晚上，把博客搭起来了。记录一下为什么想写，以及这套东西是怎么运转的。
 ---

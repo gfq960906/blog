@@ -17,6 +17,8 @@
   gap: 1rem;
 }
 
+.note-summary-field { grid-column: 1 / -1; }
+
 .note-details {
   min-width: 0;
   margin: 0;

@@ -5,6 +5,7 @@
   const key = "note-draft:" + location.pathname.replace(/[^/]*$/, "");
   const names = ["title", "date", "category", "tags", "summary", "body"];
   const fields = Object.fromEntries(names.map(name => [name, form.elements.namedItem(name)]));
+  const section = form.elements.namedItem("section");
   const initialCategory = fields.category.value;
   const status = form.querySelector(".note-status");
   const download = form.querySelector(".note-download");
@@ -63,8 +64,19 @@
     return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
   }
 
+  function updateSections(value = "") {
+    if (!section) return;
+    const category = fields.category.selectedOptions[0];
+    const options = Object.entries(JSON.parse(category?.dataset.sections || "{}"));
+    const empty = section.options[0];
+    section.replaceChildren(empty, ...options.map(([key, label]) => new Option(label, key)));
+    section.value = options.some(([key]) => key === value) ? value : "";
+    section.disabled = options.length === 0;
+  }
+
   function resetFields() {
     form.reset();
+    updateSections();
     fields.date.value = today();
     fields.title.setCustomValidity("");
     fields.body.setCustomValidity("");
@@ -84,6 +96,7 @@
       for (const name of names) {
         if (fields[name].value !== draft[name]) fields[name].value = draft[name];
       }
+      updateSections(draft.section);
       say(fields.category.value ? "已恢复本机草稿" : "已恢复草稿，原分类已移除，请重新选择。");
     } catch {
       storageUsable = false;
@@ -95,10 +108,13 @@
   }
 
   function readFields() {
-    return Object.fromEntries(names.map(name => [name, fields[name].value]));
+    const note = Object.fromEntries(names.map(name => [name, fields[name].value]));
+    note.section = section?.value || "";
+    return note;
   }
 
-  function saveDraft() {
+  function saveDraft(event) {
+    if (event.target === fields.category) updateSections(section?.value);
     unsavedInput = true;
     fields.title.setCustomValidity("");
     fields.body.setCustomValidity("");
@@ -143,6 +159,7 @@
       `title: ${JSON.stringify(note.title.trim())}`,
       `date: ${note.date}`,
       `category: ${JSON.stringify(note.category)}`,
+      ...(note.section ? [`section: ${JSON.stringify(note.section)}`] : []),
       `tags: ${JSON.stringify(tags)}`,
       `summary: ${JSON.stringify(note.summary.trim())}`,
       "---", "", note.body, "",
@@ -161,7 +178,7 @@
 
   newNote.addEventListener("click", () => {
     const draft = readFields();
-    const hasContent = draft.title || draft.body || draft.tags || draft.summary ||
+    const hasContent = draft.title || draft.body || draft.tags || draft.summary || draft.section ||
       draft.date !== today() || draft.category !== initialCategory;
     if ((hasContent || !storageUsable) && !window.confirm("新建笔记会清除本页草稿。已导出的文件会保留。继续吗？")) return;
     try {

@@ -10,7 +10,7 @@
 <meta property="og:title" content="写笔记 · 我的博客">
 <meta property="og:description" content="记录论文阅读、实验进展，以及工作与生活里的发现。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231b2a4a'/%3E%3Ctext x='50' y='70' font-size='56' text-anchor='middle' fill='%23f4f1ea' font-family='Georgia,serif'%3E%E5%8D%9A%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=9241fc83c82bd5af">
+<link rel="stylesheet" href="assets/style.css?v=e768868f0b694335">
 <link rel="alternate" type="application/rss+xml" title="我的博客" href="feed.xml">
 <script>(function(){try{var t=localStorage.getItem("blog-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <link rel="stylesheet" href="assets/katex/0.19.1/katex.min.css"><style>.katex{font-size:1.06em}.katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden;padding:.35em 0}.katex-display>.katex{width:max-content;min-width:100%}</style>
@@ -37,7 +37,7 @@
 </header>
 <main class="wrap">
 
-<link rel="stylesheet" href="assets/compose.css?v=420c786a2f9127b8">
+<link rel="stylesheet" href="assets/compose.css?v=0b6894faa12ad311">
 <section class="page-head">
   <h1>写笔记</h1>
   <p class="page-sub">草稿保存在当前浏览器。写完后可导出 Markdown，放入博客的 <code>content/posts/</code> 目录。</p>
@@ -79,7 +79,11 @@ $$</code></pre>
     <div class="note-fields">
       <div class="note-field">
         <label for="note-category">分类</label>
-        <select name="category" id="note-category" required><option value="work">工作记录</option><option value="life">生活随笔</option><option value="research" selected>研究笔记</option><option value="essay">随笔感想</option></select>
+        <select name="category" id="note-category" required><option value="work" data-sections="{&quot;project&quot;:&quot;项目记录&quot;,&quot;review&quot;:&quot;工作复盘&quot;,&quot;workflow&quot;:&quot;流程与工具&quot;}">工作记录</option><option value="life" data-sections="{&quot;daily&quot;:&quot;日常记录&quot;,&quot;trips&quot;:&quot;出行见闻&quot;}">生活随笔</option><option value="research" data-sections="{&quot;theory&quot;:&quot;理论推导&quot;,&quot;experiment&quot;:&quot;实验进展&quot;,&quot;literature&quot;:&quot;文献阅读与综述&quot;,&quot;industry&quot;:&quot;产业调研&quot;,&quot;ideas&quot;:&quot;研究思考&quot;}" selected>研究笔记</option><option value="essay" data-sections="{&quot;blog&quot;:&quot;博客与写作&quot;,&quot;reflections&quot;:&quot;观点与感想&quot;}">随笔感想</option></select>
+      </div>
+      <div class="note-field">
+        <label for="note-section">子类 <small>选填</small></label>
+        <select name="section" id="note-section" disabled><option value="">暂不指定</option></select>
       </div>
       <div class="note-field">
         <label for="note-date">日期</label>
@@ -89,7 +93,7 @@ $$</code></pre>
         <label for="note-tags">标签 <small>用逗号分隔</small></label>
         <input name="tags" id="note-tags" type="text" placeholder="如 中性原子，文献整理">
       </div>
-      <div class="note-field">
+      <div class="note-field note-summary-field">
         <label for="note-summary">摘要 <small>选填</small></label>
         <input name="summary" id="note-summary" type="text" placeholder="写下一句话结论">
       </div>
@@ -103,7 +107,7 @@ $$</code></pre>
 </form>
 <script defer src="assets/katex/0.19.1/katex.min.js?v=fa140498b8cfc830"></script>
 <script defer src="assets/note-preview.js?v=77470453b07e721f"></script>
-<script defer src="assets/compose.js?v=aa01a187b4f94d6e"></script>
+<script defer src="assets/compose.js?v=8d9f9a59895163d9"></script>
 </main>
 <footer class="site-footer">
   <div class="wrap footer-inner">

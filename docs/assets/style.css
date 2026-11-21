@@ -263,6 +263,66 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 .archive-filters .chip:hover { text-decoration: none; }
 .archive-filters .chip span { margin-left: 4px; font-size: .9em; }
 
+.note-directory {
+  display: grid;
+  grid-template-columns: minmax(158px, 204px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(20px, 4vw, 48px);
+  margin-top: 28px;
+}
+
+.directory-nav {
+  position: sticky;
+  top: 90px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+}
+
+.directory-label { margin: 0 0 4px; padding: 0 8px; font-size: .875rem; font-weight: 650; }
+.directory-nav ul, .directory-group ul { margin: 0; padding: 0; list-style: none; }
+.directory-nav a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: .9rem;
+}
+.directory-nav a:hover { background: var(--accent-soft); text-decoration: none; }
+.directory-nav a span, .directory-entry time { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+
+.directory-group + .directory-group { margin-top: 28px; }
+.directory-group h2 {
+  margin: 0;
+  padding: 0 0 6px;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 1.12rem;
+  font-weight: 650;
+}
+.directory-group:target h2 { border-bottom-color: var(--accent); color: var(--accent); }
+.directory-entry { padding: 13px 0; overflow-wrap: anywhere; }
+.directory-entry + .directory-entry { border-top: 1px solid var(--line); }
+.directory-entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 1rem;
+}
+.directory-entry h3 { flex: 1 1 16rem; margin: 0; font-size: 1.03rem; font-weight: 600; }
+.directory-entry p { margin: 3px 0 0; color: var(--fg-soft); font-size: .9rem; }
+.post-type { font-size: .82rem; }
+
+@media (max-width: 650px) {
+  .note-directory { grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 20px; }
+  .directory-nav { position: static; }
+  .directory-nav ul { display: flex; flex-wrap: wrap; gap: 2px 8px; }
+  .directory-group + .directory-group { margin-top: 18px; }
+}
+
 /* ---------------- 过滤 chips ---------------- */
 
 .filters { display: flex; flex-wrap: wrap; gap: 8px; }

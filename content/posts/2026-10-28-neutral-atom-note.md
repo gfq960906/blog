@@ -2,6 +2,7 @@
 title: 中性原子路线，为什么值得持续盯住
 date: 2026-10-28
 category: research
+section: ideas
 tags: [量子计算, 中性原子, 笔记]
 summary: 整理了最近关于中性原子量子计算的一些零散思考：它的优势到底在哪，工程上的难点又卡在哪里。
 ---

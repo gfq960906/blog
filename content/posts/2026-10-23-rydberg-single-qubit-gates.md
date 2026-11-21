@@ -2,6 +2,7 @@
 title: 里德堡量子计算单比特门：逐篇实现细节
 date: 2026-10-23
 category: research
+section: experiment
 tags: [里德堡, 单比特门, 量子计算]
 summary: 从 2015 年 Cs 阵列微波门到 2023 年 99.97% 拉曼门，10 篇代表性工作逐篇拆解平台、编码、光路与误差机理。
 ---

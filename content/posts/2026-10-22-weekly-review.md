@@ -2,6 +2,7 @@
 title: 一周工作复盘：把「查资料」变成可复用的东西
 date: 2026-10-22
 category: work
+section: review
 tags: [工作记录, 复盘, 效率]
 summary: 这周花了大量时间在检索和整理上，反思了一下怎么让这些一次性的劳动沉淀成资产。
 ---

@@ -64,6 +64,10 @@ function categoryPath(key) {
   return `categories/${standard ? key : "_" + Buffer.from(String(key)).toString("hex")}.html`;
 }
 
+function sectionAnchor(section) {
+  return section ? `type-${section}` : "unassigned-notes";
+}
+
 const iconPaths = {
   book: '<path d="M3 4.5c3.2-.9 6.1-.4 9 1.4 2.9-1.8 5.8-2.3 9-1.4v14c-3.2-.9-6.1-.4-9 1.4-2.9-1.8-5.8-2.3-9-1.4zM12 6v14"/>',
   research: '<circle cx="12" cy="12" r="1.3"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(55 12 12)"/>',
@@ -134,11 +138,16 @@ function readPosts() {
     const date = data.date ? new Date(String(data.date).replace(/\//g, "-")) : new Date();
     const { html, toc } = mdToHtml(body);
     const tags = Array.isArray(data.tags) ? data.tags : data.tags ? [data.tags] : [];
+    const category = data.category || "essay";
+    const sections = catInfo(category).sections ?? {};
+    const section = typeof data.section === "string" && Object.hasOwn(sections, data.section)
+      ? data.section : "";
     posts.push({
       slug,
       title: data.title || slug,
       date: isNaN(date) ? new Date() : date,
-      category: data.category || "essay",
+      category,
+      section,
       tags: [...new Set(tags.map(tag => String(tag).trim()).filter(Boolean))],
       summary: data.summary || "",
       cover: data.cover || "",
@@ -312,6 +321,37 @@ function postCard(p, rel) {
 </article>`;
 }
 
+function categoryDirectory(collection, rel) {
+  const groups = new Map(Object.entries(collection.sections ?? {}).map(([key, name]) =>
+    [key, { name, posts: [] }]));
+  groups.set("", { name: "未细分", posts: [] });
+  for (const post of collection.items) groups.get(post.section).posts.push(post);
+  const visibleGroups = [...groups].filter(([, group]) => group.posts.length);
+  return `
+    <div class="note-directory">
+      <nav class="directory-nav" aria-label="笔记目录">
+        <p class="directory-label">笔记目录</p>
+        <ul>${visibleGroups.map(([key, group]) => `<li><a href="#${encodeURIComponent(sectionAnchor(key))}">
+          ${esc(group.name)}<span>${group.posts.length} 篇</span>
+        </a></li>`).join("")}</ul>
+      </nav>
+      <div class="directory-groups">${visibleGroups.map(([key, group]) => `
+        <section class="directory-group" id="${escAttr(sectionAnchor(key))}">
+          <h2>${esc(group.name)}</h2>
+          <ul>${group.posts.map((p) => `
+            <li class="directory-entry">
+              <div class="directory-entry-head">
+                <h3><a href="${rel}posts/${encodeURIComponent(p.slug)}.html">${esc(p.title)}</a></h3>
+                <time datetime="${isoDate(p.date)}">${isoDate(p.date)}</time>
+              </div>
+              ${p.summary ? `<p>${esc(p.summary)}</p>` : ""}
+            </li>`).join("")}
+          </ul>
+        </section>`).join("")}
+      </div>
+    </div>`;
+}
+
 /* ---------------------------------------------------------- */
 /*  构建                                                        */
 /* ---------------------------------------------------------- */
@@ -425,13 +465,14 @@ ${collections.length ? `<section class="shelf">
     const current = ' class="chip active" aria-current="page"';
     return `<section class="page-head">
       <h1>${collection ? esc(collection.name) : "全部文章"}</h1>
-      <p class="page-sub">${entries.length} 篇记录 · 按日期排列</p>
+      <p class="page-sub">${entries.length} 篇记录 · ${collection ? "按笔记类型浏览" : "按日期排列"}</p>
     </section>
     <nav class="filters archive-filters" aria-label="按分类浏览">
       <a href="${rel}posts.html"${collection ? ' class="chip"' : current}>全部</a>
       ${collections.map((c) => `<a href="${rel}${categoryPath(c.key)}"${c === collection ? current : ' class="chip"'}>${esc(c.name)} <span>${c.items.length}</span></a>`).join("")}
     </nav>
-    <div class="post-list">${entries.map((p) => postCard(p, rel)).join("\n") || '<p class="empty">还没有已发布的笔记。</p>'}</div>`;
+${collection ? categoryDirectory(collection, rel) : `
+    <div class="post-list">${entries.map((p) => postCard(p, rel)).join("\n") || '<p class="empty">还没有已发布的笔记。</p>'}</div>`}`;
   }
   writeFile("posts.html", layout({ title: "全部文章", body: archiveBody(), active: "posts.html" }));
   for (const c of collections) {
@@ -451,6 +492,7 @@ ${collections.length ? `<section class="shelf">
   <div class="post-head">
     <div class="post-kicker">
       <a class="cat-pill" href="../${categoryPath(p.category)}" style="--c:${cat.color}">${esc(cat.name)}</a>
+      ${p.section ? `<a class="post-type" href="../${categoryPath(p.category)}#${encodeURIComponent(sectionAnchor(p.section))}">${esc(cat.sections[p.section])}</a>` : ""}
       <time datetime="${isoDate(p.date)}">${fmtDate(p.date)}</time>
       <span>${p.minutes} 分钟阅读</span>
     </div>

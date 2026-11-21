@@ -10,7 +10,7 @@ export function composePage(categories, assets) {
   const inlineExample = "B \\gg \\Omega";
   const displayExample = "B = \\frac{C_6}{R^6}";
   const options = Object.entries(categories).map(([key, category]) =>
-    `<option value="${escapeHtml(key)}"${key === "research" ? " selected" : ""}>${escapeHtml(category.name)}</option>`
+    `<option value="${escapeHtml(key)}" data-sections="${escapeHtml(JSON.stringify(category.sections ?? {}))}"${key === "research" ? " selected" : ""}>${escapeHtml(category.name)}</option>`
   );
   return `
 <link rel="stylesheet" href="${assets["compose.css"]}">
@@ -58,6 +58,10 @@ $$</code></pre>
         <select name="category" id="note-category" required>${options.join("")}</select>
       </div>
       <div class="note-field">
+        <label for="note-section">子类 <small>选填</small></label>
+        <select name="section" id="note-section" disabled><option value="">暂不指定</option></select>
+      </div>
+      <div class="note-field">
         <label for="note-date">日期</label>
         <input type="date" name="date" id="note-date" required>
       </div>
@@ -65,7 +69,7 @@ $$</code></pre>
         <label for="note-tags">标签 <small>用逗号分隔</small></label>
         <input name="tags" id="note-tags" type="text" placeholder="如 中性原子，文献整理">
       </div>
-      <div class="note-field">
+      <div class="note-field note-summary-field">
         <label for="note-summary">摘要 <small>选填</small></label>
         <input name="summary" id="note-summary" type="text" placeholder="写下一句话结论">
       </div>
