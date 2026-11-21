@@ -5,6 +5,13 @@
   <description>记录论文阅读、实验进展，以及工作与生活里的发现。</description>
   <language>zh-CN</language>
   <item>
+    <title>从教材定态微扰到瑞利–薛定谔微扰论</title>
+    <link>https://gfq960906.github.io/blog/posts/2026-11-21-rayleigh-schrodinger-perturbation-theory.html</link>
+    <guid>https://gfq960906.github.io/blog/posts/2026-11-21-rayleigh-schrodinger-perturbation-theory.html</guid>
+    <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+    <description>从非简并基态出发，用预解算符和中间归一化推导逐阶递推，将教材的二阶求和式与多体文献中的算符写法逐项对照。</description>
+  </item>
+  <item>
     <title>冷原子综述全图：139 篇，按实验形态分八类</title>
     <link>https://gfq960906.github.io/blog/posts/2026-10-31-cold-atom-review-map.html</link>
     <guid>https://gfq960906.github.io/blog/posts/2026-10-31-cold-atom-review-map.html</guid>
