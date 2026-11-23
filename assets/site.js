@@ -59,16 +59,37 @@
   if (searchForm) {
     const input = searchForm.elements.q;
     const scope = searchForm.elements.scope;
+    const section = searchForm.elements.section;
+    const sectionLabel = searchForm.querySelector('label[for="search-section"]');
     const results = document.getElementById("search-results");
     const status = document.getElementById("search-status");
     const index = JSON.parse(document.getElementById("search-data").textContent);
     const data = index.map((entry) => ({
       entry,
       title: entry.title.toLowerCase(),
-      labels: [entry.cat, ...entry.tags].join(" ").toLowerCase(),
+      labels: [entry.cat, entry.sectionName, ...entry.tags].filter(Boolean).join(" ").toLowerCase(),
+      headings: (entry.headings || []).map(({ id, label }) => ({ id, label, text: label.toLowerCase() })),
       summary: entry.summary.toLowerCase(),
       text: entry.text.toLowerCase(),
     }));
+    const sectionsByScope = new Map();
+    for (const entry of index) {
+      if (!entry.section) continue;
+      if (!sectionsByScope.has(entry.scope)) sectionsByScope.set(entry.scope, new Map());
+      sectionsByScope.get(entry.scope).set(entry.section, entry);
+    }
+
+    function syncSections(value) {
+      if (!section) return;
+      const choices = [...(sectionsByScope.get(scope.value)?.values() || [])]
+        .sort((a, b) => a.sectionOrder - b.sectionOrder);
+      section.replaceChildren(new Option("全部类型", ""), ...choices.map((choice) =>
+        new Option(choice.sectionName, choice.section)));
+      section.value = choices.some((choice) => choice.section === value) ? value : "";
+      section.hidden = section.disabled = choices.length === 0;
+      sectionLabel.hidden = section.hidden;
+      searchForm.classList.toggle("has-types", !section.hidden);
+    }
 
     function highlight(element, text, pattern) {
       if (!pattern) { element.textContent = text; return; }
@@ -101,6 +122,12 @@
       const label = document.createElement("span");
       highlight(label, [...new Set(labels)].join(" · "), pattern);
       meta.append(label);
+      if (p.sectionHref) {
+        const typeLink = document.createElement("a");
+        typeLink.href = p.sectionHref;
+        highlight(typeLink, p.sectionName, pattern);
+        meta.append(typeLink);
+      }
       if (p.date) {
         const time = document.createElement("time");
         time.dateTime = p.date;
@@ -119,19 +146,37 @@
       const snippet = bodyTerm ? excerpt(p.text, item.text.indexOf(bodyTerm)) : p.summary || excerpt(p.text, 0);
       highlight(context, snippet, pattern);
       card.append(meta, heading, context);
+      const relevant = item.headings.filter(({ text }) => terms.some((term) => text.includes(term))).slice(0, 2);
+      if (relevant.length) {
+        const chapters = document.createElement("ul");
+        chapters.className = "search-chapters";
+        chapters.setAttribute("aria-label", "匹配的章节");
+        for (const { id, label } of relevant) {
+          const li = document.createElement("li");
+          const jump = document.createElement("a");
+          jump.href = p.href + "#" + encodeURIComponent(id);
+          highlight(jump, label, pattern);
+          li.append(jump);
+          chapters.append(li);
+        }
+        card.append(chapters);
+      }
       return card;
     }
 
     function render() {
-      const terms = [...new Set(input.value.trim().toLowerCase().split(/\s+/).filter(Boolean))];
+      const query = input.value.trim().toLowerCase();
+      const terms = [...new Set(query.split(/\s+/).filter(Boolean))];
       const matches = [];
       for (const item of data) {
         const p = item.entry;
         if (scope.value && scope.value !== p.kind && scope.value !== p.scope) continue;
-        let score = 0;
+        if (section?.value && section.value !== p.section) continue;
+        let score = query && item.title.includes(query) ? 10 : 0;
         const matched = terms.every((term) => {
           if (item.title.includes(term)) score += 10;
           else if (item.labels.includes(term)) score += 5;
+          else if (item.headings.some(({ text }) => text.includes(term))) score += 4;
           else if (item.summary.includes(term)) score += 3;
           else if (item.text.includes(term)) score += 1;
           else return false;
@@ -156,6 +201,7 @@
       input.value = params.get("q") || "";
       scope.value = params.get("scope") || "";
       if (scope.selectedIndex < 0) scope.value = "";
+      syncSections(params.get("section"));
       render();
     }
     function update(method) {
@@ -163,13 +209,18 @@
       const params = new URLSearchParams();
       if (input.value.trim()) params.set("q", input.value.trim());
       if (scope.value) params.set("scope", scope.value);
+      if (section?.value) params.set("section", section.value);
       if (offline) url.hash = "?" + params.toString();
       else url.search = params.toString();
       if (url.href !== location.href) history[method](null, "", url);
       render();
     }
     input.addEventListener("input", () => update("replaceState"));
-    scope.addEventListener("change", () => update("pushState"));
+    scope.addEventListener("change", () => {
+      syncSections();
+      update("pushState");
+    });
+    section?.addEventListener("change", () => update("pushState"));
     searchForm.addEventListener("submit", (event) => {
       event.preventDefault();
       update("replaceState");

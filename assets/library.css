@@ -1,0 +1,71 @@
+.article-library {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .45rem .6rem;
+  margin-top: .85rem;
+}
+
+.article-library[hidden], .reading-library[hidden] { display: none; }
+
+.library-button {
+  padding: .27rem .62rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--fg-soft);
+  background: var(--bg-elev);
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+.library-button:hover { border-color: var(--accent); color: var(--accent); }
+.library-button[aria-pressed="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.library-feedback { margin: 0; color: var(--muted); font-size: .86rem; }
+.library-feedback:not(:empty) { display: block; }
+
+.reading-library {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: .85rem;
+  margin: .85rem 0 2rem;
+}
+
+.library-panel {
+  min-width: 0;
+  padding: .9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+}
+
+.library-panel-head, .library-entry-meta, .library-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .35rem .65rem;
+}
+
+.library-panel-head { justify-content: space-between; }
+.library-panel h2 { margin: 0; font-size: 1.15rem; }
+.library-empty { margin: .4rem 0 .15rem; color: var(--muted); font-size: .91rem; }
+.library-list { margin: 0; padding: 0; list-style: none; }
+.library-entry { padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.library-entry:last-child { padding-bottom: .15rem; border-bottom: 0; }
+.library-entry h3 { margin: 0; font-size: 1.02rem; line-height: 1.45; overflow-wrap: anywhere; }
+.library-entry-meta { margin: .22rem 0 0; color: var(--muted); font-size: .8rem; }
+.library-entry-actions { margin-top: .4rem; align-items: center; font-size: .85rem; }
+
+@media (max-width: 650px) {
+  .reading-library { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media print {
+  .article-library { display: none; }
+}

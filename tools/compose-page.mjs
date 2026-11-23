@@ -18,11 +18,16 @@ export function composePage(categories, assets) {
   <h1>写笔记</h1>
   <p class="page-sub">草稿保存在当前浏览器。写完后可导出 Markdown，放入博客的 <code>content/posts/</code> 目录。</p>
 </section>
-<noscript><p>请启用 JavaScript 以预览正文、保存草稿或导出笔记。</p></noscript>
+<noscript><p>请启用 JavaScript 以预览正文、保存草稿或导入和导出笔记。</p></noscript>
 <form id="note-editor" class="note-editor" method="dialog" autocomplete="off">
   <div class="note-field">
-    <label for="note-title">标题</label>
+    <div class="note-title-bar">
+      <label for="note-title">标题</label>
+      <button type="button" class="note-import" disabled>导入 Markdown</button>
+      <input id="note-import-source" type="file" accept=".md,.markdown" hidden>
+    </div>
     <input id="note-title" name="title" type="text" placeholder="这篇笔记记录什么？" required>
+    <span class="note-import-status" role="status"></span>
   </div>
   <div class="note-panes">
     <div class="note-field">

@@ -10,6 +10,10 @@
   const status = form.querySelector(".note-status");
   const download = form.querySelector(".note-download");
   const newNote = form.querySelector(".note-new");
+  const importButton = form.querySelector(".note-import");
+  const importSource = document.getElementById("note-import-source");
+  const importStatus = form.querySelector(".note-import-status");
+  const noteSource = window.blogNoteSource;
   const preview = document.getElementById("note-preview");
   const emptyPreview = preview?.firstElementChild;
   const previewStatus = form.querySelector(".note-preview-status");
@@ -17,6 +21,7 @@
   let previewTimer;
   let storageUsable = true;
   let unsavedInput = false;
+  let imported = null;
 
   function say(message) {
     if (status.textContent !== message) status.textContent = message;
@@ -76,6 +81,8 @@
 
   function resetFields() {
     form.reset();
+    imported = null;
+    if (importStatus) importStatus.textContent = "";
     updateSections();
     fields.date.value = today();
     fields.title.setCustomValidity("");
@@ -97,6 +104,12 @@
         if (fields[name].value !== draft[name]) fields[name].value = draft[name];
       }
       updateSections(draft.section);
+      const original = draft.imported;
+      imported = original && typeof original.filename === "string" &&
+        Array.isArray(original.extra) && original.extra.every(line => typeof line === "string" &&
+          !/[\r\n]/.test(line) && !/^---\s*$/.test(line)) &&
+        Array.isArray(original.tags) && original.tags.every(tag => typeof tag === "string") ? original : null;
+      if (importStatus) importStatus.textContent = imported ? "已导入 " + imported.filename : "";
       say(fields.category.value ? "已恢复本机草稿" : "已恢复草稿，原分类已移除，请重新选择。");
     } catch {
       storageUsable = false;
@@ -110,11 +123,18 @@
   function readFields() {
     const note = Object.fromEntries(names.map(name => [name, fields[name].value]));
     note.section = section?.value || "";
+    if (imported) note.imported = imported;
     return note;
   }
 
+  function hasContent(note) {
+    return Boolean(note.title || note.body || note.tags || note.summary || note.section || note.imported ||
+      note.date !== today() || note.category !== initialCategory);
+  }
+
   function saveDraft(event) {
-    if (event.target === fields.category) updateSections(section?.value);
+    if (event?.target === importSource) return;
+    if (event?.target === fields.category) updateSections(section?.value);
     unsavedInput = true;
     fields.title.setCustomValidity("");
     fields.body.setCustomValidity("");
@@ -146,6 +166,71 @@
     if (storageUsable && !unsavedInput && (event.key === key || event.key === null)) restoreDraft();
   });
 
+  if (importButton && importSource && importStatus && noteSource) {
+    importButton.disabled = false;
+    importButton.addEventListener("click", () => importSource.click());
+    importSource.addEventListener("change", async () => {
+      const file = importSource.files[0];
+      importSource.value = "";
+      if (!file) return;
+      const ext = /\.(?:md|markdown)$/i;
+      if (!ext.test(file.name)) {
+        importStatus.textContent = "请选择 .md 或 .markdown 文件。";
+        return;
+      }
+
+      importButton.disabled = true;
+      try {
+        const raw = await file.text();
+        if (!raw.trim() || raw.includes("\0")) {
+          importStatus.textContent = "文件为空或不是 Markdown 文本。";
+          return;
+        }
+        const { data, body, lines } = noteSource.parseFrontmatter(raw);
+        if (data.slug && !noteSource.isNoteSlug(data.slug)) {
+          importStatus.textContent = "请在原文件中把网址名（slug）改为有效的文件名，再重新导入。";
+          return;
+        }
+        if (hasContent(readFields()) && !window.confirm("导入会替换此页面的本机草稿。继续吗？")) return;
+
+        const stem = file.name.replace(ext, "");
+        const category = data.category == null ? initialCategory : String(data.category);
+        const tags = Array.isArray(data.tags) ? data.tags : String(data.tags ?? "").split(/[,，]/).map(tag => tag.trim()).filter(Boolean);
+        const hasMetadata = lines.some(({ key }) => key);
+        const content = hasMetadata ? body.replace(/^\r?\n/, "") : raw.replace(/^\uFEFF/, "");
+        const heading = content.match(/^\s*#\s+(.+?)\s*#*$/m)?.[1];
+        const editable = new Set([...names.filter(name => name !== "body"), "section"]);
+        imported = {
+          filename: noteSource.isNoteSlug(stem) ? stem + ".md" : "",
+          extra: hasMetadata ? lines.filter(({ key }) => !editable.has(key)).map(({ line }) => line) : [],
+          tags,
+        };
+        fields.title.value = String(data.title || heading || stem);
+        fields.date.value = data.date ? String(data.date).replaceAll("/", "-") : today();
+        fields.category.value = category;
+        updateSections(data.section);
+        fields.tags.value = tags.join("，");
+        fields.summary.value = String(data.summary ?? "");
+        fields.body.value = content;
+        saveDraft();
+        updatePreview();
+        preview?.scrollTo(0, 0);
+        fields.body.scrollTop = 0;
+        fields.title.focus();
+
+        const review = [];
+        if (!fields.date.value) review.push("日期");
+        if (!fields.category.value) review.push("分类");
+        else if (data.section && !section?.value) review.push("子类");
+        importStatus.textContent = "已导入 " + file.name + (review.length ? "，请检查" + review.join("和") + "。" : "。");
+      } catch {
+        importStatus.textContent = "无法读取 Markdown 文件，请重试。";
+      } finally {
+        importButton.disabled = false;
+      }
+    });
+  }
+
   form.addEventListener("submit", event => {
     event.preventDefault();
     const note = readFields();
@@ -153,7 +238,8 @@
     if (!note.body.trim()) fields.body.setCustomValidity("请填写笔记正文。");
     if (!form.reportValidity()) return;
 
-    const tags = [...new Set(note.tags.split(/[,，]/).map(tag => tag.trim()).filter(Boolean))];
+    const tags = imported && note.tags === imported.tags.join("，") ? imported.tags
+      : [...new Set(note.tags.split(/[,，]/).map(tag => tag.trim()).filter(Boolean))];
     const markdown = [
       "---",
       `title: ${JSON.stringify(note.title.trim())}`,
@@ -162,13 +248,14 @@
       ...(note.section ? [`section: ${JSON.stringify(note.section)}`] : []),
       `tags: ${JSON.stringify(tags)}`,
       `summary: ${JSON.stringify(note.summary.trim())}`,
-      "---", "", note.body, "",
-    ].join("\n");
+      ...(imported?.extra ?? []),
+      "---", "",
+    ].join("\n") + "\n" + note.body + (note.body.endsWith("\n") ? "" : "\n");
     const name = Array.from(note.title.trim().normalize("NFC").replace(/[^\p{L}\p{N}_-]+/gu, "-"))
       .slice(0, 64).join("").replace(/^-+|-+$/g, "") || "note";
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([markdown], { type: "text/markdown;charset=utf-8" }));
-    a.download = `${note.date}-${name}.md`;
+    a.download = imported?.filename || `${note.date}-${name}.md`;
     document.body.append(a);
     a.click();
     a.remove();
@@ -177,10 +264,7 @@
   });
 
   newNote.addEventListener("click", () => {
-    const draft = readFields();
-    const hasContent = draft.title || draft.body || draft.tags || draft.summary || draft.section ||
-      draft.date !== today() || draft.category !== initialCategory;
-    if ((hasContent || !storageUsable) && !window.confirm("新建笔记会清除本页草稿。已导出的文件会保留。继续吗？")) return;
+    if ((hasContent(readFields()) || !storageUsable) && !window.confirm("新建笔记会清除本页草稿。已导出的文件会保留。继续吗？")) return;
     try {
       localStorage.removeItem(key);
       storageUsable = true;

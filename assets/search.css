@@ -5,6 +5,10 @@
   gap: .4rem 1rem;
   padding-bottom: 1.5rem;
 }
+#search-form.has-types {
+  grid-template-columns: minmax(0, 1fr) repeat(2, minmax(10rem, 13rem));
+  grid-template-areas: "query-label scope-label type-label" "query scope type";
+}
 #search-form label {
   font-size: .875rem;
   font-weight: 600;
@@ -12,11 +16,14 @@
 }
 #search-form label[for="search-input"] { grid-area: query-label; }
 #search-form label[for="search-scope"] { grid-area: scope-label; }
+#search-form label[for="search-section"] { grid-area: type-label; }
 #search-input { grid-area: query; }
-#search-scope {
-  grid-area: scope;
+#search-scope { grid-area: scope; }
+#search-section { grid-area: type; }
+#search-form select {
   appearance: none;
   width: 100%;
+  min-width: 0;
   min-height: 3rem;
   padding: .65rem 2.2rem .65rem .9rem;
   border: 1px solid var(--line);
@@ -30,7 +37,7 @@
   color: var(--fg);
   font: inherit;
 }
-#search-scope:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#search-form select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 #search-status {
   margin: 0;
   padding: .7rem 0;
@@ -45,15 +52,41 @@
   color: var(--fg-soft);
   overflow-wrap: anywhere;
 }
+.search-chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .75rem;
+  margin: .65rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: .875rem;
+}
+.search-chapters a {
+  display: inline-block;
+  padding: .15rem .5rem;
+  border: 1px solid var(--line);
+  border-radius: .35rem;
+  overflow-wrap: anywhere;
+}
 #search-results mark {
   background: var(--accent-soft);
   color: var(--accent);
   border-radius: .15em;
 }
+@media (max-width: 44rem) {
+  #search-form.has-types {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "query-label query-label" "query query" "scope-label type-label" "scope type";
+  }
+}
 @media (max-width: 36rem) {
-  #search-form {
+  #search-form, #search-form.has-types {
     grid-template-columns: 1fr;
     grid-template-areas: "query-label" "query" "scope-label" "scope";
   }
-  #search-form label[for="search-scope"] { margin-top: .45rem; }
+  #search-form.has-types {
+    grid-template-areas: "query-label" "query" "scope-label" "scope" "type-label" "type";
+  }
+  #search-form label[for="search-scope"],
+  #search-form label[for="search-section"] { margin-top: .45rem; }
 }

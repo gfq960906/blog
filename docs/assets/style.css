@@ -146,7 +146,7 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 
 .header-tools { display: flex; align-items: center; gap: 2px; }
 
-.search-link,
+.header-icon-link,
 .theme-toggle {
   display: grid;
   place-items: center;
@@ -159,7 +159,8 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
   cursor: pointer;
   transition: background .18s, color .18s;
 }
-.search-link:hover,
+.header-icon-link:hover,
+.header-icon-link.active,
 .theme-toggle:hover { background: var(--bg-soft); color: var(--fg); }
 
 .theme-toggle .icon-sun { display: none; }
@@ -322,6 +323,13 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
   .directory-nav ul { display: flex; flex-wrap: wrap; gap: 2px 8px; }
   .directory-group + .directory-group { margin-top: 18px; }
 }
+
+.related-notes { margin-top: 48px; padding: 16px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-elev); }
+.related-notes h2 { margin: 0 0 4px; font-size: 1.1rem; }
+.related-notes ul { margin: 0; padding: 0; list-style: none; }
+.related-notes li { padding: 7px 0; }
+.related-notes li + li { border-top: 1px solid var(--line); }
+.related-notes small { display: block; color: var(--muted); font-size: .8rem; }
 
 /* ---------------- 过滤 chips ---------------- */
 
@@ -870,7 +878,7 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
   .site-nav { grid-area: 2 / 1 / 3 / 3; width: 100%; justify-content: space-between; }
   .site-nav a { padding: 3px 10px; }
   .header-tools { grid-area: 1 / 2; }
-  .search-link, .theme-toggle { width: 29px; }
+  .header-icon-link, .theme-toggle { width: 29px; }
   .collection-card { gap: 6px; padding-inline: 8px; }
   .collection-icon { width: 28px; height: 32px; }
   .collection-icon svg { width: 20px; height: 20px; }
@@ -878,5 +886,5 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 @media print {
-  .site-header, .site-footer, .progress, .post-nav, .toc, .back { display: none; }
+  .site-header, .site-footer, .progress, .post-nav, .toc, .back, .related-notes { display: none; }
 }

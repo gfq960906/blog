@@ -9,10 +9,11 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { site, categories, labGroups } from "./site.config.mjs";
 import { composePage } from "./tools/compose-page.mjs";
+import { libraryPage, articleLibraryControls } from "./tools/library-page.mjs";
 import markdown from "./tools/markdown.cjs";
 import { typeset, mathStyles, katexVersion } from "./tools/math.mjs";
 
-const { mdToHtml, esc, markHtmlMath } = markdown;
+const { mdToHtml, esc, markHtmlMath, parseFrontmatter, isNoteSlug } = markdown;
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT = path.join(ROOT, "content");
 // 构建产物目录。用 GitHub Pages「分支 + /docs」方式发布时必须是 docs；
@@ -76,50 +77,11 @@ const iconPaths = {
   essay: '<path d="m4 17 12-12a2.2 2.2 0 0 1 3 3L7 20l-4 1zM14 7l3 3"/>',
   folder: '<path d="M3 6h6l2 2h10v11H3z"/>',
   search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  bookmark: '<path d="M6 4h12v16l-6-4-6 4z"/>',
 };
 
 function icon(key) {
   return `<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">${Object.hasOwn(iconPaths, key) ? iconPaths[key] : iconPaths.folder}</svg>`;
-}
-
-/* ---------------------------------------------------------- */
-/*  Frontmatter 解析                                           */
-/* ---------------------------------------------------------- */
-
-function parseFrontmatter(raw) {
-  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-  if (!m) return { data: {}, body: raw };
-  const data = {};
-  for (const line of m[1].split(/\r?\n/)) {
-    if (!line.trim() || line.trimStart().startsWith("#")) continue;
-    const idx = line.indexOf(":");
-    if (idx === -1) continue;
-    const key = line.slice(0, idx).trim();
-    let val = line.slice(idx + 1).trim();
-    if (val === "") { data[key] = ""; continue; }
-    // 编辑器以 JSON 兼容的 YAML 标量和数组保存引号、反斜杠等字符。
-    if (val.startsWith('"') || /^\[\s*"/.test(val)) {
-      try {
-        const parsed = JSON.parse(val);
-        if (typeof parsed === "string" || (Array.isArray(parsed) && parsed.every(item => typeof item === "string"))) {
-          data[key] = parsed;
-          continue;
-        }
-      } catch { /* 手写的标签列表和引号沿用下方解析方式。 */ }
-    }
-    if (/^\[.*\]$/.test(val)) {
-      data[key] = val
-        .slice(1, -1)
-        .split(",")
-        .map((s) => s.trim().replace(/^["']|["']$/g, ""))
-        .filter(Boolean);
-    } else if (/^(true|false)$/i.test(val)) {
-      data[key] = /^true$/i.test(val);
-    } else {
-      data[key] = val.replace(/^["']|["']$/g, "");
-    }
-  }
-  return { data, body: raw.slice(m[0].length) };
 }
 
 /* ---------------------------------------------------------- */
@@ -130,11 +92,20 @@ function readPosts() {
   const dir = path.join(CONTENT, "posts");
   if (!fs.existsSync(dir)) return [];
   const posts = [];
+  const slugs = new Map();
   for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".md"))) {
     const raw = fs.readFileSync(path.join(dir, f), "utf8");
     const { data, body } = parseFrontmatter(raw);
     if (data.draft === true || data.draft === "true") continue;
     const slug = data.slug || f.replace(/\.md$/, "");
+    if (!isNoteSlug(slug)) {
+      throw new Error(f + " 的网址名无效，请在 slug 中填写可用作单个文件名的文字。");
+    }
+    const slugKey = slug.toLowerCase();
+    if (slugs.has(slugKey)) {
+      throw new Error(f + " 和 " + slugs.get(slugKey) + " 的网址名重复。");
+    }
+    slugs.set(slugKey, f);
     const date = data.date ? new Date(String(data.date).replace(/\//g, "-")) : new Date();
     const { html, toc } = mdToHtml(body);
     const tags = Array.isArray(data.tags) ? data.tags : data.tags ? [data.tags] : [];
@@ -278,9 +249,10 @@ ${head}
     </a>
     <nav class="site-nav" aria-label="主导航">${nav(rel, active)}</nav>
     <div class="header-tools">
-      <a class="search-link" href="${rel}search.html" title="搜索" aria-label="搜索">
+      <a class="header-icon-link" href="${rel}search.html" title="搜索" aria-label="搜索">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </a>
+      <a class="header-icon-link${active === "library.html" ? " active" : ""}" href="${rel}library.html" title="阅读夹" aria-label="阅读夹"${active === "library.html" ? ' aria-current="page"' : ""}>${icon("bookmark")}</a>
       <button id="theme-toggle" class="theme-toggle" title="切换深浅色" aria-label="切换深浅色">
         <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
@@ -299,6 +271,8 @@ ${body}
     <a href="${rel}feed.xml">RSS</a>
     <span class="dot">·</span>
     <a href="${rel}posts.html">归档</a>
+    <span class="dot">·</span>
+    <a href="${rel}library.html">阅读夹</a>
   </div>
 </footer>
 <script src="${rel}${assets["site.js"]}" defer></script>
@@ -352,6 +326,23 @@ function categoryDirectory(collection, rel) {
     </div>`;
 }
 
+function relatedNotes(post, posts) {
+  const related = posts.filter((other) => other !== post).map((other) => {
+    const shared = other.tags.filter((tag) => post.tags.includes(tag));
+    const sameSection = post.section && post.category === other.category && post.section === other.section;
+    return { other, shared, score: shared.length + Number(Boolean(sameSection)) };
+  }).filter(({ score }) => score > 0).sort((a, b) => b.score - a.score).slice(0, 3);
+  if (!related.length) return "";
+
+  return `<section class="related-notes" aria-labelledby="related-notes-title">
+    <h2 id="related-notes-title">相关笔记</h2>
+    <ul>${related.map(({ other, shared }) => `<li>
+      <a href="${encodeURIComponent(other.slug)}.html">${esc(other.title)}</a>
+      ${shared.length ? `<small>${shared.map((tag) => "#" + esc(tag)).join(" · ")}</small>` : ""}
+    </li>`).join("")}</ul>
+  </section>`;
+}
+
 /* ---------------------------------------------------------- */
 /*  构建                                                        */
 /* ---------------------------------------------------------- */
@@ -388,7 +379,7 @@ function prepareAssets() {
   fs.writeFileSync(cssPath, css.replaceAll('url("optics-cover.webp")', `url("${versioned("optics-cover.webp")}")`));
 
   fs.copyFileSync(path.join(ROOT, "tools/markdown.cjs"), path.join(destination, "note-preview.js"));
-  const files = ["style.css", "site.js", "search.css", "compose.css", "compose.js", "note-preview.js"];
+  const files = ["style.css", "site.js", "search.css", "compose.css", "compose.js", "note-preview.js", "library.css", "library.js"];
   const assets = Object.fromEntries(files.map((name) => [name, `assets/${versioned(name)}`]));
   const browserKatex = `katex/${katexVersion}/katex.min.js`;
   fs.copyFileSync(path.join(ROOT, "tools/vendor/katex/katex.cjs"), path.join(destination, browserKatex));
@@ -399,14 +390,16 @@ function prepareAssets() {
 export function build({ quiet = false } = {}) {
   const log = (...a) => { if (!quiet) console.log(...a); };
   const t0 = Date.now();
+  const posts = readPosts();
+  const labs = readLabs();
 
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
 
   const assets = prepareAssets();
   const layout = (options) => renderPage(assets, options);
-  const posts = readPosts();
-  const labs = readLabs();
+  const libraryAssets = (rel = "") => `<link rel="stylesheet" href="${rel}${assets["library.css"]}">
+<script defer src="${rel}${assets["library.js"]}"></script>`;
   const tagMap = new Map();
   for (const p of posts) for (const t of p.tags) {
     const k = tagSlug(t);
@@ -465,7 +458,9 @@ ${collections.length ? `<section class="shelf">
     const current = ' class="chip active" aria-current="page"';
     return `<section class="page-head">
       <h1>${collection ? esc(collection.name) : "全部文章"}</h1>
-      <p class="page-sub">${entries.length} 篇记录 · ${collection ? "按笔记类型浏览" : "按日期排列"}</p>
+      <p class="page-sub">${entries.length} 篇记录 · ${collection
+        ? `<a href="${rel}search.html?scope=${encodeURIComponent("category:" + collection.key)}">搜索本类</a>`
+        : "按日期排列"}</p>
     </section>
     <nav class="filters archive-filters" aria-label="按分类浏览">
       <a href="${rel}posts.html"${collection ? ' class="chip"' : current}>全部</a>
@@ -479,6 +474,18 @@ ${collection ? categoryDirectory(collection, rel) : `
     writeFile(categoryPath(c.key), layout({ title: c.name, body: archiveBody(c), rel: "../", active: "posts.html" }));
   }
   writeFile("compose.html", layout({ title: "写笔记", body: composePage(categories, assets) }));
+  const libraryEntries = posts.map((p) => ({
+    slug: p.slug,
+    href: `posts/${encodeURIComponent(p.slug)}.html`,
+    title: p.title,
+    category: catInfo(p.category).name,
+  }));
+  writeFile("library.html", layout({
+    title: "阅读夹",
+    body: libraryPage(libraryEntries),
+    active: "library.html",
+    head: `<meta name="robots" content="noindex">${libraryAssets()}`,
+  }));
 
   /* ---- 文章详情 ---- */
   posts.forEach((p, idx) => {
@@ -499,12 +506,14 @@ ${collection ? categoryDirectory(collection, rel) : `
     <h1 class="post-title">${esc(p.title)}</h1>
     ${p.summary ? `<p class="post-lede">${esc(p.summary)}</p>` : ""}
     ${p.tags.length ? `<div class="card-tags">${p.tags.map((t) => `<a class="tag" href="../tags/${encodeURIComponent(tagSlug(t))}.html">#${esc(t)}</a>`).join(" ")}</div>` : ""}
+    ${articleLibraryControls(p.slug)}
   </div>
   <div class="post-body${p.toc.length ? " with-toc" : ""}">
     ${tocLinks ? `<details class="toc-inline"><summary>文章目录 · ${p.toc.length} 节</summary><nav aria-label="文章目录">${tocLinks}</nav></details>` : ""}
     <div class="prose">${p.html}</div>
     ${tocLinks ? `<nav class="toc" aria-label="目录"><div class="toc-title">目录</div>${tocLinks}</nav>` : ""}
   </div>
+${relatedNotes(p, posts)}
   <nav class="post-nav">
     ${next ? `<a class="pn prev" href="${encodeURIComponent(next.slug)}.html"><span>← 更新的一篇</span><strong>${esc(next.title)}</strong></a>` : "<span></span>"}
     ${prev ? `<a class="pn next" href="${encodeURIComponent(prev.slug)}.html"><span>更早的一篇 →</span><strong>${esc(prev.title)}</strong></a>` : "<span></span>"}
@@ -522,6 +531,7 @@ ${collection ? categoryDirectory(collection, rel) : `
         rel: "../",
         active: "posts.html",
         bodyClass: "page-post",
+        head: libraryAssets("../"),
       })
     );
   });
@@ -657,6 +667,13 @@ ${g.items.map(labCard).join("\n")}
       dateText: fmtDate(p.date),
       scope: `category:${p.category}`,
       cat: catInfo(p.category).name,
+      section: p.section,
+      ...(p.section && {
+        sectionName: catInfo(p.category).sections[p.section],
+        sectionHref: `${categoryPath(p.category)}#${encodeURIComponent(sectionAnchor(p.section))}`,
+        sectionOrder: Object.keys(catInfo(p.category).sections).indexOf(p.section),
+      }),
+      headings: p.toc.map(({ id, label }) => ({ id, label: searchText(label) })).filter(({ label }) => label),
       tags: p.tags,
       summary: p.summary,
       text: searchText(p.html),
@@ -687,13 +704,15 @@ ${g.items.map(labCard).join("\n")}
   const searchBody = `
 <section class="page-head">
   <h1>站内搜索</h1>
-  <p class="page-sub">搜索 ${posts.length} 篇文章与 ${labs.length} 个专题的标题、标签和正文。</p>
+  <p class="page-sub">搜索 ${posts.length} 篇文章与 ${labs.length} 个专题。可按分类和笔记类型缩小范围。</p>
 </section>
 <form id="search-form" class="search-box" action="search.html" method="get" role="search">
   <label for="search-input">关键词</label>
   <input id="search-input" name="q" type="search" placeholder="例如：里德堡、量子门" autocomplete="off">
   <label for="search-scope">搜索范围</label>
   <select id="search-scope" name="scope"><option value="">全部内容</option>${scopeGroup("article", "文章")}${scopeGroup("lab", "专题")}</select>
+  <label for="search-section" hidden>笔记类型</label>
+  <select id="search-section" name="section" hidden disabled><option value="">全部类型</option></select>
 </form>
 <noscript><p>启用 JavaScript 后可搜索正文，也可以浏览<a href="posts.html">所有文章</a>或<a href="labs.html">专题报告</a>。</p></noscript>
 <p id="search-status" role="status" aria-live="polite"></p>

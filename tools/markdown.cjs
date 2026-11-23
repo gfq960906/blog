@@ -6,6 +6,64 @@
   const esc = (s = "") =>
     String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+  function frontmatterValue(value) {
+    // The editor writes JSON-compatible YAML strings and arrays.
+    if (value.startsWith('"') || /^\[\s*"/.test(value)) {
+      try {
+        const parsed = JSON.parse(value);
+        if (typeof parsed === "string" || (Array.isArray(parsed) && parsed.every(item => typeof item === "string"))) {
+          return parsed;
+        }
+      } catch { /* Still accept simple hand-written scalars and lists. */ }
+    }
+    if (/^\[.*\]$/.test(value)) {
+      return value.slice(1, -1).split(",").map(item => item.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
+    }
+    if (/^(true|false)$/i.test(value)) return /^true$/i.test(value);
+    return value.replace(/^["']|["']$/g, "");
+  }
+
+  function parseFrontmatter(raw) {
+    const source = raw.replace(/^\uFEFF/, "");
+    const data = Object.create(null);
+    const lines = [];
+    const opening = source.match(/^---[ \t]*\r?\n/);
+    const rest = opening ? source.slice(opening[0].length) : "";
+    const closing = /^---[ \t]*(?:\r?\n|$)/m.exec(rest);
+    if (!closing) return { data, body: source, lines };
+    let inTagList = false;
+    for (const line of rest.slice(0, closing.index).replace(/\r?\n$/, "").split(/\r?\n/)) {
+      if (!line.trim() || line.trimStart().startsWith("#")) {
+        lines.push({ key: "", line });
+        continue;
+      }
+      const tag = inTagList && line.match(/^\s*-\s+(.+)$/);
+      if (tag) {
+        if (!Array.isArray(data.tags)) data.tags = [];
+        data.tags.push(String(frontmatterValue(tag[1].trim())));
+        lines.push({ key: "tags", line });
+        continue;
+      }
+      const idx = line.indexOf(":");
+      const key = idx < 0 ? "" : line.slice(0, idx).trim();
+      const value = key ? line.slice(idx + 1).trim() : "";
+      lines.push({ key, line });
+      if (key) data[key] = frontmatterValue(key === "draft" ? value.replace(/[ \t]+#.*$/, "") : value);
+      inTagList = key === "tags" && !value;
+    }
+    return { data, body: rest.slice(closing.index + closing[0].length), lines };
+  }
+
+  function isNoteSlug(value) {
+    if (typeof value !== "string" || !value || value !== value.trim() || /^\.+$/.test(value) ||
+        /[<>:"/\\|?*\x00-\x1f]/.test(value) ||
+        /^(con|prn|aux|nul|com[1-9¹²³]|lpt[1-9¹²³])(?:\.|$)/i.test(value)) return false;
+    try {
+      encodeURIComponent(value);
+      return true;
+    } catch { return false; }
+  }
+
   // Keep the TeX as plain text until rendering the final page. The search index
   // can then reuse the article HTML without indexing two copies of each formula.
   function mathMarker(tex, display = false) {
@@ -341,8 +399,9 @@
   }
 
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { mdToHtml, markHtmlMath, mathMarker, typesetMarkers, renderNotePreview, esc };
+    module.exports = { mdToHtml, markHtmlMath, mathMarker, typesetMarkers, renderNotePreview, esc, parseFrontmatter, isNoteSlug };
   } else {
     window.renderBlogNotePreview = renderNotePreview;
+    window.blogNoteSource = { parseFrontmatter, isNoteSlug };
   }
 })();
